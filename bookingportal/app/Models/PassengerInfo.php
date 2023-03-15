@@ -32,6 +32,14 @@ class PassengerInfo extends Model
             $query->where('id', $val);
     }
 
+    public function scopeByEmail($query, $val) {
+        $query->where('email', $val);
+    }
+
+    public function scopeByBookingReference($query, $val) {
+        $query->where('PNR', $val);
+    }
+
     /*
      * GET / SET
      */
