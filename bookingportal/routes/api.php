@@ -24,7 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/getAccess', [FlightBookingController::class, 'getAccessToken']);
 Route::post('/search', [FlightBookingController::class, 'searchFlights']);
 Route::get('/selectFlightOffer', [FlightBookingController::class, 'selectFlightOffer']);
-
+Route::post('/flightConfirmation', [FlightBookingController::class, 'flightConfirmation']);
 
 Route::get('/searchHotelByCity', [HotelBookingController::class, 'searchHotelByCity']);
 Route::get('/selectSpecificHotelOffer', [HotelBookingController::class, 'selectSpecificHotelOffer']);

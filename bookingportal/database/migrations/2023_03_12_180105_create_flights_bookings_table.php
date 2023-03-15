@@ -13,14 +13,16 @@ return new class extends Migration
     {
         Schema::create('flights_bookings', function (Blueprint $table) {
             $table->id();
-            $table->string('bookingReference')->unique();
-            $table->dateTime('issueDate');
+            $table->string('bookingReference');
+            $table->timestamp('time')->useCurrent();
             $table->string('airline');
             $table->string('flightNumber');
             $table->string('departureFrom');
-            $table->dateTime('departureDateTime');
+            $table->string('departureTerminal');
+            $table->string('departureDateTime');
             $table->string('arrivelTo');
-            $table->dateTime('arrivelDate');
+            $table->string('arrivelTerminal');
+            $table->string('arrivelDate');
             $table->string('flightDuration');
             $table->boolean('isBookingConfirmed');
             $table->timestamps();
