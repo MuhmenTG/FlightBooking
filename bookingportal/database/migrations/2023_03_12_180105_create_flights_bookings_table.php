@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('departureTerminal');
             $table->string('departureDateTime');
             $table->string('arrivelTo');
-            $table->string('arrivelTerminal');
+            $table->string('arrivelTerminal')->nullable();
             $table->string('arrivelDate');
             $table->string('flightDuration');
             $table->boolean('isBookingConfirmed');

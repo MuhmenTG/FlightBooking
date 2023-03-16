@@ -13,6 +13,7 @@ use PhpParser\Node\Stmt\Echo_;
 use Amadeus\Amadeus;
 use Amadeus\Exceptions\ResponseException;
 use App\Models\FlightBooking;
+use App\Models\PassengerInfo;
 use DateTime;
 
 use function PHPSTORM_META\type;
@@ -168,9 +169,41 @@ class FlightBookingController extends Controller
     
                 }
             }         
+            foreach($FlightData["passengers"] as $passenger){
+                
+                $firstName = $passenger["firstName"];
+                $lastName = $passenger["lastName"];
+                $dateOfBirth = $passenger["dateOfBirth"];
+                $email = $passenger["email"];
+                $passengerType = $passenger["passengerType"];
+                $ticketNumber = $this->generateTicketNumber(14);
+
+                $passengerInfo = new PassengerInfo();
+                $passengerInfo->setPNR($bookingReference);
+                $passengerInfo->setPaymentInfoId(1);
+                $passengerInfo->setFirstName($firstName);
+                $passengerInfo->setLastName($lastName);
+                $passengerInfo->setDateOfBirth($dateOfBirth);
+                $passengerInfo->setEmail($email);
+                $passengerInfo->setPassengerType($passengerType);
+                $passengerInfo->setTicketNumber($ticketNumber);
+                $passengerInfo->save();
+
+                
+            }
         }
 
 
         
     }
+
+    private function generateTicketNumber($length) {
+        $result = '';
+        for($i = 0; $i < $length; $i++) {
+            $result .= mt_rand(0, 9);
+        }
+        return $result;
+    }
 }
+
+

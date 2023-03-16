@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('dateOfBirth');
             $table->string('email');
             $table->string('passengerType');
-            $table->integer('ticketNumber');
+            $table->string('ticketNumber');
             $table->timestamps();
         });
     }
