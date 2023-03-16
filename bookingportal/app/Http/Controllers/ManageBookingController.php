@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FlightBooking;
 use App\Models\PassengerInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -14,7 +15,6 @@ class ManageBookingController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'bookingReference'      => 'required|string',
-            'email'                 => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -22,11 +22,21 @@ class ManageBookingController extends Controller
         }
 
         $bookingReference = $request->input('bookingReference');
-        $email = $request->input('email');
         
-        $passengers = PassengerInfo::where(PassengerInfo::COL_EMAIL, $email)->where(PassengerInfo::COL_PNR, $bookingReference)->all();
-        if($passengers){
-            
+        $passengers = PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->get();
+        
+        if($passengers == null){
+            return response()->json("Booking Could not be found", 404);
         }
+        
+        $flights = FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();   
+
+        $booking = [
+            'success' => true,
+            'PAX'  => $passengers,
+            'flight' => $flights,    
+        ];
+
+        return response()->json($booking, 200);
     }
 }

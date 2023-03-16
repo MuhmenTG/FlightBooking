@@ -6,18 +6,9 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Validator;
-
 use Illuminate\Support\Arr;
-use PhpParser\Node\Stmt\Const_;
-use PhpParser\Node\Stmt\Echo_;
-use Amadeus\Amadeus;
-use Amadeus\Exceptions\ResponseException;
 use App\Models\FlightBooking;
 use App\Models\PassengerInfo;
-use DateTime;
-
-use function PHPSTORM_META\type;
-
 class FlightBookingController extends Controller
 {
     //
@@ -168,7 +159,8 @@ class FlightBookingController extends Controller
                     $flightBooking->save();
     
                 }
-            }         
+            }   
+
             foreach($FlightData["passengers"] as $passenger){
                 
                 $firstName = $passenger["firstName"];
@@ -187,14 +179,9 @@ class FlightBookingController extends Controller
                 $passengerInfo->setEmail($email);
                 $passengerInfo->setPassengerType($passengerType);
                 $passengerInfo->setTicketNumber($ticketNumber);
-                $passengerInfo->save();
-
-                
+                $passengerInfo->save();   
             }
         }
-
-
-        
     }
 
     private function generateTicketNumber($length) {
