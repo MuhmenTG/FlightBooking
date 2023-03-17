@@ -27,8 +27,6 @@ Route::get('/selectFlightOffer', [FlightBookingController::class, 'selectFlightO
 Route::post('/flightConfirmation', [FlightBookingController::class, 'flightConfirmation']);
 
 Route::get('/searchHotelByCity', [HotelBookingController::class, 'searchHotelByCity']);
-Route::get('/selectSpecificHotelOffer', [HotelBookingController::class, 'selectSpecificHotelOffer']);
-Route::post('/search', [FlightBookingController::class, 'searchFlights']);
-Route::post('/search', [FlightBookingController::class, 'searchFlights']);
+Route::post('/getFinalHotelOfferInfo', [HotelBookingController::class, 'getFinalHotelOfferInfo']);
 
 Route::post('/makePayment', [PaymentController::class, 'createPayment']);

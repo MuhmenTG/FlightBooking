@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_accounts', function (Blueprint $table) {
-            $table->id();
-            $table->string('userId');
+            
+            $table->increments('userId');
             $table->string('firstName');
             $table->string('lastName');
             $table->string('email')->unique();
@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('role');
             $table->integer('firstTimeLoggedIn')->default(0);
             $table->timestamp('registeredAt')->useCurrent();
+            $table->integer('deactivatedAt')->nullable();
             $table->timestamps();
 
         });
