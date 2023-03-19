@@ -7,14 +7,17 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
-use App\Models\FlightBooking;
-use App\Models\PassengerInfo;
 use BookingFactory;
 
 class FlightBookingController extends Controller
 {
     //
+    protected $bookingFactory;
 
+    public function __construct(BookingFactory $bookingFactory)
+    {
+        $this->bookingFactory = $bookingFactory;
+    }
 
     //We have made this only because there is not any frontend yet, where acess token comes from
     public function getAccessToken()
@@ -76,9 +79,12 @@ class FlightBookingController extends Controller
         $searchData = Arr::query($data);
         $url .= '?' . $searchData;
 
-
         $accessTtoken = 'nQKqltWJEJ7tyZAYa3mkE6w0SVdB';
-        try {
+
+        $response = $this->makeRequest($url, $accessTtoken, "get")
+
+        return response()->json($response, 200);
+       /* try {
 
             $client = new \GuzzleHttp\Client();
             $response = $client->get($url, [
@@ -91,7 +97,7 @@ class FlightBookingController extends Controller
             return $response->getBody();
         } catch (GuzzleException $exception) {
             print($exception);
-        }
+        }*/
     }
 
     public function selectFlightOffer(Request $request)
@@ -130,27 +136,39 @@ class FlightBookingController extends Controller
         }*/
     }
 
-    public function flightConfirmation(Request $request)
+    public function flightConfirmation(Request $request, BookingFactory $bookingFactory)
     {
-        $flightData = $request->json()->all();
+        try {
+            $flightData = $request->json()->all();
 
-        if(!empty($flightData)) {
+            
+            $validator = Validator::make($flightData, [
+                'passengers' => 'required|array',
+            ]);
+            
+            if ($validator->fails()) {
+                throw new Exception($validator->errors()->first());
+            }
 
-            $passengers = BookingFactory::createPassengerRecord($flightData["passengers"], $bookingReference);
-            $flightSegments =  BookingFactory::createFlightBookingRecord($flightData);
+            $passengers = $bookingFactory->createPassengerRecord($flightData["passengers"], $bookingReference);
+            $flightSegments =  $bookingFactory->createFlightBookingRecord($flightData);
+
+            $booking = [
+                'success' => true,
+                'PAX'  => $passengers,
+                'flight' => $flightSegments,    
+            ];
+
+            return response()->json($booking, 200);
+        } catch (Exception $e) {
+            $error = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($error, 400);
         }
-
-        $booking = [
-            'success' => true,
-            'PAX'  => $passengers,
-            'flight' => $flightSegments,    
-        ];
-
-        return response()->json($booking, 200);
     }
 
-
-    
 }
 
 
