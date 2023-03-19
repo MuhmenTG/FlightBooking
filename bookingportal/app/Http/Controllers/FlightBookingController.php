@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
 use App\Models\FlightBooking;
 use App\Models\PassengerInfo;
+use BookingFactory;
+
 class FlightBookingController extends Controller
 {
     //
@@ -107,7 +109,10 @@ class FlightBookingController extends Controller
 
         $accessTtoken = 'nQKqltWJEJ7tyZAYa3mkE6w0SVdB';
 
-        try {
+        $response = $this->makeRequest($url, $accessTtoken, "post", $data);
+
+        return response()->json($response, 200);
+       /* try {
             $client = new \GuzzleHttp\Client();
             $response = $client->post($url, [
                 'headers' => [
@@ -122,75 +127,30 @@ class FlightBookingController extends Controller
             return $response->getBody();
         } catch (GuzzleException $exception) {
             return $exception->getMessage();
-        }
+        }*/
     }
 
     public function flightConfirmation(Request $request)
     {
-        $FlightData = $request->json()->all();
+        $flightData = $request->json()->all();
 
-        if(!$FlightData == null){
-            foreach ($FlightData["itineraries"] as $itinerary) {
-                foreach ($itinerary["segments"] as $segment) 
-                {
-                    $departureIata = $segment["departure"]["iataCode"];
-                    $departureTerminal = isset($segment['departure']['terminal']) ? $segment['departure']['terminal'] : null;
-                    $departureTime = $segment["departure"]["at"];
-                    $arrivalIata = $segment["arrival"]["iataCode"];
-                    $arrivalTerminal = isset($segment['arrival']['terminal']) ? $segment['arrival']['terminal'] : null;
-                    $arrivalTime = $segment["arrival"]["at"];
-                    $carrierCode = $segment["carrierCode"];
-                    $flightNumber = $segment["number"];
-                    $duration = $segment["duration"];
-                    $bookingReference = "something";
-    
-                    $flightBooking = new FlightBooking();
-                    $flightBooking->setBookingReference($bookingReference);
-                    $flightBooking->setAirline($carrierCode);
-                    $flightBooking->setFlightNumber($flightNumber);
-                    $flightBooking->setDepartureFrom($departureIata);
-                    $flightBooking->setDepartureDateTime($departureTime);
-                    $flightBooking->setDepartureTerminal($departureTerminal);
-                    $flightBooking->setArrivelTo($arrivalIata);
-                    $flightBooking->setArrivelDate($arrivalTime);
-                    $flightBooking->getArrivelTerminal($arrivalTerminal);
-                    $flightBooking->setFlightDuration($duration);
-                    $flightBooking->setIsBookingConfirmed(true);
-                    $flightBooking->save();
-    
-                }
-            }   
+        if(!empty($flightData)) {
 
-            foreach($FlightData["passengers"] as $passenger){
-                
-                $firstName = $passenger["firstName"];
-                $lastName = $passenger["lastName"];
-                $dateOfBirth = $passenger["dateOfBirth"];
-                $email = $passenger["email"];
-                $passengerType = $passenger["passengerType"];
-                $ticketNumber = $this->generateTicketNumber(14);
-
-                $passengerInfo = new PassengerInfo();
-                $passengerInfo->setPNR($bookingReference);
-                $passengerInfo->setPaymentInfoId(1);
-                $passengerInfo->setFirstName($firstName);
-                $passengerInfo->setLastName($lastName);
-                $passengerInfo->setDateOfBirth($dateOfBirth);
-                $passengerInfo->setEmail($email);
-                $passengerInfo->setPassengerType($passengerType);
-                $passengerInfo->setTicketNumber($ticketNumber);
-                $passengerInfo->save();   
-            }
+            $passengers = BookingFactory::createPassengerRecord($flightData["passengers"], $bookingReference);
+            $flightSegments =  BookingFactory::createFlightBookingRecord($flightData);
         }
+
+        $booking = [
+            'success' => true,
+            'PAX'  => $passengers,
+            'flight' => $flightSegments,    
+        ];
+
+        return response()->json($booking, 200);
     }
 
-    private function generateTicketNumber($length) {
-        $result = '';
-        for($i = 0; $i < $length; $i++) {
-            $result .= mt_rand(0, 9);
-        }
-        return $result;
-    }
+
+    
 }
 
 
