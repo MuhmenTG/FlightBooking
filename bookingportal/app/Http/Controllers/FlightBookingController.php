@@ -2,22 +2,17 @@
 
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
-use BookingFactory;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use App\Factories\BookingFactory;
 
 class FlightBookingController extends Controller
 {
-    //
-    protected $bookingFactory;
-
-    public function __construct(BookingFactory $bookingFactory)
-    {
-        $this->bookingFactory = $bookingFactory;
-    }
 
     //We have made this only because there is not any frontend yet, where acess token comes from
     public function getAccessToken()
@@ -43,23 +38,23 @@ class FlightBookingController extends Controller
         } catch (GuzzleException $exception) {
             dd($exception);
         }
+        
     }
 
-    public function searchFlights(Request $request)
+    public function searchFlights(Request $request) : JsonResponse
     {
-
         $validator = Validator::make($request->all(), [
-            'originLocationCode'      => 'required|string',
-            'destinationLocationCode' => 'required|string',
-            'departureDate'           => 'required|string',
-            'returnDate'              => 'string',
-            'adults'                  => 'required|string'
+            'originLocationCode'        => 'required|string',
+            'destinationLocationCode'   => 'required|string',
+            'departureDate'             => 'required|string',
+            'returnDate'                => 'nullable|string',
+            'adults'                    => 'required|integer|min:1',
         ]);
-
+    
         if ($validator->fails()) {
-            return response()->json("Validation Failed", 400);
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
         }
-
+        
         $url = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
 
         $originLocationCode = $request->input('originLocationCode');
@@ -79,28 +74,18 @@ class FlightBookingController extends Controller
         $searchData = Arr::query($data);
         $url .= '?' . $searchData;
 
-        $accessTtoken = 'nQKqltWJEJ7tyZAYa3mkE6w0SVdB';
+        $accessTtoken = 'hSj7NAANBJCM1TgKww3GuKp8le66';
 
-        $response = $this->makeRequest($url, $accessTtoken, "get")
+        $response = $this->httpRequest($url, $accessTtoken, "get");
 
-        return response()->json($response, 200);
-       /* try {
+        if($response == null){
+            return response()->json("No results found", 404);
+        }
 
-            $client = new \GuzzleHttp\Client();
-            $response = $client->get($url, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => 'Bearer ' . $accessTtoken
-                ],
-
-            ]);
-            return $response->getBody();
-        } catch (GuzzleException $exception) {
-            print($exception);
-        }*/
+        return $response;
     }
 
-    public function selectFlightOffer(Request $request)
+    public function selectFlightOffer(Request $request) 
     {
         $url = 'https://test.api.amadeus.com/v1/shopping/flight-offers/pricing';
 
@@ -113,60 +98,31 @@ class FlightBookingController extends Controller
             )
         );
 
-        $accessTtoken = 'nQKqltWJEJ7tyZAYa3mkE6w0SVdB';
+        $accessTtoken = 'hSj7NAANBJCM1TgKww3GuKp8le66';
 
-        $response = $this->makeRequest($url, $accessTtoken, "post", $data);
+        $response = $this->httpRequest($url, $accessTtoken, "post", $data);
 
-        return response()->json($response, 200);
-       /* try {
-            $client = new \GuzzleHttp\Client();
-            $response = $client->post($url, [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'X-HTTP-Method-Override' => 'GET',
-                    'Authorization' => 'Bearer ' . $accessTtoken
-                ],
-                'json' => $data
-            ]);
-
-            print_r($response->getStatusCode());
-            return $response->getBody();
-        } catch (GuzzleException $exception) {
-            return $exception->getMessage();
-        }*/
+        return $response;
     }
 
-    public function flightConfirmation(Request $request, BookingFactory $bookingFactory)
+    public function flightConfirmation(Request $request)
     {
-        try {
-            $flightData = $request->json()->all();
+        
+        $validator = Validator::make($request->json(), [
+            'passengers' => 'required|array',
+        ]);
 
-            
-            $validator = Validator::make($flightData, [
-                'passengers' => 'required|array',
-            ]);
-            
-            if ($validator->fails()) {
-                throw new Exception($validator->errors()->first());
-            }
-
-            $passengers = $bookingFactory->createPassengerRecord($flightData["passengers"], $bookingReference);
-            $flightSegments =  $bookingFactory->createFlightBookingRecord($flightData);
-
-            $booking = [
-                'success' => true,
-                'PAX'  => $passengers,
-                'flight' => $flightSegments,    
-            ];
-
-            return response()->json($booking, 200);
-        } catch (Exception $e) {
-            $error = [
-                'success' => false,
-                'message' => $e->getMessage(),
-            ];
-            return response()->json($error, 400);
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first());
         }
+    
+        $flightData = $request->json()->all();
+        
+        $passengers = Booki ::createPassengerRecord($flightData["passengers"], $bookingReference);
+        
+        $flightSegments = BookingFactory::createFlightBookingRecord($flightData);
+
+        
     }
 
 }
