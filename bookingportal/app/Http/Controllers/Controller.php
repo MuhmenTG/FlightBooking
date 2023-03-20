@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Validation\ValidatesRequests;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
  //   use AuthorizesRequests, ValidatesRequests;
 
-    public function makeRequest(string $url, string $accessTtoken, string $method = 'get',  array $data = null)
+    public function httpRequest(string $url, string $accessTtoken, string $method = 'get',  array $data = null)
     {
+       
         $client = new \GuzzleHttp\Client();
 
         try {
@@ -33,7 +33,6 @@ class Controller extends BaseController
                     'json' => $data,
                 ]);
             }
-
             return $response->getBody();
         } catch (GuzzleException $exception) {
             print($exception);

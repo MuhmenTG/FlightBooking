@@ -45,6 +45,16 @@ class AdminController extends Controller
 
     public function getSpecificAgentDetails(Request $request){
 
+        $validator = Validator::make($request->all(), [
+            'userId'                  => 'required|int',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json("Validation Failed", 400);
+        }
+
+        $userId = $request->input('userId');
+
     }
 
     public function removeAgentAccount(Request $request){
