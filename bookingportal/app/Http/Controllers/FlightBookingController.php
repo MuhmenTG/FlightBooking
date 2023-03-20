@@ -62,7 +62,7 @@ class FlightBookingController extends Controller
         $departureDate = $request->input('departureDate');
         $returnDate = $request->input('returnDate');
         $adults =  $request->input('adults');
-        $accessToken = $request->bearerToken();
+        //$accessToken = $request->bearerToken();
 
         $data = [
             'originLocationCode'      => $originLocationCode,
@@ -77,7 +77,7 @@ class FlightBookingController extends Controller
 
         $accessTtoken = 'hSj7NAANBJCM1TgKww3GuKp8le66';
 
-        $response = $this->httpRequest($url, $accessToken, "get");
+        $response = $this->httpRequest($url, $accessTtoken, "get");
 
         if($response == null){
             return response()->json("No results found", 404);

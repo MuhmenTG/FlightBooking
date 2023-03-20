@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Support\Arr;
-use Termwind\Components\Raw;
+use InvalidArgumentException;
 
 class HotelBookingController extends Controller
 {
@@ -16,7 +15,7 @@ class HotelBookingController extends Controller
     const SPECIFICHOTELAVALIABILITY = '';
     const SPECIFICHOTELOFFER = '';
     const CONFIRMHOTELOFFER = 'https://test.api.amadeus.com/v1/booking/hotel-bookings';
-    
+
     public function searchHotel(Request $request)
     {
         $listOfHotelByCityUrl = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city";
@@ -33,7 +32,7 @@ class HotelBookingController extends Controller
         }
     
         $cityCode = $request->input('cityCode');
-        $adults = $request->input('adults');
+        $adults = intval($request->input('adults'));
         $checkInDate = $request->input('checkInDate');
         $checkOutDate = $request->input('checkOutDate');
     
@@ -55,11 +54,30 @@ class HotelBookingController extends Controller
         return $finalHotelList;
     }
     
-    private function getSpecificHotelsRoomAvailability($hotelIds, string $adults, string $checkInDate, string $checkOutDate)
+    private function getSpecificHotelsRoomAvailability($hotelIds, int $adults, string $checkInDate, string $checkOutDate)
     {
+       
+        $isCommaSeparated = implode(",", explode(",", $hotelIds)) === $hotelIds;
+
+        if (!$isCommaSeparated || empty($hotelIds)) {
+            throw new InvalidArgumentException("Invalid hotelIds parameter. Expecting a non-empty array.");
+        }
+
+        if (!is_numeric($adults) || $adults < 1) {
+            throw new InvalidArgumentException("Invalid adults parameter. Expecting a positive integer.");
+        }
+
+        if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $checkInDate)) {
+            throw new InvalidArgumentException("Invalid checkInDate parameter. Expecting date format yyyy-mm-dd.");
+        }
+    
+        if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $checkOutDate)) {
+            throw new InvalidArgumentException("Invalid checkOutDate parameter. Expecting date format yyyy-mm-dd.");
+        }
+    
+
         $specificHotelOfferUrl = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
         $token = 'RgSFMiL6G6S5VBwWCPPS6Q00TCLY';
-
 
         $data = [
             'hotelIds'      => $hotelIds,
@@ -71,21 +89,10 @@ class HotelBookingController extends Controller
         $searchData = Arr::query($data);
         $specificHotelOfferUrl .= '?' . $searchData;
 
-        try {
-
-            $client = new \GuzzleHttp\Client();
-            $response = $client->get($specificHotelOfferUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => 'Bearer ' . $token
-                ],
-
-            ]);
-            return $response->getBody();
-        } catch (GuzzleException $exception) {
-            dd($exception);
-        }
+        $response = $this->httpRequest($specificHotelOfferUrl, $token);
+        return $response;
     }
+
 
     public function getFinalHotelOfferInfo(Request $request)
     {
