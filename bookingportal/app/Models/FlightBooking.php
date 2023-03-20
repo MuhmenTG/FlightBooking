@@ -37,6 +37,10 @@ class FlightBooking extends Model
             $query->where('id', $val);
     }
 
+    public function scopeByBookingReference($query, $val) {
+        $query->where('bookingReference', $val);
+    }
+
     public function scopeFromTime($query, $val) {
             $query->where('time', '>=', $val);
     }

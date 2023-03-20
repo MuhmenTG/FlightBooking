@@ -16,60 +16,46 @@ class HotelBookingController extends Controller
     const SPECIFICHOTELAVALIABILITY = '';
     const SPECIFICHOTELOFFER = '';
     const CONFIRMHOTELOFFER = 'https://test.api.amadeus.com/v1/booking/hotel-bookings';
-
-    public function searchHotelByCity(Request $request)
+    
+    public function searchHotel(Request $request)
     {
         $listOfHotelByCityUrl = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city";
         $token = 'RgSFMiL6G6S5VBwWCPPS6Q00TCLY';
+    
         $validator = Validator::make($request->all(), [
-            'cityCode'         => 'required|string',
-            'adults'           => 'required|string',
-            'checkInDate'      => 'required|string',
-            'checkOutDate'     => 'required|string',
+            'cityCode' => 'required|string',
+            'adults' => 'required|string',
+            'checkInDate' => 'required|string',
+            'checkOutDate' => 'required|string',
         ]);
-
         if ($validator->fails()) {
             return response()->json("Validation Failed", 400);
         }
-
+    
         $cityCode = $request->input('cityCode');
         $adults = $request->input('adults');
         $checkInDate = $request->input('checkInDate');
         $checkOutDate = $request->input('checkOutDate');
-
-
+    
         $data = [
-            'cityCode'      => $cityCode
+            'cityCode' => $cityCode
         ];
-
         $searchData = Arr::query($data);
         $listOfHotelByCityUrl .= '?' . $searchData;
-
-        try {
-
-            $client = new \GuzzleHttp\Client();
-            $response = $client->get($listOfHotelByCityUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => 'Bearer ' . $token
-                ],
-
-            ]);
-            $hotelResponse = $response->getBody();
-
-            $data = json_decode($hotelResponse, true);
-
-            $hotelIds = implode(',', array_map(function ($item) {
-                return $item['hotelId'];
-            }, $data['data']));
-            $finalHotelList = $this->getSpecificHotelsRoomAvaliability($hotelIds, $adults, $checkInDate, $checkOutDate);
-            return $finalHotelList;
-        } catch (GuzzleException $exception) {
-            dd($exception);
-        }
+    
+        $hotelResponse = $this->httpRequest($listOfHotelByCityUrl, $token);
+        $data = json_decode($hotelResponse, true);
+    
+        $hotelIds = implode(',', array_map(function ($item) {
+            return $item['hotelId'];
+        }, $data['data']));
+    
+        $finalHotelList = $this->getSpecificHotelsRoomAvailability($hotelIds, $adults, $checkInDate, $checkOutDate);
+    
+        return $finalHotelList;
     }
-
-    private function getSpecificHotelsRoomAvaliability($hotelIds, string $adults, string $checkInDate, string $checkOutDate)
+    
+    private function getSpecificHotelsRoomAvailability($hotelIds, string $adults, string $checkInDate, string $checkOutDate)
     {
         $specificHotelOfferUrl = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
         $token = 'RgSFMiL6G6S5VBwWCPPS6Q00TCLY';

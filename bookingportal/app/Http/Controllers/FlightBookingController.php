@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Factories\BookingFactory;
 use Illuminate\Http\Request;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
-use Exception;
 use Illuminate\Http\JsonResponse;
-use App\Factories\BookingFactory;
+
+
 
 class FlightBookingController extends Controller
 {
@@ -62,6 +62,7 @@ class FlightBookingController extends Controller
         $departureDate = $request->input('departureDate');
         $returnDate = $request->input('returnDate');
         $adults =  $request->input('adults');
+        $accessToken = $request->bearerToken();
 
         $data = [
             'originLocationCode'      => $originLocationCode,
@@ -76,7 +77,7 @@ class FlightBookingController extends Controller
 
         $accessTtoken = 'hSj7NAANBJCM1TgKww3GuKp8le66';
 
-        $response = $this->httpRequest($url, $accessTtoken, "get");
+        $response = $this->httpRequest($url, $accessToken, "get");
 
         if($response == null){
             return response()->json("No results found", 404);
@@ -108,20 +109,30 @@ class FlightBookingController extends Controller
     public function flightConfirmation(Request $request)
     {
         
-        $validator = Validator::make($request->json(), [
+        /*$validator = Validator::make($request->json(), [
             'passengers' => 'required|array',
         ]);
 
         if ($validator->fails()) {
             throw new Exception($validator->errors()->first());
-        }
+        }*/
     
         $flightData = $request->json()->all();
-        
-        $passengers = Booki ::createPassengerRecord($flightData["passengers"], $bookingReference);
-        
-        $flightSegments = BookingFactory::createFlightBookingRecord($flightData);
 
+        $bookingReferenceNumber = BookingFactory::generateBookingReference();
+        
+        $passengers = BookingFactory::createPassengerRecord($flightData["passengers"], $bookingReferenceNumber);
+        
+        $flightSegments = BookingFactory::createFlightBookingRecord($flightData, $bookingReferenceNumber);
+
+        
+        $booking = [
+            'success' => true,
+            'PAX'  => $passengers,
+            'flight' => $flightSegments,    
+        ];
+
+        return response()->json($booking, 200);
         
     }
 

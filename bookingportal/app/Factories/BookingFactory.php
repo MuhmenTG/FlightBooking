@@ -1,14 +1,16 @@
-
 <?php
 
+declare(strict_types=1);
+namespace App\Factories;
 use App\Models\FlightBooking;
 use App\Models\PassengerInfo;
+use Illuminate\Support\Arr;
 
 class BookingFactory{
 
-    public static function createFlightBookingRecord(array $flightData): string
+    public static function createFlightBookingRecord(array $flightData, string $bookingReference)
     {
-        $bookingReference = "something";
+        
         foreach ($flightData["itineraries"] as $itinerary) {
             foreach ($itinerary["segments"] as $segment) {
                 $flightBooking = new FlightBooking();
@@ -26,10 +28,11 @@ class BookingFactory{
                 $flightBooking->save();
             }
         }
-        return $bookingReference;
+        $bookedSegments = FlightBooking::ByBookingReference($bookingReference)->get();
+        return $bookedSegments;
     }
 
-    public static function createPassengerRecord(array $passengersData, string $bookingReference): void
+    public static function createPassengerRecord(array $passengersData, string $bookingReference)
     {
         foreach ($passengersData as $passenger) {
             $passengerInfo = new PassengerInfo();
@@ -43,12 +46,24 @@ class BookingFactory{
             $passengerInfo->setTicketNumber(BookingFactory::generateTicketNumber(14));
             $passengerInfo->save();
         }
+        
+        $bookedPassengers = PassengerInfo::ByBookingReference($bookingReference)->get();
+        return $bookedPassengers;
     }
 
     public static function generateTicketNumber($length) {
         $result = '';
         for($i = 0; $i < $length; $i++) {
             $result .= mt_rand(0, 9);
+        }
+        return $result;
+    }
+
+    public static function generateBookingReference() : string{
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $result = '';
+        for ($i = 0; $i < 6; $i++) {
+            $result .= $characters[rand(0, strlen($characters) - 1)];
         }
         return $result;
     }
