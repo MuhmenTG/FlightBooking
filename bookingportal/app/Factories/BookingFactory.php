@@ -2,8 +2,13 @@
 
 declare(strict_types=1);
 namespace App\Factories;
+
+use App\DTO\HotelOfferDTO;
+use App\DTO\HotelSelectionDTO;
 use App\Models\FlightBooking;
+use App\Models\HotelBooking;
 use App\Models\PassengerInfo;
+use DateTime;
 use Illuminate\Support\Arr;
 
 class BookingFactory{
@@ -30,6 +35,32 @@ class BookingFactory{
         }
         $bookedSegments = FlightBooking::ByBookingReference($bookingReference)->get();
         return $bookedSegments;
+    }
+
+    public static function createHotelRecord(HotelSelectionDTO $HotelSelectionDTO, string $bookingReference){
+
+        $hotelBooking = new HotelBooking();
+        $hotelBooking->setHotelBookingReference($bookingReference);
+        $date = new DateTime();
+        $hotelBooking->setIssueDate($date);
+        $hotelBooking->setHotelName($HotelSelectionDTO->name);
+        $hotelBooking->setHotelLocation($HotelSelectionDTO->countryCode);
+        $hotelBooking->setHotelCity($HotelSelectionDTO->cityCode);
+        $hotelBooking->setHotelContact("Something place holder");
+        $hotelBooking->setCheckInDate($HotelSelectionDTO->checkInDate);
+        $hotelBooking->setCheckOutDate($HotelSelectionDTO->checkInDate);
+        $hotelBooking->setRoomType($HotelSelectionDTO->roomType);
+        $hotelBooking->setMainGuest("MUHMEN PARVAZE");
+        $hotelBooking->setNumberOfAdults($HotelSelectionDTO->guestsAdults);
+        //$hotelBooking->setPoliciesCheckInOutCheckIn($HotelSelectionDTO->policiesCheckInOutCheckIn);
+        //$hotelBooking->setPoliciesCheckInOutCheckOut($HotelSelectionDTO->policiesCheckInOutCheckOut);
+        //$hotelBooking->setPoliciesCancellationDeadline($HotelSelectionDTO->policiesCancellationDeadline);
+        $hotelBooking->setDescription($HotelSelectionDTO->description);
+
+        $hotelBooking->save();
+
+        $bookedHotel = HotelBooking::ByHotelBookingReference($bookingReference)->get();
+        return $bookedHotel;
     }
 
     public static function createPassengerRecord(array $passengersData, string $bookingReference)

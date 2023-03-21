@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\HotelOfferDTO;
+use App\DTO\HotelSelectionDTO;
+use App\Factories\BookingFactory;
 use Illuminate\Http\Request;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Validator;
@@ -19,20 +22,20 @@ class HotelBookingController extends Controller
     public function searchHotel(Request $request)
     {
         $listOfHotelByCityUrl = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city";
-        $token = 'RgSFMiL6G6S5VBwWCPPS6Q00TCLY';
+        $token = 'GMvn8enAg3EWsaAhhDAJ8SZImiEa';
     
         $validator = Validator::make($request->all(), [
-            'cityCode' => 'required|string',
-            'adults' => 'required|string',
-            'checkInDate' => 'required|string',
-            'checkOutDate' => 'required|string',
+            'cityCode'      => 'required|string',
+            'adults'        => 'required|string',
+            'checkInDate'   => 'required|string',
+            'checkOutDate'  => 'required|string',
         ]);
         if ($validator->fails()) {
             return response()->json("Validation Failed", 400);
         }
     
         $cityCode = $request->input('cityCode');
-        $adults = intval($request->input('adults'));
+        $adults = $request->input('adults');
         $checkInDate = $request->input('checkInDate');
         $checkOutDate = $request->input('checkOutDate');
     
@@ -43,18 +46,18 @@ class HotelBookingController extends Controller
         $listOfHotelByCityUrl .= '?' . $searchData;
     
         $hotelResponse = $this->httpRequest($listOfHotelByCityUrl, $token);
-        $data = json_decode($hotelResponse, true);
+        $hotelResponse = json_decode($hotelResponse, true);
     
         $hotelIds = implode(',', array_map(function ($item) {
             return $item['hotelId'];
-        }, $data['data']));
+        }, $hotelResponse['data']));
     
         $finalHotelList = $this->getSpecificHotelsRoomAvailability($hotelIds, $adults, $checkInDate, $checkOutDate);
     
         return $finalHotelList;
     }
     
-    private function getSpecificHotelsRoomAvailability($hotelIds, int $adults, string $checkInDate, string $checkOutDate)
+    private function getSpecificHotelsRoomAvailability($hotelIds, string $adults, string $checkInDate, string $checkOutDate)
     {
        
         $isCommaSeparated = implode(",", explode(",", $hotelIds)) === $hotelIds;
@@ -77,7 +80,7 @@ class HotelBookingController extends Controller
     
 
         $specificHotelOfferUrl = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
-        $token = 'RgSFMiL6G6S5VBwWCPPS6Q00TCLY';
+        $token = 'GMvn8enAg3EWsaAhhDAJ8SZImiEa';
 
         $data = [
             'hotelIds'      => $hotelIds,
@@ -99,16 +102,15 @@ class HotelBookingController extends Controller
 
         $url = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
 
-        $token = 'RgSFMiL6G6S5VBwWCPPS6Q00TCLY';
-
+        $token = '6CfuAxAE2xc1wA8O7bhGT3whv32M';
 
         $validator = Validator::make($request->all(), [
             'hotelOfferId'         => 'required|string',
-            'firstName'            => 'required|string',
+       /*     'firstName'            => 'required|string',
             'lastName'             => 'required|string',
             'gender'               => 'required|string',
             'dateOfBirth'          => 'required|string',
-            'email'                => 'required|string',
+            'email'                => 'required|string',*/
         ]);
 
         if ($validator->fails()) {
@@ -124,27 +126,19 @@ class HotelBookingController extends Controller
 
 
         $url .= '/' . $hotelOfferId;
-        try {
 
-            $client = new \GuzzleHttp\Client();
-            $response = $client->get($url, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => 'Bearer ' . $token
-                ],
+        
+        $response = $this->httpRequest($url, $token);
+        $data = json_decode($response, true);
 
-            ]);
-            $hotelOfferResponse = $response->getBody();
-            
-            $data = json_decode($hotelOfferResponse, true);
-            $create = $this->createHotelBooking();
+        $hotelOfferDTO = new HotelSelectionDTO($data);
 
-        } catch (GuzzleException $exception) {
-            dd($exception);
-        }
+        $bookingReferenceNumber = BookingFactory::generateBookingReference();
+    
+        $hotelBoooking = BookingFactory::createHotelRecord($hotelOfferDTO, $bookingReferenceNumber);
+     
+        echo $hotelBoooking;exit;
     }
 
-    private function createHotelBooking(){
-
-    }
+    
 }
