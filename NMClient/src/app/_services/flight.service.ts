@@ -17,14 +17,23 @@ export class FlightService {
       .set('grant_type', 'client_credentials')
       .set('client_id', '73Vz7GstLSf9xaHWx0fPMH6PRg6wYqjT')
       .set('client_secret', 'lSJEDh6AwHwH5omy')
+
+
+  private token: AccessTokenResponse = {access_token: ''};
+  private httpOptions = {
+    headers: new HttpHeaders({
+      'Authorization': 'Bearer ' + this.token.access_token
+    })
+  };
   
   constructor(private http: HttpClient) { }
 
-  getAccessToken(): Observable<AccessTokenResponse> {
-    return this.http.post<AccessTokenResponse>(this.amadeusUrl, this.accessTokenParameters);
+  getAccessToken(): void {
+    this.http.post<AccessTokenResponse>(this.amadeusUrl, this.accessTokenParameters).subscribe(x => {this.token.access_token = x.access_token; console.log(this.token)});
   }
 
-  getFlights(): Observable<Flight[]> {
+  getFlights(token: string): Observable<Flight[]> {
+
     return this.http.get<Flight[]>(this.apiUrl + "/" + "searchFlights");
   }
 }

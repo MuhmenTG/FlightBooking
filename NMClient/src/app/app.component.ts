@@ -15,6 +15,6 @@ export class AppComponent implements OnInit{
   constructor(private _flightService: FlightService) {}
 
   ngOnInit(): void{
-    this._flightService.getAccessToken().subscribe(x => {this.accessToken = x; console.log(x)});
+    this._flightService.getAccessToken();
   }
 }
