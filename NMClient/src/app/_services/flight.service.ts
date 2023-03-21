@@ -21,22 +21,26 @@ export class FlightService {
 
 
   private token: AccessTokenResponse = {access_token: ''};
-  private body: SearchFlight = {originLocationCode: "", destinationLocationCode: "", departureDate: "", returnDate:"", adults: 1};
+  private body: SearchFlight = {originLocationCode: "AXX", destinationLocationCode: "YYZ", departureDate: "2023-04-15", returnDate:"2023-04-21", adults: 1};
 
   private httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': 'Bearer ' + this.token.access_token
+      'Authorization': 'Bearer Wm9oLBBQagCVxMhTbZAa6D05k0sg'
     })
   };
   
   constructor(private http: HttpClient) { }
 
   getAccessToken(): void {
-    this.http.post<AccessTokenResponse>(this.amadeusUrl, this.accessTokenParameters).subscribe(x => {this.token.access_token = x.access_token; console.log(this.token)});
+    this.http.post<AccessTokenResponse>(this.amadeusUrl, this.accessTokenParameters).subscribe(x => 
+      {
+        this.token.access_token = x.access_token; 
+        this.getFlights()
+      });
   }
 
   getFlights(): Observable<Flight[]> {
-    return this.http.post<Flight[]>(this.apiUrl + "/searchFlights", this.body, this.httpOptions);
+    return this.http.post<Flight[]>(this.apiUrl + "/searchFlight", this.body, this.httpOptions);
   }
 }
