@@ -13,19 +13,22 @@ return new class extends Migration
     {
         Schema::create('hotels_bookings', function (Blueprint $table) {
             $table->id();
-            $table->string('hotelBookingReference')->unique();
+            $table->string('hotelBookingReference');
             $table->date('issueDate');
             $table->string('hotelName');
             $table->string('hotelLocation');
             $table->string('hotelCity');
             $table->string('hotelContact');
-            $table->date('checkInDate');
-            $table->date('checkOutDate');
+            $table->string('checkInDate');
+            $table->string('checkOutDate');
             $table->string('roomType');
             $table->string('mainGuest');
             $table->integer('numberOfAdults');
-            $table->integer('numberOfChildren');
-            $table->string('description');
+            $table->integer('numberOfChildren')->nullable()->default(0);
+            $table->string('policiesCheckInOutCheckIn')->nullable()->default(Null);
+            $table->string('policiesCheckInOutCheckOut')->nullable()->default(Null);;
+            $table->string('policiesCancellationDeadline')->nullable()->default(Null);
+            $table->text('description');
             $table->timestamps();
         });
     }
