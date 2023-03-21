@@ -16,5 +16,6 @@ export class AppComponent implements OnInit{
 
   ngOnInit(): void{
     this._flightService.getAccessToken();
+    this._flightService.getFlights().subscribe(x => {console.log(x)});
   }
 }
