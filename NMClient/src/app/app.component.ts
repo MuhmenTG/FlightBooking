@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FlightService } from './_services/flight.service';
+import { AccessTokenResponse } from './_models/accessTokenResponse';
+
 
 @Component({
   selector: 'app-root',
@@ -8,7 +10,7 @@ import { FlightService } from './_services/flight.service';
 })
 export class AppComponent implements OnInit{
   title = 'NM Flights';
-  accessToken = {};
+  accessToken: AccessTokenResponse = { access_token: ""};
 
   constructor(private _flightService: FlightService) {}
 
