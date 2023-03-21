@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DTO\HotelOfferDTO;
 use App\DTO\HotelSelectionDTO;
 use App\Factories\BookingFactory;
+use App\Factories\PaymentFactory;
 use Illuminate\Http\Request;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Validator;
@@ -14,10 +15,6 @@ use InvalidArgumentException;
 
 class HotelBookingController extends Controller
 {
-    //
-    const SPECIFICHOTELAVALIABILITY = '';
-    const SPECIFICHOTELOFFER = '';
-    const CONFIRMHOTELOFFER = 'https://test.api.amadeus.com/v1/booking/hotel-bookings';
 
     public function searchHotel(Request $request)
     {
@@ -26,10 +23,12 @@ class HotelBookingController extends Controller
     
         $validator = Validator::make($request->all(), [
             'cityCode'      => 'required|string',
-            'adults'        => 'required|string',
-            'checkInDate'   => 'required|string',
-            'checkOutDate'  => 'required|string',
+            'adults'        => 'required|integer|min:1',
+            'checkInDate'   => 'required|date|date_format:Y-m-d',
+            'checkOutDate'  => 'required|date|date_format:Y-m-d',
         ]);
+
+        
         if ($validator->fails()) {
             return response()->json("Validation Failed", 400);
         }
@@ -78,7 +77,6 @@ class HotelBookingController extends Controller
             throw new InvalidArgumentException("Invalid checkOutDate parameter. Expecting date format yyyy-mm-dd.");
         }
     
-
         $specificHotelOfferUrl = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
         $token = 'GMvn8enAg3EWsaAhhDAJ8SZImiEa';
 
@@ -97,20 +95,34 @@ class HotelBookingController extends Controller
     }
 
 
-    public function getFinalHotelOfferInfo(Request $request)
+    public function reviewSelectedHotelOfferInfo(string $hotelOfferId)
     {
 
         $url = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
 
         $token = '6CfuAxAE2xc1wA8O7bhGT3whv32M';
 
+        if($hotelOfferId == null){
+            throw new InvalidArgumentException("Invalid hotelOfferId found");
+        }
+
+        $url .= '/' . $hotelOfferId;
+
+        $response = $this->httpRequest($url, $token);
+        return $response;
+    }
+
+    publiC function hotelConfirmation(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'hotelOfferId'         => 'required|string',
-       /*     'firstName'            => 'required|string',
+            'firstName'            => 'required|string',
             'lastName'             => 'required|string',
-            'gender'               => 'required|string',
-            'dateOfBirth'          => 'required|string',
-            'email'                => 'required|string',*/
+            'email'                => 'required|email',
+            'cardNumber'           => 'required|string',
+            'expireMonth'          => 'required|string',
+            'expireYear'           => 'required|string',
+            'cvcDigts'             => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -120,24 +132,31 @@ class HotelBookingController extends Controller
         $hotelOfferId = $request->input('hotelOfferId');
         $firstName = $request->input('firstName');
         $lastName = $request->input('lastName');
-        $gender = $request->input('gender');
-        $dateOfBirth = $request->input('dateOfBirth');
         $email = $request->input('email');
+        $cardNumber = $request->input('cardNumber');
+        $expireMonth = $request->input('expireMonth');
+        $expireYear = $request->input('expireYear');
+        $cvcDigts = $request->input('cvcDigts');
 
+        $response = $this->reviewSelectedHotelOfferInfo($hotelOfferId);
 
-        $url .= '/' . $hotelOfferId;
-
-        
-        $response = $this->httpRequest($url, $token);
         $data = json_decode($response, true);
-
+        
         $hotelOfferDTO = new HotelSelectionDTO($data);
 
         $bookingReferenceNumber = BookingFactory::generateBookingReference();
     
-        $hotelBoooking = BookingFactory::createHotelRecord($hotelOfferDTO, $bookingReferenceNumber);
-     
-        echo $hotelBoooking;exit;
+        $hotelBoooking = BookingFactory::createHotelRecord($hotelOfferDTO, $bookingReferenceNumber, $firstName, $lastName, $email);
+
+        $transaction = PaymentFactory::createCharge($hotelOfferDTO->priceTotal, "DKK", $cardNumber, $expireYear, $expireMonth, $cvcDigts);
+        
+        $booking = [
+            'success' => true,
+            'hotel'  => $hotelBoooking,
+            'payment' => $transaction,    
+        ];
+
+        return response()->json($booking, 200);
     }
 
     

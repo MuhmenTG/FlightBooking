@@ -22,7 +22,10 @@ return new class extends Migration
             $table->string('checkInDate');
             $table->string('checkOutDate');
             $table->string('roomType');
-            $table->string('mainGuest');
+            $table->string('mainGuestFirstName');
+            $table->string('mainGuestLasName');
+            $table->string('mainGuestEmail');
+
             $table->integer('numberOfAdults');
             $table->integer('numberOfChildren')->nullable()->default(0);
             $table->string('policiesCheckInOutCheckIn')->nullable()->default(Null);

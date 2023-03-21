@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class HotelBooking extends Model
 {
+
     protected $table = 'hotels_bookings';
     protected $primaryKey = 'id';
 //      protected $guarded = [];
@@ -22,7 +23,9 @@ class HotelBooking extends Model
     const COL_CHECKINDATE = 'checkInDate';
     const COL_CHECKOUTDATE = 'checkOutDate';
     const COL_ROOMTYPE = 'roomType';
-    const COL_MAINGUEST = 'mainGuest';
+    const COL_MAINGUESTFIRSTNAME = 'mainGuestFirstName';
+    const COL_MAINGUESTLASNAME = 'mainGuestLasName';
+    const COL_MAINGUESTEMAIL = 'mainGuestEmail';
     const COL_NUMBEROFADULTS = 'numberOfAdults';
     const COL_NUMBEROFCHILDREN = 'numberOfChildren';
     const COL_POLICIESCHECKINOUTCHECKIN = 'policiesCheckInOutCheckIn';
@@ -39,10 +42,6 @@ class HotelBooking extends Model
     public function scopeById($query, $val) {
             $query->where('id', $val);
     }
-
-    public function scopeByHotelBookingReference($query, $val) {
-        $query->where('hotelBookingReference', $val);
-}
 
     /*
      * GET / SET
@@ -124,12 +123,28 @@ class HotelBooking extends Model
             $this->roomType = $value;
     }
 
-    public function getMainGuest() {
-            return $this->mainGuest;
+    public function getMainGuestFirstName() {
+            return $this->mainGuestFirstName;
     }
 
-    public function setMainGuest($value) {
-            $this->mainGuest = $value;
+    public function setMainGuestFirstName($value) {
+            $this->mainGuestFirstName = $value;
+    }
+
+    public function getMainGuestLasName() {
+            return $this->mainGuestLasName;
+    }
+
+    public function setMainGuestLasName($value) {
+            $this->mainGuestLasName = $value;
+    }
+
+    public function getMainGuestEmail() {
+            return $this->mainGuestEmail;
+    }
+
+    public function setMainGuestEmail($value) {
+            $this->mainGuestEmail = $value;
     }
 
     public function getNumberOfAdults() {
