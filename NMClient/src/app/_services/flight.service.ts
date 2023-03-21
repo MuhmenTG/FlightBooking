@@ -22,6 +22,7 @@ export class FlightService {
   private token: AccessTokenResponse = {access_token: ''};
   private httpOptions = {
     headers: new HttpHeaders({
+      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + this.token.access_token
     })
   };
@@ -34,6 +35,6 @@ export class FlightService {
 
   getFlights(token: string): Observable<Flight[]> {
 
-    return this.http.get<Flight[]>(this.apiUrl + "/" + "searchFlights");
+    return this.http.get<Flight[]>(this.apiUrl + "/" + "searchFlights", this.httpOptions);
   }
 }
