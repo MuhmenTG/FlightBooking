@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
 import { AccessTokenResponse } from '../_models/accessTokenResponse';
 import { Flight } from '../_models/flight';
+import { SearchFlight } from '../_models/searchFlight';
 
 @Injectable({
   providedIn: 'root'
@@ -20,21 +21,26 @@ export class FlightService {
 
 
   private token: AccessTokenResponse = {access_token: ''};
+  private body: SearchFlight = {originLocationCode: "AXX", destinationLocationCode: "YYZ", departureDate: "2023-04-15", returnDate:"2023-04-21", adults: 1};
+
   private httpOptions = {
     headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + this.token.access_token
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Bearer Wm9oLBBQagCVxMhTbZAa6D05k0sg'
     })
   };
   
   constructor(private http: HttpClient) { }
 
   getAccessToken(): void {
-    this.http.post<AccessTokenResponse>(this.amadeusUrl, this.accessTokenParameters).subscribe(x => {this.token.access_token = x.access_token; console.log(this.token)});
+    this.http.post<AccessTokenResponse>(this.amadeusUrl, this.accessTokenParameters).subscribe(x => 
+      {
+        this.token.access_token = x.access_token; 
+        this.getFlights()
+      });
   }
 
-  getFlights(token: string): Observable<Flight[]> {
-
-    return this.http.get<Flight[]>(this.apiUrl + "/" + "searchFlights", this.httpOptions);
+  getFlights(): Observable<Flight[]> {
+    return this.http.post<Flight[]>(this.apiUrl + "/searchFlight", this.body, this.httpOptions);
   }
 }
