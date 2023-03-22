@@ -25,13 +25,13 @@ return new class extends Migration
             $table->string('mainGuestFirstName');
             $table->string('mainGuestLasName');
             $table->string('mainGuestEmail');
-
             $table->integer('numberOfAdults');
             $table->integer('numberOfChildren')->nullable()->default(0);
             $table->string('policiesCheckInOutCheckIn')->nullable()->default(Null);
             $table->string('policiesCheckInOutCheckOut')->nullable()->default(Null);;
             $table->string('policiesCancellationDeadline')->nullable()->default(Null);
             $table->text('description');
+            $table->string('paymentInfoId');
             $table->timestamps();
         });
     }

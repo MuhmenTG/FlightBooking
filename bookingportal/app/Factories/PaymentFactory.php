@@ -3,30 +3,45 @@ declare(strict_types=1);
 
 namespace App\Factories;
 
+use App\Models\Payment;
 use Stripe\Charge;
 use Stripe\BalanceTransaction;
 use Stripe\BalanceTransactionList;
 use Stripe\Card;
 
 class PaymentFactory {
-    public static function createCharge(float $amount, string $currency, string $cardNumber, string $expYear, string $expMonth, string $cvc): Charge
+    public static function createCharge(float $amount, string $currency, string $cardNumber, string $expYear, string $expMonth, string $cvc, string $description) 
     {
-        $cardToken = PaymentFactory::createCardRecord($cardNumber, $expYear, $expMonth, $cvc);
-
-        if (!is_int($amount) || $amount < 0) {
+        $stripe = PaymentFactory::createCardRecord($cardNumber, $expYear, $expMonth, $cvc);
+        
+        if ($amount < 0) {
             throw new \InvalidArgumentException('Invalid amount.');
         }
 
         if (!in_array($currency, ['usd', 'eur', 'dkk'])) {
             throw new \InvalidArgumentException('Invalid currency.');
         }
-
-        \Stripe\Stripe::setApiKey('your_api_key');
-        return Charge::create([
+        
+        $charge =  $stripe->charges->create([
             'amount' => $amount,
             'currency' => $currency,
-            'source' => $cardToken,
+            'source' => 'tok_mastercard',
         ]);
+
+        if($charge){    
+            $payment = New Payment();
+            $payment->setPaymentAmount($charge->amount);       
+            $payment->setPaymentCurrency($currency);
+            $payment->setPaymentType(Payment::PAYMENT_TYPE);
+            $payment->setPaymentStatus(Payment::PAYMENT_STATUS_COMPLETED);
+            $payment->setPaymentInfoId($charge->id);
+            $payment->setPaymentMethod("MasterCard");
+            $payment->setPaymentGatewayProcessor("Stripe Api");
+            $payment->setNoteComments($description);
+            $payment->save();
+        }
+
+        return $payment;
     }
 
     public static function retrieveSpecificBalanceTransaction(string $transactionId): BalanceTransaction
@@ -63,7 +78,7 @@ class PaymentFactory {
 
         $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
       
-        $stripeCardToken =$stripe->tokens->create([
+        $stripe->tokens->create([
           'card' => [
             'number' => $cardNumber,
             'exp_month' => $expMonth,
@@ -72,6 +87,6 @@ class PaymentFactory {
           ],
         ]);
 
-        return $stripeCardToken;
+        return $stripe;
     }
 }

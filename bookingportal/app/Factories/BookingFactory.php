@@ -37,7 +37,7 @@ class BookingFactory{
         return $bookedSegments;
     }
 
-    public static function createHotelRecord(HotelSelectionDTO $HotelSelectionDTO, string $bookingReference, string $firstName, string $lastName, string $email){
+    public static function createHotelRecord(HotelSelectionDTO $HotelSelectionDTO, string $bookingReference, string $firstName, string $lastName, string $email, string $paymentId){
 
         $hotelBooking = new HotelBooking();
         $hotelBooking->setHotelBookingReference($bookingReference);
@@ -50,15 +50,15 @@ class BookingFactory{
         $hotelBooking->setCheckInDate($HotelSelectionDTO->checkInDate);
         $hotelBooking->setCheckOutDate($HotelSelectionDTO->checkInDate);
         $hotelBooking->setRoomType($HotelSelectionDTO->roomType);
-        $hotelBooking->setMainGuest("MUHMEN PARVAZE");
         $hotelBooking->setNumberOfAdults($HotelSelectionDTO->guestsAdults);
         $hotelBooking->setMainGuestFirstName($firstName);
         $hotelBooking->setMainGuestLasName($lastName);
         $hotelBooking->setMainGuestEmail($email);
-        //$hotelBooking->setPoliciesCheckInOutCheckIn($HotelSelectionDTO->policiesCheckInOutCheckIn);
-        //$hotelBooking->setPoliciesCheckInOutCheckOut($HotelSelectionDTO->policiesCheckInOutCheckOut);
-        //$hotelBooking->setPoliciesCancellationDeadline($HotelSelectionDTO->policiesCancellationDeadline);
+        $hotelBooking->setPoliciesCheckInOutCheckIn($HotelSelectionDTO->policiesCheckInOutCheckIn);
+        $hotelBooking->setPoliciesCheckInOutCheckOut($HotelSelectionDTO->policiesCheckInOutCheckOut);
+        $hotelBooking->setPoliciesCancellationDeadline($HotelSelectionDTO->policiesCancellationDeadline);
         $hotelBooking->setDescription($HotelSelectionDTO->description);
+        $hotelBooking->setPaymentInfoId($paymentId);
         $hotelBooking->save();
         $bookedHotel = HotelBooking::ByHotelBookingReference($bookingReference)->get();
         return $bookedHotel;

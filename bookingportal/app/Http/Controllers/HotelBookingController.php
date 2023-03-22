@@ -19,7 +19,7 @@ class HotelBookingController extends Controller
     public function searchHotel(Request $request)
     {
         $listOfHotelByCityUrl = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city";
-        $token = 'GMvn8enAg3EWsaAhhDAJ8SZImiEa';
+        $token = 'TizVBB9VEFAR4hDip9nR9nYjrwAg';
     
         $validator = Validator::make($request->all(), [
             'cityCode'      => 'required|string',
@@ -78,7 +78,7 @@ class HotelBookingController extends Controller
         }
     
         $specificHotelOfferUrl = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
-        $token = 'GMvn8enAg3EWsaAhhDAJ8SZImiEa';
+        $token = 'TizVBB9VEFAR4hDip9nR9nYjrwAg';
 
         $data = [
             'hotelIds'      => $hotelIds,
@@ -100,7 +100,7 @@ class HotelBookingController extends Controller
 
         $url = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
 
-        $token = '6CfuAxAE2xc1wA8O7bhGT3whv32M';
+        $token = 'WrgaicAUlie5AYs8AAy1FsHKyrhL';
 
         if($hotelOfferId == null){
             throw new InvalidArgumentException("Invalid hotelOfferId found");
@@ -139,21 +139,24 @@ class HotelBookingController extends Controller
         $cvcDigts = $request->input('cvcDigts');
 
         $response = $this->reviewSelectedHotelOfferInfo($hotelOfferId);
-
+      
         $data = json_decode($response, true);
         
         $hotelOfferDTO = new HotelSelectionDTO($data);
 
         $bookingReferenceNumber = BookingFactory::generateBookingReference();
-    
-        $hotelBoooking = BookingFactory::createHotelRecord($hotelOfferDTO, $bookingReferenceNumber, $firstName, $lastName, $email);
-
-        $transaction = PaymentFactory::createCharge($hotelOfferDTO->priceTotal, "DKK", $cardNumber, $expireYear, $expireMonth, $cvcDigts);
+        
+        $transaction = PaymentFactory::createCharge($hotelOfferDTO->priceTotal, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigts, $bookingReferenceNumber);
+        
+        if($transaction){
+            $hotelBoooking = BookingFactory::createHotelRecord($hotelOfferDTO, $bookingReferenceNumber, $firstName, $lastName, $email, $transaction->getPaymentInfoId());
+      
+        }
         
         $booking = [
             'success' => true,
-            'hotel'  => $hotelBoooking,
-            'payment' => $transaction,    
+            'hotelBoooking'  => $hotelBoooking,
+            'transaction' => $transaction,    
         ];
 
         return response()->json($booking, 200);

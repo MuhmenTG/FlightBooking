@@ -30,13 +30,16 @@ class ManageBookingController extends Controller
         }
         
         $flights = FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();   
+        
+        if($flights){
 
-        $booking = [
-            'success' => true,
-            'PAX'  => $passengers,
-            'flight' => $flights,    
-        ];
-
-        return response()->json($booking, 200);
+            $booking = [
+                'success' => true,
+                'PAX'  => $passengers,
+                'flight' => $flights,    
+            ];
+    
+            return response()->json($booking, 200);
+        }
     }
 }
