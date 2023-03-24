@@ -22,11 +22,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/getAccess', [FlightBookingController::class, 'getAccessToken']);
-Route::post('/flight/searchFlight', [FlightBookingController::class, 'searchFlights']);
+Route::post('/flight/searchFlights', [FlightBookingController::class, 'searchFlights']);
 Route::get('/flight/selectFlight', [FlightBookingController::class, 'selectFlightOffer']);
 Route::post('/flight/confirmFlight', [FlightBookingController::class, 'flightConfirmation']);
 
 Route::get('/hotel/searchSelectHotel', [HotelBookingController::class, 'searchHotel']);
-Route::post('/hotel/confirmHotel', [HotelBookingController::class, 'getFinalHotelOfferInfo']);
+Route::get('/hotel/reviewSpecificHotelOffer/{hotelOfferId}', [HotelBookingController::class, 'reviewSelectedHotelOfferInfo']);
+Route::post('/hotel/confirmHotel', [HotelBookingController::class, 'hotelConfirmation']);
 
 Route::post('/makePayment', [PaymentController::class, 'createPayment']);
