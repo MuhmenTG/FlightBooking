@@ -165,10 +165,6 @@ class HotelBookingController extends Controller
             'firstName'            => 'required|string',
             'lastName'             => 'required|string',
             'email'                => 'required|email',
-            'cardNumber'           => 'required|string',
-            'expireMonth'          => 'required|string',
-            'expireYear'           => 'required|string',
-            'cvcDigts'             => 'required|string',
         ]);
 
         if ($validator->fails()) {

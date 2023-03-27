@@ -37,18 +37,19 @@ Route::get('/hotel/reviewSpecificHotelOffer/{hotelOfferId}', [HotelBookingContro
 Route::post('/hotel/confirmHotel', [HotelBookingController::class, 'hotelConfirmation']);
 
 //find booking both hotel and/or flight(costumer-page)
-route::post('/booking/retriveBooking', [ManageBookingController::class, 'retriveBookingInformation']);
+route::post('/booking/retriveBooking', [ManageBookingController::class, 'retrieveBookingInformation']);
+route::post('/booking/updateHotelGuestInfo', [HotelBookingController::class, 'changeGuestDetails']);
 
 //AgentPanel
 
 //Admin Panel
-route::post('/admin/createAgent', [AdminController::class, 'createAgent']);
-route::post('/admin/getSpecificAgentDetails', [AdminController::class, 'getSpecificAgentDetails']);
-route::post('/admin/removeAgentAccount', [AdminController::class, 'removeAgentAccount']);
-route::post('/admin/editAgentDetails', [AdminController::class, 'editAgentDetails']);
-route::post('/admin/showListOfAgent', [AdminController::class, 'showListOfAgent']);
+Route::post('/admin/createAgent', [AdminController::class, 'createAgent']);
+Route::post('/admin/getSpecificAgentDetails', [AdminController::class, 'getSpecificAgentDetails']);
+Route::post('/admin/removeAgentAccount', [AdminController::class, 'removeAgentAccount']);
+Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgentDetails']);
+Route::post('/admin/showListOfAgent', [AdminController::class, 'showListOfAgent']);
 
 //auth
-route::post('/auth/login', [AuthenticationController::class, 'loginUser']);
-route::post('/auth/logout', [AuthenticationController::class, 'logout']);
+Route::post('/auth/login', [AuthenticationController::class, 'loginUser']);
+Route::post('/auth/logout', [AuthenticationController::class, 'logout']);
 

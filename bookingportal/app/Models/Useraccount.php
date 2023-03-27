@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class UserAccount extends Model
 {
+        
+    use HasFactory, Notifiable, HasApiTokens;
     
         protected $table = 'user_accounts';
         protected $primaryKey = 'id';
@@ -33,7 +37,7 @@ class UserAccount extends Model
          */
 
         public function scopeById($query, $val) {
-                $query->where('id', $val);
+                $query->where('userId', $val);
         }
 
         public function scopeByStatus($query, $val) {
@@ -43,6 +47,12 @@ class UserAccount extends Model
         public function scopeByEmail($query, $val) {
                 $query->where('email', $val);
         }
+
+        public function scopeByRole($query, $val) {
+                $query->where('role', $val);
+        }
+
+        
 
         /*
          * GET / SET

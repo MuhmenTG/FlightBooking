@@ -13,7 +13,7 @@ class AdminController extends Controller
 
     public function createAgent(Request $request){
 
-        echo "hi";exit;
+        
         $validator = Validator::make($request->all(), [
             'firstName'               => 'required|string',
             'lastName'                => 'required|string',
@@ -40,9 +40,8 @@ class AdminController extends Controller
         $userAccount->setPassword(Hash::make($password));
         $userAccount->setStatus($status);
         $userAccount->setRole($role);
-        $user = $userAccount->save();
 
-        return response()->json($user, 200);
+        return response()->json($userAccount->save(), 200);
 
     }
 
@@ -120,8 +119,12 @@ class AdminController extends Controller
         return response()->json($user, 400);
     }
 
-    public function showListOfAgent(Request $request){
+    public function showListOfAgent(){
 
+        $agents = Useraccount::ByRolea(0)->all();
+        return [
+            "agents" => $agents
+        ];
     }
 
     public function showAllBookings(Request $request){
