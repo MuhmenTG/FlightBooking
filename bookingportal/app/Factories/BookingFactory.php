@@ -44,6 +44,7 @@ class BookingFactory{
         $hotelBooking->setHotelBookingReference($bookingReference);
         $date = new DateTime();
         $hotelBooking->setIssueDate($date);
+        $hotelBooking->setHotelId($HotelSelectionDTO->hotelId);
         $hotelBooking->setHotelName($HotelSelectionDTO->name);
         $hotelBooking->setHotelLocation($HotelSelectionDTO->countryCode);
         $hotelBooking->setHotelCity($HotelSelectionDTO->cityCode);

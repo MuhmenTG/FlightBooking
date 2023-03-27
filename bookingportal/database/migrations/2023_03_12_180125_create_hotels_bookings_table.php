@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('hotelBookingReference');
             $table->date('issueDate');
             $table->string('hotelName');
+            $table->string('hotelId');
+            $table->string('hotelOfferId');
             $table->string('hotelLocation');
             $table->string('hotelCity');
             $table->string('hotelContact');

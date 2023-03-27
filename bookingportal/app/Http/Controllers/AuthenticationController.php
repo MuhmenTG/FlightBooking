@@ -18,9 +18,9 @@ class AuthenticationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->sendError("Validation failed", $validator->errors());
+            return response()->json("Validation Failed", 400);
         }
-
+        
         $email = $request->input('email');
         $password = $request->input('password');
         $user = UserAccount::ByEmail($email)->first();
@@ -31,7 +31,7 @@ class AuthenticationController extends Controller
                 'token' =>  $token,
                 'user'  =>  $user,
                 'message' => 'Login Success',
-                'status'=>' success'
+                'status'  => true
             ], 200);
         }
         

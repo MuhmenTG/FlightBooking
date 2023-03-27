@@ -14,6 +14,8 @@ class HotelBooking extends Model
         //      protected $fillable = [];
 
         const COL_ID = 'id';
+        const COL_HOTELID = 'hotelId';
+        const COL_HOTELOFFERID = 'hotelOfferId';
         const COL_HOTELBOOKINGREFERENCE = 'hotelBookingReference';
         const COL_ISSUEDATE = 'issueDate';
         const COL_HOTELNAME = 'hotelName';
@@ -55,6 +57,15 @@ class HotelBooking extends Model
      * GET / SET
      */
 
+    public function getHotelId()
+    {
+            return $this->hotelId;
+    }
+
+    public function setHotelId()
+    {
+            return $this->hotelId;
+    }
         public function getHotelsBookingId()
         {
                 return $this->id;

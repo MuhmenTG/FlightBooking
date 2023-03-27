@@ -16,14 +16,14 @@ return new class extends Migration
             $table->increments('userId');
             $table->string('firstName');
             $table->string('lastName');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('password');
             $table->boolean('emailConfirmation')->default(false);
             $table->string('status');
             $table->string('role');
             $table->integer('firstTimeLoggedIn')->default(0);
             $table->timestamp('registeredAt')->useCurrent();
-            $table->integer('deactivatedAt')->nullable();
+            $table->integer('deactivatedAt')->default(0);
             $table->timestamps();
 
         });
