@@ -1,31 +1,52 @@
 <div id="component">
     <form>
-        <div class="form-check-inline">
-            <input class="form-check-input" type="radio" name="exampleRadios" id="flightRadioTwoWay" value="two"
-                checked>
-            <label class="form-check-label" for="exampleRadios1">
-                Two way trip
-            </label>
-        </div>
-        <div class="form-check-inline">
-            <input class="form-check-input" type="radio" name="exampleRadios" id="flightRadioSingle" value="single">
-            <label class="form-check-label" for="exampleRadios1">
-                Single
-            </label>
-        </div>
-        <div class="row w-50">
-            <div class="col">
-                <div class="form-group w-50">
-                    <input type="text" class="form-control" id="inputFrom" placeholder="From">
-                </div>
+        <div class="m-2">
+            <div class="form-check-inline my-1">
+                <input class="form-check-input" type="radio" id="flightRadioTwoWay" value="two" checked>
+                <label class="form-check-label" for="exampleRadios1">
+                    Two way trip
+                </label>
             </div>
-            <div class="col">
-                <div class="form-group-inline w-50">
-                    <input type="text" class="form-control" id="inputTo" placeholder="To">
-                </div>
+            <div class="form-check-inline my-1">
+                <input class="form-check-input" type="radio" id="flightRadioSingle" value="single">
+                <label class="form-check-label" for="exampleRadios1">
+                    Single
+                </label>
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <div class="d-flex flex-row my-2 justify-content-start">
+            <input type="text" class="form-control mx-2 px-2 w-25" id="inputFrom" placeholder="From">
+            <input type="text" class="form-control mx-2 px-2 me-auto w-25" id="inputTo" placeholder="To">
+        </div>
+        <div class="d-flex flex-row my-2 justify-content-start align-items-end flex-wrap">
+            <div class="form-group m-2 w-auto">
+                <label for="dateStart">Start date</label><br>
+                <input id="dateStart" class="form-control" type="date" />
+            </div>
+            <div class="form-group m-2 w-auto">
+                <label for="dateEnd">End date</label><br>
+                <input id="dateEnd" class="form-control" type="date" />
+            </div>
+            <div class="form-group px-2 m-2">
+                <label for="selectPassengers">Passengers</label><br>
+                <select id="selectPassengers" class="form-select" aria-label="Default select example">
+                    <option selected disabled>Select passengers</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+            <div class="form-group px-2 m-2">
+                <label for="selectClass">Class</label><br>
+                <select id="selectClass" class="form-select" aria-label="Default select example">
+                    <option selected disabled>Select class</option>
+                    <option value="1">First</option>
+                    <option value="2">Business</option>
+                    <option value="3">Economy</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary ms-auto px-2">Submit</button>
+        </div>
     </form>
 </div>
