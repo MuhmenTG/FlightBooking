@@ -3,7 +3,7 @@
 declare(strict_types=1);
 namespace App\Factories;
 
-use App\DTO\HotelOfferDTO;
+use App\DTO\FlightSelectionDTO;
 use App\DTO\HotelSelectionDTO;
 use App\Models\FlightBooking;
 use App\Models\HotelBooking;
@@ -18,17 +18,18 @@ class BookingFactory{
         
         foreach ($flightData["itineraries"] as $itinerary) {
             foreach ($itinerary["segments"] as $segment) {
+                $flightSegment = new FlightSelectionDTO($segment);
                 $flightBooking = new FlightBooking();
                 $flightBooking->setBookingReference($bookingReference);
-                $flightBooking->setAirline($segment["carrierCode"]);
-                $flightBooking->setFlightNumber($segment["number"]);
-                $flightBooking->setDepartureFrom($segment["departure"]["iataCode"]);
-                $flightBooking->setDepartureDateTime($segment["departure"]["at"]);
-                $flightBooking->setDepartureTerminal($segment["departure"]["terminal"] ?? null);
-                $flightBooking->setArrivelTo($segment["arrival"]["iataCode"]);
-                $flightBooking->setArrivelDate($segment["arrival"]["at"]);
-                $flightBooking->setArrivelTerminal($segment["arrival"]["terminal"] ?? null);
-                $flightBooking->setFlightDuration($segment["duration"]);
+                $flightBooking->setAirline($flightSegment->airline);
+                $flightBooking->setFlightNumber($flightSegment->flightNumber);
+                $flightBooking->setDepartureFrom($flightSegment->departureFrom);
+                $flightBooking->setDepartureDateTime($flightSegment->departureDateTime);
+                $flightBooking->setDepartureTerminal($flightSegment->departureTerminal ?? null);
+                $flightBooking->setArrivelTo($flightSegment->arrivelTo);
+                $flightBooking->setArrivelDate($flightSegment->arrivelDateTime);
+                $flightBooking->setArrivelTerminal($flightSegment->arrivelTerminal ?? null);
+                $flightBooking->setFlightDuration($flightSegment->flightDuration);
                 $flightBooking->setIsBookingConfirmed(true);
                 $flightBooking->save();
             }
@@ -99,4 +100,21 @@ class BookingFactory{
         }
         return $result;
     }
+    
+    public static function getTotalPrice($response)
+    {
+        $travelerPricings = $response['travelerPricings'];
+        $totalPrice = 0;
+    
+        if (count($travelerPricings) > 1) {
+            foreach ($travelerPricings as $travelerPricing) {
+                $totalPrice += $travelerPricing['price']['total'];
+            }
+        } else {
+            $totalPrice = $travelerPricings[0]['price']['total'];
+        }
+    
+        return $totalPrice;
+    }
+    
 }

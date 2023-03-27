@@ -55,6 +55,8 @@ class AdminController extends Controller
 
         $userId = $request->input('userId');
 
+        $user = Useraccount::ById();
+
     }
 
     public function removeAgentAccount(Request $request){

@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('flights_bookings', function (Blueprint $table) {
             $table->id();
             $table->string('bookingReference');
-            $table->timestamp('time')->useCurrent();
             $table->string('airline');
             $table->string('flightNumber');
             $table->string('departureFrom');
@@ -24,6 +23,9 @@ return new class extends Migration
             $table->string('arrivelTerminal')->nullable();
             $table->string('arrivelDate');
             $table->string('flightDuration');
+            $table->string('cabin')->nullable();
+            $table->string('fareBasis')->nullable();
+            $table->string('includedCheckedBags')->nullable();
             $table->boolean('isBookingConfirmed');
             $table->timestamps();
         });

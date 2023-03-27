@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Factories\BookingFactory;
+use App\Factories\PaymentFactory;
 use Illuminate\Http\Request;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
-use Illuminate\Http\JsonResponse;
-
 
 
 class FlightBookingController extends Controller
@@ -75,7 +74,7 @@ class FlightBookingController extends Controller
         $searchData = Arr::query($data);
         $url .= '?' . $searchData;
 
-        $accessToken = 'JtcYCUF3Ub86NQWGqEPPSa13s3GN';
+        $accessToken = 'J4ChZOSC2RLA8lqs839hUdyfnORC';
 
         $response = $this->httpRequest($url, $accessToken, "get");
 
@@ -147,6 +146,11 @@ class FlightBookingController extends Controller
         }*/
     
         $flightData = $request->json()->all();
+
+        $calculatedTotalPrice = BookingFactory::getTotalPrice($flightData);
+
+        
+       // $transaction = PaymentFactory::createCharge($calculatedTotalPrice, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigts, $bookingReferenceNumber);
 
         $bookingReferenceNumber = BookingFactory::generateBookingReference();
         

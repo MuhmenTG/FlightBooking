@@ -19,7 +19,7 @@ class HotelBookingController extends Controller
     public function searchHotel(Request $request)
     {
         $listOfHotelByCityUrl = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city";
-        $token = 'TizVBB9VEFAR4hDip9nR9nYjrwAg';
+        //$token = 'TizVBB9VEFAR4hDip9nR9nYjrwAg';
     
         $validator = Validator::make($request->all(), [
             'cityCode'      => 'required|string',
@@ -37,26 +37,27 @@ class HotelBookingController extends Controller
         $adults = $request->input('adults');
         $checkInDate = $request->input('checkInDate');
         $checkOutDate = $request->input('checkOutDate');
-    
+        $accessToken = $request->bearerToken();
+
         $data = [
             'cityCode' => $cityCode
         ];
         $searchData = Arr::query($data);
         $listOfHotelByCityUrl .= '?' . $searchData;
     
-        $hotelResponse = $this->httpRequest($listOfHotelByCityUrl, $token);
+        $hotelResponse = $this->httpRequest($listOfHotelByCityUrl, $accessToken);
         $hotelResponse = json_decode($hotelResponse, true);
     
         $hotelIds = implode(',', array_map(function ($item) {
             return $item['hotelId'];
         }, $hotelResponse['data']));
     
-        $finalHotelList = $this->getSpecificHotelsRoomAvailability($hotelIds, $adults, $checkInDate, $checkOutDate);
+        $finalHotelList = $this->getSpecificHotelsRoomAvailability($hotelIds, $adults, $checkInDate, $checkOutDate, $accessToken);
     
         return $finalHotelList;
     }
     
-    private function getSpecificHotelsRoomAvailability($hotelIds, string $adults, string $checkInDate, string $checkOutDate)
+    private function getSpecificHotelsRoomAvailability($hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $accessToken)
     {
        
         $isCommaSeparated = implode(",", explode(",", $hotelIds)) === $hotelIds;
@@ -78,7 +79,6 @@ class HotelBookingController extends Controller
         }
     
         $specificHotelOfferUrl = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
-        $token = 'TizVBB9VEFAR4hDip9nR9nYjrwAg';
 
         $data = [
             'hotelIds'      => $hotelIds,
@@ -90,17 +90,16 @@ class HotelBookingController extends Controller
         $searchData = Arr::query($data);
         $specificHotelOfferUrl .= '?' . $searchData;
 
-        $response = $this->httpRequest($specificHotelOfferUrl, $token);
+
+        $response = $this->httpRequest($specificHotelOfferUrl, $accessToken);
         return $response;
     }
 
 
-    public function reviewSelectedHotelOfferInfo(string $hotelOfferId)
+    public function reviewSelectedHotelOfferInfo(string $hotelOfferId, string $accessToken)
     {
 
         $url = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
-
-        $token = 'WrgaicAUlie5AYs8AAy1FsHKyrhL';
 
         if($hotelOfferId == null){
             throw new InvalidArgumentException("Invalid hotelOfferId found");
@@ -108,7 +107,7 @@ class HotelBookingController extends Controller
 
         $url .= '/' . $hotelOfferId;
 
-        $response = $this->httpRequest($url, $token);
+        $response = $this->httpRequest($url, $accessToken);
         return $response;
     }
 
@@ -137,8 +136,9 @@ class HotelBookingController extends Controller
         $expireMonth = $request->input('expireMonth');
         $expireYear = $request->input('expireYear');
         $cvcDigts = $request->input('cvcDigts');
+        $accessToken = $request->bearerToken();
 
-        $response = $this->reviewSelectedHotelOfferInfo($hotelOfferId);
+        $response = $this->reviewSelectedHotelOfferInfo($hotelOfferId, $accessToken);
       
         $data = json_decode($response, true);
         
@@ -150,7 +150,6 @@ class HotelBookingController extends Controller
         
         if($transaction){
             $hotelBoooking = BookingFactory::createHotelRecord($hotelOfferDTO, $bookingReferenceNumber, $firstName, $lastName, $email, $transaction->getPaymentInfoId());
-      
         }
         
         $booking = [

@@ -40,6 +40,10 @@ class UserAccount extends Model
                 $query->where('status', $val);
         }
 
+        public function scopeByEmail($query, $val) {
+                $query->where('email', $val);
+        }
+
         /*
          * GET / SET
          */
