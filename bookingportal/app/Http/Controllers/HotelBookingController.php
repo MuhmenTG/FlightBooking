@@ -27,8 +27,9 @@ class HotelBookingController extends Controller
 
         
         if ($validator->fails()) {
-            return response()->json("Validation Failed", 400);
+            return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 400);
         }
+    
     
         $cityCode = $request->input('cityCode');
         $adults = $request->input('adults');
