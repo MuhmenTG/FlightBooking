@@ -28,7 +28,7 @@ Route::post('/getAccess', [FlightBookingController::class, 'getAccessToken']);
 
 //Flight searching
 Route::post('/flight/searchFlights', [FlightBookingController::class, 'searchFlights']);
-Route::post('/flight/selectFlight', [FlightBookingController::class, 'selectFlightOffer']);
+Route::post('/flight/chooseFlightOffer', [FlightBookingController::class, 'chooseFlightOffer']);
 Route::post('/flight/confirmFlight', [FlightBookingController::class, 'flightConfirmation']);
 
 //Hotel seaching
