@@ -61,7 +61,7 @@ class FlightBookingController extends Controller
         $departureDate = $request->input('departureDate');
         $returnDate = $request->input('returnDate');
         $adults =  $request->input('adults');
-       // $accessToken = $request->bearerToken();
+        $accessToken = $request->bearerToken();
 
         $data = [
             'originLocationCode'      => $originLocationCode,
@@ -73,8 +73,6 @@ class FlightBookingController extends Controller
 
         $searchData = Arr::query($data);
         $url .= '?' . $searchData;
-
-        $accessToken = 'Iw3QLJhLAj0FEdmVDdzG3jVvArPr';
 
         $response = $this->httpRequest($url, $accessToken, "get");
 
@@ -90,6 +88,8 @@ class FlightBookingController extends Controller
         $url = 'https://test.api.amadeus.com/v1/shopping/flight-offers/pricing';
 
         $jsonFlightData = $request->json()->all();
+        $accessToken = $request->bearerToken();
+
 
         $data = array(
             "data" => array(
@@ -98,9 +98,8 @@ class FlightBookingController extends Controller
             )
         );
 
-        $accessTtoken = 'hSj7NAANBJCM1TgKww3GuKp8le66';
 
-        $response = $this->httpRequest($url, $accessTtoken, "post", $data);
+        $response = $this->httpRequest($url, $accessToken, "post", $data);
         if($response){
             return $response;
         }
