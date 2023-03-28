@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FlightService } from './_services/flight.service';
 import { AccessTokenResponse } from './_models/AccessTokenResponse';
 import { environment } from 'src/environments/environment.development';
+import { SearchFlightsResponses } from './_models/SearchFlightsResponses';
+import { FlightResponse } from './_models/FlightResponse';
 
 
 @Component({
@@ -12,16 +14,14 @@ import { environment } from 'src/environments/environment.development';
 export class AppComponent implements OnInit {
   title = 'NM Flights';
   accessToken: AccessTokenResponse = { access_token: "" };
+  searchFlightsResponses: FlightResponse[] = [];
 
   constructor(private _flightService: FlightService) { }
 
-  async ngOnInit(): Promise<void> {
-    this._flightService.getAccessToken().subscribe(x => {
-      environment.access_token = x.access_token;
+  ngOnInit() {
+    this._flightService.getAccessToken().subscribe(accessTokenResponse => {
+      environment.access_token = accessTokenResponse.access_token;
       this._flightService.setHttpOptions();
-      this._flightService.getFlights().subscribe(y => console.log(y))
     });
-
-    // this._flightService.getFlights().subscribe(x => {console.log(x)});
   }
 }
