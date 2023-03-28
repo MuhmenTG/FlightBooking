@@ -1,14 +1,16 @@
 <div id="component">
-    <form>
+    <form #searchFlights="ngForm" (submit)="submitForm(searchFlights)">
         <div class="m-2">
             <div class="form-check-inline my-1">
-                <input class="form-check-input" type="radio" id="flightRadioTwoWay" value="two" checked>
+                <input class="form-check-input me-1" type="radio" id="flightRadioTwoWay" [value]="0" name="travelType"
+                    [(ngModel)]="model.travelType">
                 <label class="form-check-label" for="exampleRadios1">
                     Two way trip
                 </label>
             </div>
             <div class="form-check-inline my-1">
-                <input class="form-check-input" type="radio" id="flightRadioSingle" value="single">
+                <input class="form-check-input me-1" type="radio" id="flightRadioSingle" [value]="1" ngModel
+                    name="travelType" [(ngModel)]="model.travelType">
                 <label class="form-check-label" for="exampleRadios1">
                     Single
                 </label>
@@ -16,37 +18,36 @@
         </div>
 
         <div class="d-flex flex-row my-2 justify-content-start">
-            <input type="text" class="form-control mx-2 px-2 w-25" id="inputFrom" placeholder="From">
-            <input type="text" class="form-control mx-2 px-2 me-auto w-25" id="inputTo" placeholder="To">
+            <input required class="form-control mx-2 px-2 w-25" placeholder="From"
+                [(ngModel)]="model.originLocationCode" name="originLocationCode">
+            <input required type="text" class="form-control mx-2 px-2 w-25" id="inputTo" placeholder="To"
+                [(ngModel)]="model.destinationLocationCode" name="destinationLocationCode">
         </div>
         <div class="d-flex flex-row my-2 justify-content-start align-items-end flex-wrap">
             <div class="form-group m-2 w-auto">
-                <label for="dateStart">Start date</label><br>
-                <input id="dateStart" class="form-control" type="date" />
+                <label for="departureDate">Departure date</label><br>
+                <input required id="departureDate" class="form-control" min="{{todayDate | date: 'yyyy-MM-dd'}}"
+                    type="date" [(ngModel)]="model.departureDate" name="departureDate" />
             </div>
-            <div class="form-group m-2 w-auto">
-                <label for="dateEnd">End date</label><br>
-                <input id="dateEnd" class="form-control" type="date" />
+            <div *ngIf="model.travelType == 0" class="form-group m-2 w-auto">
+                <label for="returnDate">Return date</label><br>
+                <input required id="returnDate" class="form-control" min="{{model.departureDate| date: 'yyyy-MM-dd'}}"
+                    type="date" [(ngModel)]="model.returnDate" name="returnDate" />
             </div>
-            <div class="form-group px-2 m-2">
-                <label for="selectPassengers">Passengers</label><br>
-                <select id="selectPassengers" class="form-select" aria-label="Default select example">
-                    <option selected disabled>Select passengers</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
+            <div class="form-group m-2">
+                <label for="selectPassengers">Passengers</label>
+                <select class="form-select" id="selectPassengers" name="adults" [(ngModel)]="model.adults" required>
+                    <option *ngFor="let adult of adults" [value]="adult">{{adult}}</option>
+                </select>
+
+            </div>
+            <div class="form-group m-2">
+                <label for="selectAdults">Class</label>
+                <select class="form-select" id="selectAdults" name="class" [(ngModel)]="model.class" required>
+                    <option *ngFor="let class of classes" [value]="class">{{class}}</option>
                 </select>
             </div>
-            <div class="form-group px-2 m-2">
-                <label for="selectClass">Class</label><br>
-                <select id="selectClass" class="form-select" aria-label="Default select example">
-                    <option selected disabled>Select class</option>
-                    <option value="1">First</option>
-                    <option value="2">Business</option>
-                    <option value="3">Economy</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary ms-auto px-2">Submit</button>
+            <button type="submit" class="btn btn-primary m-2 px-2">Search flights</button>
         </div>
     </form>
 </div>
