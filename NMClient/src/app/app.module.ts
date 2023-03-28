@@ -6,13 +6,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SearchFlightsComponent } from './search-flights/search-flights.component';
 import { FormsModule } from '@angular/forms';
-import { ShowFlightofferComponent } from './show-flightoffer/show-flightoffer.component';
+import { ShowFlightoffersComponent } from './show-flightoffers/show-flightoffers.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SearchFlightsComponent,
-    ShowFlightofferComponent
+    ShowFlightoffersComponent
   ],
   imports: [
     BrowserModule,
