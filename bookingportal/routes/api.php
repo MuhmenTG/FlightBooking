@@ -28,12 +28,12 @@ Route::post('/getAccess', [FlightBookingController::class, 'getAccessToken']);
 
 //Flight searching
 Route::post('/flight/searchFlights', [FlightBookingController::class, 'searchFlights']);
-Route::get('/flight/selectFlight', [FlightBookingController::class, 'selectFlightOffer']);
+Route::post('/flight/selectFlight', [FlightBookingController::class, 'selectFlightOffer']);
 Route::post('/flight/confirmFlight', [FlightBookingController::class, 'flightConfirmation']);
 
 //Hotel seaching
-Route::get('/hotel/searchSelectHotel', [HotelBookingController::class, 'searchHotel']);
-Route::get('/hotel/reviewSpecificHotelOffer/{hotelOfferId}', [HotelBookingController::class, 'reviewSelectedHotelOfferInfo']);
+Route::post('/hotel/searchSelectHotel', [HotelBookingController::class, 'searchHotel']);
+Route::get('/hotel/reviewSelectedHotelOfferInfo/{hotelOfferId}', [HotelBookingController::class, 'reviewSelectedHotelOfferInfo']);
 Route::post('/hotel/confirmHotel', [HotelBookingController::class, 'hotelConfirmation']);
 
 //find booking both hotel and/or flight(costumer-page)

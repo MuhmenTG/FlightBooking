@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthenticationController extends Controller
 {
-     
+
     public function loginUser(Request $request)
     {
         $validator = Validator::make($request->all(), [
