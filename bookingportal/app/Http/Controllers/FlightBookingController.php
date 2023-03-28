@@ -74,7 +74,7 @@ class FlightBookingController extends Controller
         $searchData = Arr::query($data);
         $url .= '?' . $searchData;
 
-        $accessToken = 'J4ChZOSC2RLA8lqs839hUdyfnORC';
+        $accessToken = 'Iw3QLJhLAj0FEdmVDdzG3jVvArPr';
 
         $response = $this->httpRequest($url, $accessToken, "get");
 
@@ -85,7 +85,7 @@ class FlightBookingController extends Controller
         return $response;
     }
 
-    public function selectFlightOffer(Request $request) 
+    public function chooseFlightOffer(Request $request) 
     {
         $url = 'https://test.api.amadeus.com/v1/shopping/flight-offers/pricing';
 
