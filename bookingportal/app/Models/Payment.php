@@ -43,6 +43,12 @@ class Payment extends Model
                 $query->where('id', $val);
         }
 
+        
+        public function scopeByNote($query, $val)
+        {
+                $query->where('noteComments', $val);
+        }
+
         /*
  * GET / SET
  */

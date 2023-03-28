@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FlightBooking;
 use App\Models\HotelBooking;
 use App\Models\PassengerInfo;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,11 +29,14 @@ class ManageBookingController extends Controller
 
             $bookedHotel = HotelBooking::byHotelBookingReference($bookingReference)->first();
 
+            $paymentDetails = Payment::ByNote($bookingReference)->first();
+
             if (!$bookedFlightSegments->isEmpty() && !$bookedFlightPassenger->isEmpty()) {
                 return response()->json([
                     'success' => true,
                     'PAX' => $bookedFlightPassenger,
                     'flight' => $bookedFlightSegments,
+                    'payment' => $paymentDetails
                 ], Response::HTTP_OK);
             }
 
@@ -40,6 +44,7 @@ class ManageBookingController extends Controller
                 return response()->json([
                     'success' => true,
                     'hotelVoucher' => $bookedHotel,
+                    'payment' => $paymentDetails
                 ], Response::HTTP_OK);
             }
 

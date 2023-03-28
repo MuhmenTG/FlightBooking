@@ -6,6 +6,9 @@ use App\Models\Useraccount;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use SendGrid;
+use SendGrid\Mail\Mail;
+use Mikehaertl\wkhtmlto\Pdf;
 
 class AdminController extends Controller
 {
@@ -106,6 +109,7 @@ class AdminController extends Controller
         $email = $request->input('email');
         $status = $request->input('status');
         $role = $request->input('role');
+        
         $userId = $request->input('userId');
 
         $userAccount = Useraccount::ById($userId)->first();
@@ -130,4 +134,5 @@ class AdminController extends Controller
     public function showAllBookings(Request $request){
 
     }
+
 }

@@ -3,19 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
-class UserAccount extends Model
+use Illuminate\Foundation\Auth\User as Authenticatable;
+class UserAccount extends Authenticatable
 {
         
     use HasFactory, Notifiable, HasApiTokens;
     
         protected $table = 'user_accounts';
         protected $primaryKey = 'id';
-//      protected $guarded = [];
-//      protected $fillable = [];
+      protected $guarded = [];
+      protected $fillable = [];
 
         const COL_ID = 'id';
         const COL_USERID = 'userId';

@@ -24,9 +24,11 @@ class AuthenticationController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
         $user = UserAccount::ByEmail($email)->first();
-        
+
         if($user && Hash::check($password, $user->getPassword())){
-            $token = $user->createToken($request->email)->plainTextToken;
+            
+            $token = $user->createToken('my-token')->plainTextToken;
+            echo $token;exit;
             return response([
                 'token' =>  $token,
                 'user'  =>  $user,

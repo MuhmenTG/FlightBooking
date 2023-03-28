@@ -42,14 +42,17 @@ route::post('/booking/updateHotelGuestInfo', [HotelBookingController::class, 'ch
 
 //AgentPanel
 
-//Admin Panel
-Route::post('/admin/createAgent', [AdminController::class, 'createAgent']);
-Route::post('/admin/getSpecificAgentDetails', [AdminController::class, 'getSpecificAgentDetails']);
-Route::post('/admin/removeAgentAccount', [AdminController::class, 'removeAgentAccount']);
-Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgentDetails']);
-Route::post('/admin/showListOfAgent', [AdminController::class, 'showListOfAgent']);
 
 //auth
 Route::post('/auth/login', [AuthenticationController::class, 'loginUser']);
 Route::post('/auth/logout', [AuthenticationController::class, 'logout']);
 
+
+//Route::group(['middleware' => ['auth:sanctum']], function () {
+    //Admin Panel
+    Route::post('/admin/createAgent', [AdminController::class, 'createAgent']);
+    Route::post('/admin/getSpecificAgentDetails', [AdminController::class, 'getSpecificAgentDetails']);
+    Route::post('/admin/removeAgentAccount', [AdminController::class, 'removeAgentAccount']);
+    Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgentDetails']);
+    Route::post('/admin/showListOfAgent', [AdminController::class, 'showListOfAgent']);
+//});
