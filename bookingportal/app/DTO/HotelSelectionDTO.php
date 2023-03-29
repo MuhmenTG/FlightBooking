@@ -1,57 +1,60 @@
 <?php
+
 namespace App\DTO;
 
 class HotelSelectionDTO
 {
-    public bool $available;
-    public string $hotelId;
-    public string $name;
-    public string $cityCode;
-    public string $countryCode;
-    public array $amenities;
-    public string $checkInDate;
-    public string $checkOutDate;
-    public string $rateCode;
-    public string $rateFamilyEstimatedCode;
-    public string $rateFamilyEstimatedType;
-    public string $category;
-    public string $description;
-    public ?float $commissionPercentage;
-    public string $roomType;
-    public int $guestsAdults;
-    public string $priceCurrency;
-    public float $priceBase;
-    public float $priceTotal;
-    public array $priceTaxes;
-    public string $policiesGuaranteePaymentType;
-    public string $policiesCheckInOutCheckIn;
-    public string $policiesCheckInOutCheckOut;
-    public string $policiesCancellationDeadline;
+    private bool $available;
+    private string $hotelId;
+    private string $name;
+    private string $cityCode;
+    private string $countryCode;
+    private array $amenities;
+    private string $checkInDate;
+    private string $checkOutDate;
+    private string $rateCode;
+    private string $rateFamilyEstimatedCode;
+    private string $rateFamilyEstimatedType;
+    private string $category;
+    private string $description;
+    private ?float $commissionPercentage;
+    private string $roomType;
+    private int $guestsAdults;
+    private string $priceCurrency;
+    private float $priceBase;
+    private float $priceTotal;
+    private array $priceTaxes;
+    private string $policiesGuaranteePaymentType;
+    private string $policiesCheckInOutCheckIn;
+    private string $policiesCheckInOutCheckOut;
+    private string $policiesCancellationDeadline;
 
     public function __construct(array $data)
     {
-        $this->available = isset($data['data']['available']) ? (bool) $data['data']['available'] : "";
-        $this->hotelId = isset($data['data']['hotel']['hotelId']) ? (string) $data['data']['hotel']['hotelId'] : "";
-        $this->name = isset($data['data']['hotel']['name']) ? (string) $data['data']['hotel']['name'] : "";
-        $this->cityCode = isset($data['data']['hotel']['cityCode']) ? (string) $data['data']['hotel']['cityCode'] : "";
-        $this->countryCode = isset($data['data']['hotel']['address']['countryCode']) ? (string) $data['data']['hotel']['address']['countryCode'] : "";
-        $this->amenities = isset($data['data']['hotel']['amenities']) ? (array) $data['data']['hotel']['amenities'] : "";
-        $this->checkInDate = isset($data['data']['offers'][0]['checkInDate']) ? (string) $data['data']['offers'][0]['checkInDate'] : "";
-        $this->checkOutDate = isset($data['data']['offers'][0]['checkOutDate']) ? (string) $data['data']['offers'][0]['checkOutDate'] : "";
-        $this->rateCode = isset($data['data']['offers'][0]['rateCode']) ? (string) $data['data']['offers'][0]['rateCode'] : "";
-        $this->rateFamilyEstimatedCode = isset($data['data']['offers'][0]['rateFamilyEstimated']['code']) ? (string) $data['data']['offers'][0]['rateFamilyEstimated']['code'] : "";
-        $this->rateFamilyEstimatedType = isset($data['data']['offers'][0]['rateFamilyEstimated']['type']) ? (string) $data['data']['offers'][0]['rateFamilyEstimated']['type'] : "";
-        $this->description =  isset($data['data']['offers'][0]['description']['text']) ? (string) $data['data']['offers'][0]['description']['text'] : "";
-        $this->commissionPercentage = (float) isset($data['data']['offers'][0]['commission']['percentage']) ? (float) $data['data']['offers'][0]['commission']['percentage'] : null;
-        $this->roomType = isset($data['data']['offers'][0]['room']['type']) ? (string) $data['data']['offers'][0]['room']['type'] : "";
-        $this->guestsAdults = isset($data['data']['offers'][0]['guests']['adults']) ? $data['data']['offers'][0]['guests']['adults'] : null;
-        $this->priceCurrency = isset($data['data']['offers'][0]['price']['currency']) ? $data['data']['offers'][0]['price']['currency'] : "";
-        $this->priceBase = (float) isset($data['data']['offers'][0]['price']['base']) ? $data['data']['offers'][0]['price']['base'] : null;
-        $this->priceTotal = (float) isset($data['data']['offers'][0]['price']['total']) ? $data['data']['offers'][0]['price']['total'] : null;
-        $this->priceTaxes = isset($data['data']['offers'][0]['price']['taxes']) ? $data['data']['offers'][0]['price']['taxes'] : [];
-        $this->policiesCheckInOutCheckIn = isset($data['data']['offers'][0]['policies']['checkInOut']['checkin']) ? $data['data']['offers'][0]['policies']['checkInOut']['checkin'] : "";
-        $this->policiesCheckInOutCheckOut = isset($data['data']['offers'][0]['policies']['checkInOut']['checkout']) ? $data['data']['offers'][0]['policies']['checkInOut']['checkout'] : "";
-        $this->policiesCancellationDeadline = isset($data['data']['offers'][0]['policies']['cancellation']['deadline']) ? $data['data']['offers'][0]['policies']['cancellation']['deadline'] : "";
-        
+        $hotelData = $data['data']['hotel'];
+        $offerData = $data['data']['offers'][0];
+
+        $this->available = $data['data']['available'] ?? false;
+        $this->hotelId = $hotelData['hotelId'] ?? '';
+        $this->name = $hotelData['name'] ?? '';
+        $this->cityCode = $hotelData['cityCode'] ?? '';
+        $this->countryCode = $hotelData['address']['countryCode'] ?? '';
+        $this->amenities = $hotelData['amenities'] ?? [];
+        $this->checkInDate = $offerData['checkInDate'] ?? '';
+        $this->checkOutDate = $offerData['checkOutDate'] ?? '';
+        $this->rateCode = $offerData['rateCode'] ?? '';
+        $this->rateFamilyEstimatedCode = $offerData['rateFamilyEstimated']['code'] ?? '';
+        $this->rateFamilyEstimatedType = $offerData['rateFamilyEstimated']['type'] ?? '';
+        $this->description = $offerData['description']['text'] ?? '';
+        $this->commissionPercentage = isset($offerData['commission']['percentage']) ? (float) $offerData['commission']['percentage'] : null;
+        $this->roomType = $offerData['room']['type'] ?? '';
+        $this->guestsAdults = $offerData['guests']['adults'] ?? 0;
+        $this->priceCurrency = $offerData['price']['currency'] ?? '';
+        $this->priceBase = (float) $offerData['price']['base'] ?? 0;
+        $this->priceTotal = (float) $offerData['price']['total'] ?? 0;
+        $this->priceTaxes = $offerData['price']['taxes'] ?? [];
+        $this->policiesCheckInOutCheckIn = $offerData['policies']['checkInOut']['checkin'] ?? '';
+        $this->policiesCheckInOutCheckOut = $offerData['policies']['checkInOut']['checkout'] ?? '';
+        $this->policiesCancellationDeadline = $offerData['policies']['cancellation']['deadline'] ?? '';
     }
 }
