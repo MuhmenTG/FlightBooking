@@ -1,3 +1,7 @@
 export interface CustomerInfo {
-    id: string
+    firstName: string
+    lastName: string
+    dateOfBirth: string
+    email: string
+    passengerType: string
 }
