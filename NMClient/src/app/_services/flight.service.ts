@@ -3,9 +3,10 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
 import { AccessTokenResponse } from '../_models/AccessTokenResponse';
-import { SearchFlightsResponses } from '../_models/SearchFlightsResponses';
-import { SearchFlightsRequest } from '../_models/SearchFlightsRequest';
-import { CustomerInfo } from '../_models/CustomerInfo';
+import { SearchFlightsResponses } from '../_models/Flights/SearchFlightsResponses';
+import { SearchFlightsRequest } from '../_models/Flights/SearchFlightsRequest';
+import { FlightResponse } from '../_models/Flights/FlightResponse';
+import { FlightInfoResponse, FlightOffer } from '../_models/Flights/FlightInfoResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -41,11 +42,11 @@ export class FlightService {
     return this.http.post<SearchFlightsResponses>(this.apiUrl + "/searchFlights", JSON.stringify(body), this.httpOptions);
   }
 
-  getFlightInfo(flightOffer: {}): Observable<{}> {
-    return this.http.post<{}>(this.apiUrl + "/chooseFlightOffer", JSON.stringify(flightOffer), this.httpOptions);
+  getFlightInfo(flightOffer: FlightResponse): Observable<FlightInfoResponse> {
+    return this.http.post<FlightInfoResponse>(this.apiUrl + "/chooseFlightOffer", JSON.stringify(flightOffer), this.httpOptions);
   }
 
-  getFlightConfirmation(customerInfo: CustomerInfo): Observable<SearchFlightsResponses[]> {
-    return this.http.post<SearchFlightsResponses[]>(this.apiUrl + "/confirmFlight", JSON.stringify(customerInfo), this.httpOptions);
+  getFlightConfirmation(bookingInfo: FlightOffer): Observable<{}> {
+    return this.http.post<{}>(this.apiUrl + "/confirmFlight", JSON.stringify(bookingInfo), this.httpOptions);
   }
 }
