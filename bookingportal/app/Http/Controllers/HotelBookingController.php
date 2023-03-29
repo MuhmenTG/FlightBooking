@@ -29,8 +29,7 @@ class HotelBookingController extends Controller
         if ($validator->fails()) {
             return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 400);
         }
-    
-    
+
         $cityCode = $request->input('cityCode');
         $adults = $request->input('adults');
         $checkInDate = $request->input('checkInDate');
@@ -44,6 +43,11 @@ class HotelBookingController extends Controller
         $listOfHotelByCityUrl .= '?' . $searchData;
     
         $hotelResponse = $this->httpRequest($listOfHotelByCityUrl, $accessToken);
+
+        if(!$hotelResponse || $hotelResponse == null){
+            return response()->json(['message' => 'No search results found'], 404);
+        }
+        
         $hotelResponse = json_decode($hotelResponse, true);
     
         $hotelIds = implode(',', array_map(function ($item) {
