@@ -4,10 +4,8 @@ declare(strict_types=1);
 namespace App\Factories;
 
 use App\Models\Payment;
-use Stripe\Charge;
 use Stripe\BalanceTransaction;
-use Stripe\BalanceTransactionList;
-use Stripe\Card;
+
 
 class PaymentFactory {
     public static function createCharge(float $amount, string $currency, string $cardNumber, string $expYear, string $expMonth, string $cvc, string $description) 
