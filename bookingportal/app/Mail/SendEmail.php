@@ -26,7 +26,7 @@ class SendEmail
             $email->addAttachment($attachmentFile);
         }
     
-        $sendgrid = new \SendGrid('');
+        $sendgrid = new \SendGrid('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');
     
         try {
             $response = $sendgrid->send($email);
