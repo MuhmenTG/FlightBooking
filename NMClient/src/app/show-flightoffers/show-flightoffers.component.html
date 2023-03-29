@@ -1,1 +1,14 @@
-<p>show-flightoffers works!</p>
+<div *ngIf="offers != null" id="component">
+    <div *ngFor="let offer of offers">
+        <h1>{{offer.id}}</h1>
+        <div *ngFor="let iti of offer.itineraries">
+            <div *ngFor="let seg of iti.segments">
+                <h2>Departure: {{seg.departure.at}} at terminal {{seg.departure.terminal}}</h2>
+                <h2>Arrival: {{seg.arrival.at}} at terminal {{seg.arrival.terminal}}</h2>
+            </div>
+            <h3>Duration: {{iti.duration}}</h3>
+        </div>
+        <button (click)="chooseFlight(offer.id)" type="button" class="btn btn-primary m-2 px-2">Search
+            flights</button>
+    </div>
+</div>
