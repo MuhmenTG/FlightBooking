@@ -4,8 +4,7 @@ import { SearchFlightsComponent } from './search-flights/search-flights.componen
 import { ShowFlightoffersComponent } from './show-flightoffers/show-flightoffers.component';
 
 const routes: Routes = [
-  { path: '', component: SearchFlightsComponent },
-  { path: 'flight/', component: ShowFlightoffersComponent }
+  { path: '', component: SearchFlightsComponent }
 ];
 
 @NgModule({
