@@ -33,7 +33,6 @@ class HotelControllerTest extends TestCase
 
         $response = $controller->searchHotel($request);
 
-        // Assert that the response is correct
         $this->assertEquals(['hotels' => []], $response);
     }
 
@@ -60,7 +59,6 @@ class HotelControllerTest extends TestCase
         $response = $controller->searchHotel($request);
 
         $this->assertEquals(400, $response->getStatusCode());
-
     }
 
 }

@@ -55,4 +55,5 @@ Route::post('/auth/logout', [AuthenticationController::class, 'logout']);
     Route::post('/admin/removeAgentAccount', [AdminController::class, 'removeAgentAccount']);
     Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgentDetails']);
     Route::post('/admin/showListOfAgent', [AdminController::class, 'showListOfAgent']);
+    Route::post('/admin/sendBooking', [AdminController::class, 'uploadAndEmail']);
 //});
