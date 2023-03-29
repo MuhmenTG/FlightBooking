@@ -99,7 +99,7 @@ class FlightBookingController extends Controller
         );
 
 
-        $response = $this->httpRequest($url, $accessToken, "post", $data);
+        $response = $this->httpRequest($url, $accessToken, "POST", $data);
         if($response){
             return $response;
         }
@@ -118,7 +118,7 @@ class FlightBookingController extends Controller
     
         $flightData = $request->json()->all();
 
-        $calculatedTotalPrice = BookingFactory::getTotalPrice($flightData);
+        //$calculatedTotalPrice = BookingFactory::getTotalPrice($flightData);
 
         
        // $transaction = PaymentFactory::createCharge($calculatedTotalPrice, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigts, $bookingReferenceNumber);

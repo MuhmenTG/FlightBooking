@@ -7,10 +7,10 @@ class FlightSelectionDTO {
     public string $flightNumber;
     public string $departureFrom;
     public string $departureDateTime;
-    public int $departureTerminal;
+    public string $departureTerminal;
     public string $arrivelTo;
     public string $arrivelDateTime;
-    public int $arrivelTerminal;
+    public string $arrivelTerminal;
     public string $flightDuration;
 
     public function __construct($segment) {
@@ -18,10 +18,10 @@ class FlightSelectionDTO {
         $this->flightNumber = $segment["number"];
         $this->departureFrom = $segment["departure"]["iataCode"];
         $this->departureDateTime = $segment["departure"]["at"];
-        $this->departureTerminal = $segment["departure"]["terminal"] ?? null;
+        $this->departureTerminal = $segment["departure"]["terminal"] ?? "";
         $this->arrivelTo = $segment["arrival"]["iataCode"];
         $this->arrivelDateTime = $segment["arrival"]["at"];
-        $this->arrivelTerminal = $segment["arrival"]["terminal"] ?? null;
+        $this->arrivelTerminal = $segment["arrival"]["terminal"] ?? "";
         $this->flightDuration = $segment["duration"];
     }
 }

@@ -5,6 +5,7 @@ use App\DTO\HotelSelectionDTO;
 use App\Factories\BookingFactory;
 use App\Factories\PaymentFactory;
 use App\Models\HotelBooking;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -113,7 +114,7 @@ class HotelBookingController extends Controller
         return $response;
     }
 
-    publiC function hotelConfirmation(Request $request)
+    public function bookHotel(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'hotelOfferId'         => 'required|string',
@@ -125,11 +126,11 @@ class HotelBookingController extends Controller
             'expireYear'           => 'required|string',
             'cvcDigts'             => 'required|string',
         ]);
-
+    
         if ($validator->fails()) {
-            return response()->json("Validation Failed", 400);
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
         }
-
+    
         $hotelOfferId = $request->input('hotelOfferId');
         $firstName = $request->input('firstName');
         $lastName = $request->input('lastName');
@@ -137,32 +138,41 @@ class HotelBookingController extends Controller
         $cardNumber = $request->input('cardNumber');
         $expireMonth = $request->input('expireMonth');
         $expireYear = $request->input('expireYear');
-        $cvcDigts = $request->input('cvcDigts');
+        $cvcDigits = $request->input('cvcDigts');
         $accessToken = $request->bearerToken();
+    
+        try {
+            $selectedHotelOfferResponse = $this->reviewSelectedHotelOfferInfo($hotelOfferId, $accessToken);
+            if(!$selectedHotelOfferResponse){
+                throw new Exception("Failed to confirm hotel offer info");
+            }
+            $data = json_decode($selectedHotelOfferResponse, true);
+            $hotelOfferDTO = new HotelSelectionDTO($data);
+    
+            $bookingReferenceNumber = BookingFactory::generateBookingReference();
+    
+            $transaction = PaymentFactory::createCharge($hotelOfferDTO->priceTotal, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReferenceNumber);
+            if(!$transaction){
+                throw new Exception("Failed to create payment transaction");
+            }
+    
+            $hotelBooking = BookingFactory::createHotelRecord($hotelOfferDTO, $bookingReferenceNumber, $firstName, $lastName, $email, $transaction->getPaymentInfoId());
+            if(!$hotelBooking){
+                throw new Exception("Failed to create hotel booking record");
+            }
+    
+            $response = [
+                'success' => true,
+                'hotelBooking'  => $hotelBooking,
+                'transaction' => $transaction,    
+            ];
 
-        $response = $this->reviewSelectedHotelOfferInfo($hotelOfferId, $accessToken);
-      
-        $data = json_decode($response, true);
-        
-        $hotelOfferDTO = new HotelSelectionDTO($data);
-
-        $bookingReferenceNumber = BookingFactory::generateBookingReference();
-        
-        $transaction = PaymentFactory::createCharge($hotelOfferDTO->priceTotal, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigts, $bookingReferenceNumber);
-        
-        if($transaction){
-            $hotelBoooking = BookingFactory::createHotelRecord($hotelOfferDTO, $bookingReferenceNumber, $firstName, $lastName, $email, $transaction->getPaymentInfoId());
+            return response()->json($response, 200);
+        } catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], 400);
         }
-        
-        $booking = [
-            'success' => true,
-            'hotelBoooking'  => $hotelBoooking,
-            'transaction' => $transaction,    
-        ];
-
-        return response()->json($booking, 200);
     }
-
+    
     public function changeGuestDetails(Request $request){
         
         $validator = Validator::make($request->all(), [
