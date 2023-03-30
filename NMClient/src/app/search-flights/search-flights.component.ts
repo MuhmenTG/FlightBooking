@@ -16,7 +16,6 @@ export class SearchFlightsComponent implements OnInit {
   model: SearchFlightsRequest = { travelType: 0, originLocationCode: '', destinationLocationCode: '', departureDate: '', returnDate: '', adults: this.adults[0], class: this.classes[0] }
   flightsResponses: FlightResponse[] = [];
   formSubmitted = false;
-  isLoaded = false;
   todayDate = Date.now();
 
   constructor(private _flightService: FlightService) { }
@@ -25,8 +24,6 @@ export class SearchFlightsComponent implements OnInit {
   }
 
   submitForm(form: NgForm) {
-    this.isLoaded = false;
-
     if (!form.valid) {
       return alert("Form is not valid. Try again.");
     } else {
@@ -35,7 +32,6 @@ export class SearchFlightsComponent implements OnInit {
         this.flightsResponses = [];
         responses.data.forEach(flightOffer => {
           this.flightsResponses.push(flightOffer);
-          this.isLoaded = true;
           this.formSubmitted = true;
         });
         return true;

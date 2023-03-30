@@ -16,7 +16,9 @@
                 <input required type="email" class="form-control mx-2 px-2" placeholder="Email"
                     [(ngModel)]="model.email" name="email">
             </div>
-            <button type="submit" class="btn btn-primary m-2 px-2">Book flight</button>
+            <button type="submit" class="btn btn-primary m-2 px-2">Reserve flight</button>
         </div>
     </form>
 </div>
+
+<app-payment *ngIf="formSubmitted" [bookingResponse]="bookingResponse" [flightInfo]="flightInfo"></app-payment>

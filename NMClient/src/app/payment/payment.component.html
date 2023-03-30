@@ -1,0 +1,19 @@
+<div id="component">
+    <form #sendPayment="ngForm" (submit)="submitForm(sendPayment)">
+        <div class="d-flex flex-row my-2 justify-content-start">
+            <input required class="form-control mx-2 px-2 w-25" placeholder="Card number" [(ngModel)]="model.cardNumber"
+                name="cardNumber">
+        </div>
+        <div class="d-flex flex-row my-2 justify-content-start align-items-end flex-wrap">
+            <div class="form-group m-2 w-auto">
+                <input required type="text" class="form-control mx-2 px-2" placeholder="Expiration month"
+                    [(ngModel)]="model.expireMonth" name="expireDate">
+                <input required type="text" class="form-control mx-2 px-2" placeholder="Expiration year"
+                    [(ngModel)]="model.expireYear" name="expireYear">
+                <input required type="text" class="form-control mx-2 px-2" placeholder="CVC number"
+                    [(ngModel)]="model.cvcDigits" name="cvcDigits">
+            </div>
+            <button type="submit" class="btn btn-primary m-2 px-2">Pay</button>
+        </div>
+    </form>
+</div>
