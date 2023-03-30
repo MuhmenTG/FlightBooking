@@ -151,7 +151,7 @@ class FlightBookingController extends Controller
             'cardNumber'           => 'required|string',
             'expireMonth'          => 'required|string',
             'expireYear'           => 'required|string',
-            'cvcDigts'             => 'required|string',
+            'cvcDigits'            => 'required|string',
         ]);
     
         if ($validator->fails()) {
