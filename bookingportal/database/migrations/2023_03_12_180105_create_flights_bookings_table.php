@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('fareBasis')->nullable();
             $table->string('includedCheckedBags')->nullable();
             $table->boolean('isBookingConfirmed');
+            $table->boolean('isPaid');
             $table->timestamps();
         });
     }

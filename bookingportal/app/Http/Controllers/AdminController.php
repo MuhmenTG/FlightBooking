@@ -135,17 +135,17 @@ class AdminController extends Controller
     }
     public function uploadAndEmail(Request $request)
     {
-        $request->validate([
+       /* $request->validate([
             'files' => 'required',
             'files.*' => 'mimes:pdf|max:2048'
-        ]);
+        ])*/
     
         $attachments = $request->allFiles('files');
     
         $email = "muhmen@live.ca";
         $name = "MUHMEN";
     
-        SendEmail::sendEmailWithAttachments($attachments, $name, $email);
+        SendEmail::sendEmailWithAttachments($name, $email, "Booking");
     
         return response()->json("Booking confirmation has been sent", 200);
     }

@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\FlightBookingController;
 use App\Http\Controllers\HotelBookingController;
 use App\Http\Controllers\ManageBookingController;
+use App\Models\FlightBooking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,7 @@ Route::post('/getAccess', [FlightBookingController::class, 'getAccessToken']);
 Route::post('/flight/searchFlights', [FlightBookingController::class, 'searchFlights']);
 Route::post('/flight/chooseFlightOffer', [FlightBookingController::class, 'chooseFlightOffer']);
 Route::post('/flight/confirmFlight', [FlightBookingController::class, 'flightConfirmation']);
+Route::post('/flight/payConfirmFlight', [FlightBookingController::class, 'payFlightConfirmation']);
 
 //Hotel seaching
 Route::post('/hotel/searchSelectHotel', [HotelBookingController::class, 'searchHotel']);

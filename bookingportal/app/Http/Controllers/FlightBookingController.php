@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\FlightSelectionDTO;
 use App\Factories\BookingFactory;
 use App\Factories\PaymentFactory;
+use App\Mail\SendEmail;
+use App\Models\FlightBooking;
+use App\Models\PassengerInfo;
+use Exception;
 use Illuminate\Http\Request;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
-
+use Symfony\Component\HttpFoundation\Response;
 
 class FlightBookingController extends Controller
 {
@@ -51,7 +56,7 @@ class FlightBookingController extends Controller
         ]);
     
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
         }
         
         $url = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
@@ -77,66 +82,121 @@ class FlightBookingController extends Controller
         $response = $this->httpRequest($url, $accessToken, "get");
 
         if($response == null){
-            return response()->json("No flight result found", 404);
+            return response()->json("No flight result found", Response::HTTP_NOT_FOUND);
         }
 
         return $response;
     }
 
-    public function chooseFlightOffer(Request $request) 
+    public function chooseFlightOffer(Request $request)
     {
         $url = 'https://test.api.amadeus.com/v1/shopping/flight-offers/pricing';
-
+    
         $jsonFlightData = $request->json()->all();
         $accessToken = $request->bearerToken();
-
-
+    
+        if (empty($jsonFlightData)) {
+            return response()->json(['message' => 'Empty flight data'], Response::HTTP_BAD_REQUEST);
+        }
+    
         $data = array(
             "data" => array(
                 "type" => "flight-offers-pricing",
                 "flightOffers" => [$jsonFlightData]
             )
         );
-
-
-        $response = $this->httpRequest($url, $accessToken, "POST", $data);
-        if($response){
-            return $response;
-        }
+    
+        try {
+            $response = $this->httpRequest($url, $accessToken, "POST", $data);
+            if ($response) {
+                return $response;
+            }
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Request failed', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }        
     }
+    
 
-    public function flightConfirmation(Request $request)
+    public function FlightConfirmation(Request $request)
     {
         
-        /*$validator = Validator::make($request->json(), [
-            'passengers' => 'required|array',
-        ]);
-
-        if ($validator->fails()) {
-            throw new Exception($validator->errors()->first());
-        }*/
-    
         $flightData = $request->json()->all();
-
-        //$calculatedTotalPrice = BookingFactory::getTotalPrice($flightData);
-
-        
-       // $transaction = PaymentFactory::createCharge($calculatedTotalPrice, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigts, $bookingReferenceNumber);
 
         $bookingReferenceNumber = BookingFactory::generateBookingReference();
         
         $passengers = BookingFactory::createPassengerRecord($flightData["passengers"], $bookingReferenceNumber);
-        
-        $flightSegments = BookingFactory::createFlightBookingRecord($flightData, $bookingReferenceNumber);
+        if(!$passengers){
+            return response()->json('Could not create passenger record', Response::HTTP_BAD_REQUEST);
+        }
 
+        $flightSegments = BookingFactory::createFlightBookingRecord($flightData, $bookingReferenceNumber);
+        if(!$flightSegments){
+            return response()->json('Could not create flight segments record', Response::HTTP_BAD_REQUEST);
+        }
          
         $booking = [
             'success' => true,
-            'PAX'  => $passengers,
-            'flight' => $flightSegments,    
+            'bookingReference' => $bookingReferenceNumber
         ];
 
         return response()->json($booking, 200);
+        
+    }
+
+    public function payFlightConfirmation(Request $request){
+        
+        $validator = Validator::make($request->all(), [
+            'bookingReference'     => 'required|string',
+            'grandTotal'           => 'required|string',
+            'cardNumber'           => 'required|string',
+            'expireMonth'          => 'required|string',
+            'expireYear'           => 'required|string',
+            'cvcDigts'             => 'required|string',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
+        }
+    
+        $bookingReference = $request->input('bookingReference');
+        $cardNumber = $request->input('cardNumber');
+        $expireMonth = $request->input('expireMonth');
+        $expireYear = $request->input('expireYear');
+        $cvcDigits = $request->input('cvcDigts');
+        $grandTotal = floatval($request->input('grandTotal'));
+
+
+        $unPaidflightBooking = FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 0)->get();
+        $bookedPassengers = PassengerInfo::ByBookingReference($bookingReference)->get();
+        foreach($bookedPassengers as $bookedPassenger){
+            $email = $bookedPassenger->getEmail();
+        }
+
+        if($unPaidflightBooking->count() == 0){
+            return response()->json('Invalid booking', Response::HTTP_NOT_FOUND);
+        }
+
+        $transaction = PaymentFactory::createCharge($grandTotal, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReference);
+        if(!$transaction){
+            return response()->json('Could not create transaction', Response::HTTP_BAD_REQUEST);
+        }
+
+        FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISPAID => 1]);
+        $paidflightBooking = FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 1)->get();
+
+        $booking = [
+            'success' => true,
+            'itinerary' => $paidflightBooking,
+            'passengers' => $bookedPassengers,
+            'transaction' => $transaction
+        ];
+
+
+        SendEmail::sendEmailWithAttachments("Muhmen", $email, $bookingReference);
+    
+
+        return response()->json($booking, 200);
+
         
     }
 

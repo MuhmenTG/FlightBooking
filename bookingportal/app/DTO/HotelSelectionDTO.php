@@ -4,30 +4,30 @@ namespace App\DTO;
 
 class HotelSelectionDTO
 {
-    private bool $available;
-    private string $hotelId;
-    private string $name;
-    private string $cityCode;
-    private string $countryCode;
-    private array $amenities;
-    private string $checkInDate;
-    private string $checkOutDate;
-    private string $rateCode;
-    private string $rateFamilyEstimatedCode;
-    private string $rateFamilyEstimatedType;
-    private string $category;
-    private string $description;
-    private ?float $commissionPercentage;
-    private string $roomType;
-    private int $guestsAdults;
-    private string $priceCurrency;
-    private float $priceBase;
-    private float $priceTotal;
-    private array $priceTaxes;
-    private string $policiesGuaranteePaymentType;
-    private string $policiesCheckInOutCheckIn;
-    private string $policiesCheckInOutCheckOut;
-    private string $policiesCancellationDeadline;
+    public bool $available;
+    public string $hotelId;
+    public string $name;
+    public string $cityCode;
+    public string $countryCode;
+    public array $amenities;
+    public string $checkInDate;
+    public string $checkOutDate;
+    public string $rateCode;
+    public string $rateFamilyEstimatedCode;
+    public string $rateFamilyEstimatedType;
+    public string $category;
+    public string $description;
+    public ?float $commissionPercentage;
+    public string $roomType;
+    public int $guestsAdults;
+    public string $priceCurrency;
+    public float $priceBase;
+    public float $priceTotal;
+    public array $priceTaxes;
+    public string $policiesGuaranteePaymentType;
+    public string $policiesCheckInOutCheckIn;
+    public string $policiesCheckInOutCheckOut;
+    public string $policiesCancellationDeadline;
 
     public function __construct(array $data)
     {

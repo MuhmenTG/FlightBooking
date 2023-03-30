@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\Response;
 
 class HotelBookingController extends Controller
 {
@@ -18,7 +19,7 @@ class HotelBookingController extends Controller
     public function searchHotel(Request $request)
     {
         $listOfHotelByCityUrl = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city";
-    
+
         $validator = Validator::make($request->all(), [
             'cityCode'      => 'required|string',
             'adults'        => 'required|integer|min:1',
@@ -26,7 +27,6 @@ class HotelBookingController extends Controller
             'checkOutDate'  => 'required|date|date_format:Y-m-d',
         ]);
 
-        
         if ($validator->fails()) {
             return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 400);
         }
@@ -37,29 +37,38 @@ class HotelBookingController extends Controller
         $checkOutDate = $request->input('checkOutDate');
         $accessToken = $request->bearerToken();
 
-        $data = [
-            'cityCode' => $cityCode
-        ];
+        $data = ['cityCode' => $cityCode];
         $searchData = Arr::query($data);
         $listOfHotelByCityUrl .= '?' . $searchData;
-    
+
         $hotelResponse = $this->httpRequest($listOfHotelByCityUrl, $accessToken);
 
-        if(!$hotelResponse || $hotelResponse == null){
-            return response()->json(['message' => 'No search results found'], 404);
+        if (empty($hotelResponse)) {
+            return response()->json(['message' => 'Error retrieving hotel data'], 500);
         }
-        
+
         $hotelResponse = json_decode($hotelResponse, true);
-    
+
+        if (!isset($hotelResponse['data'])) {
+            return response()->json(['message' => 'No hotels found in the specified city'], 404);
+        }
+
         $hotelIds = implode(',', array_map(function ($item) {
             return $item['hotelId'];
         }, $hotelResponse['data']));
-    
-        $finalHotelList = $this->getSpecificHotelsRoomAvailability($hotelIds, $adults, $checkInDate, $checkOutDate, $accessToken);
-    
+
+        try {
+            $finalHotelList = $this->getSpecificHotelsRoomAvailability($hotelIds, $adults, $checkInDate, $checkOutDate, $accessToken);
+        } 
+        catch (InvalidArgumentException $e) 
+        {
+            return response()->json(['message' => $e->getMessage()], 400);
+        } 
+        
+
         return $finalHotelList;
     }
-    
+
     public function getSpecificHotelsRoomAvailability($hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $accessToken)
     {
        
@@ -144,8 +153,9 @@ class HotelBookingController extends Controller
         try {
             $selectedHotelOfferResponse = $this->reviewSelectedHotelOfferInfo($hotelOfferId, $accessToken);
             if(!$selectedHotelOfferResponse){
-                throw new Exception("Failed to confirm hotel offer info");
+                return response()->json('Could not find booking', Response::HTTP_BAD_REQUEST);
             }
+            
             $data = json_decode($selectedHotelOfferResponse, true);
             $hotelOfferDTO = new HotelSelectionDTO($data);
     
@@ -153,12 +163,12 @@ class HotelBookingController extends Controller
     
             $transaction = PaymentFactory::createCharge($hotelOfferDTO->priceTotal, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReferenceNumber);
             if(!$transaction){
-                throw new Exception("Failed to create payment transaction");
+                return response()->json('Could not create transaction', Response::HTTP_BAD_REQUEST);
             }
     
             $hotelBooking = BookingFactory::createHotelRecord($hotelOfferDTO, $bookingReferenceNumber, $firstName, $lastName, $email, $transaction->getPaymentInfoId());
             if(!$hotelBooking){
-                throw new Exception("Failed to create hotel booking record");
+                return response()->json('Could not create hotel record', Response::HTTP_BAD_REQUEST);
             }
     
             $response = [

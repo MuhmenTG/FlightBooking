@@ -13,15 +13,16 @@ class FlightSelectionDTO {
     public string $arrivelTerminal;
     public string $flightDuration;
 
-    public function __construct($segment) {
-        $this->airline = $segment["carrierCode"];
-        $this->flightNumber = $segment["number"];
-        $this->departureFrom = $segment["departure"]["iataCode"];
-        $this->departureDateTime = $segment["departure"]["at"];
-        $this->departureTerminal = $segment["departure"]["terminal"] ?? "";
-        $this->arrivelTo = $segment["arrival"]["iataCode"];
-        $this->arrivelDateTime = $segment["arrival"]["at"];
-        $this->arrivelTerminal = $segment["arrival"]["terminal"] ?? "";
-        $this->flightDuration = $segment["duration"];
+    public function __construct($booking) {
+        $this->airline = $booking["carrierCode"];
+        $this->flightNumber = $booking["number"];
+        $this->departureFrom = $booking["departure"]["iataCode"];
+        $this->departureDateTime = $booking["departure"]["at"];
+        $this->departureTerminal = $booking["departure"]["terminal"] ?? "";
+        $this->arrivelTo = $booking["arrival"]["iataCode"];
+        $this->arrivelDateTime = $booking["arrival"]["at"];
+        $this->arrivelTerminal = $booking["arrival"]["terminal"] ?? "";
+        $this->flightDuration = $booking["duration"];
+     
     }
 }

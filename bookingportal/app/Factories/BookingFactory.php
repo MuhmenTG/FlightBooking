@@ -31,6 +31,7 @@ class BookingFactory{
                 $flightBooking->setArrivelTerminal($flightSegment->arrivelTerminal ?? null);
                 $flightBooking->setFlightDuration($flightSegment->flightDuration);
                 $flightBooking->setIsBookingConfirmed(true);
+                $flightBooking->setIsPaid(false);
                 $flightBooking->save();
             }
         }
