@@ -162,8 +162,8 @@ class FlightBookingController extends Controller
         $cardNumber = $request->input('cardNumber');
         $expireMonth = $request->input('expireMonth');
         $expireYear = $request->input('expireYear');
-        $cvcDigits = $request->input('cvcDigts');
-        $grandTotal = floatval($request->input('grandTotal'));
+        $cvcDigits = $request->input('cvcDigits');
+        $grandTotal = intval($request->input('grandTotal'));
 
 
         $unPaidflightBooking = FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 0)->get();

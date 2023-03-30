@@ -8,7 +8,7 @@ use Stripe\BalanceTransaction;
 
 
 class PaymentFactory {
-    public static function createCharge(float $amount, string $currency, string $cardNumber, string $expYear, string $expMonth, string $cvc, string $description) 
+    public static function createCharge(int $amount, string $currency, string $cardNumber, string $expYear, string $expMonth, string $cvc, string $description) 
     {
         $stripe = PaymentFactory::createCardRecord($cardNumber, $expYear, $expMonth, $cvc);
         
