@@ -37,7 +37,6 @@ export class SearchFlightsComponent implements OnInit {
           this.flightsResponses.push(flightOffer);
           this.isLoaded = true;
           this.formSubmitted = true;
-          console.log(this.formSubmitted);
         });
         return true;
       })
