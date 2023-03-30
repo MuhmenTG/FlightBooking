@@ -7,6 +7,8 @@ import { SearchFlightsResponses } from '../_models/Flights/SearchFlightsResponse
 import { SearchFlightsRequest } from '../_models/Flights/SearchFlightsRequest';
 import { FlightResponse } from '../_models/Flights/FlightResponse';
 import { FlightInfoResponse, FlightOffer } from '../_models/Flights/FlightInfoResponse';
+import { BookingResponse } from '../_models/Flights/BookingResponse';
+import { PaymentInfo } from '../_models/PaymentInfo';
 
 @Injectable({
   providedIn: 'root'
@@ -35,7 +37,11 @@ export class FlightService {
   }
 
   getAccessToken(): Observable<AccessTokenResponse> {
-    return this.http.post<AccessTokenResponse>(this.amadeusUrl, this.accessTokenParameters);
+    return this.http.post<AccessTokenResponse>(this.amadeusUrl + "security/oauth2/token", this.accessTokenParameters);
+  }
+
+  getCarrier(carrierCode: string): Observable<[]> {
+    return this.http.get<[]>(this.amadeusUrl + "reference-data/airlines?airlineCodes=" + carrierCode, this.httpOptions);
   }
 
   getFlights(body: SearchFlightsRequest): Observable<SearchFlightsResponses> {
@@ -46,7 +52,11 @@ export class FlightService {
     return this.http.post<FlightInfoResponse>(this.apiUrl + "/chooseFlightOffer", JSON.stringify(flightOffer), this.httpOptions);
   }
 
-  getFlightConfirmation(bookingInfo: FlightOffer): Observable<{}> {
-    return this.http.post<{}>(this.apiUrl + "/confirmFlight", JSON.stringify(bookingInfo), this.httpOptions);
+  getFlightConfirmation(bookingInfo: FlightOffer): Observable<BookingResponse> {
+    return this.http.post<BookingResponse>(this.apiUrl + "/confirmFlight", JSON.stringify(bookingInfo), this.httpOptions);
+  }
+
+  getPaymentConfirmation(paymentInfo: PaymentInfo): Observable<{}> {
+    return this.http.post<{}>(this.apiUrl + "/payConfirmFlight", JSON.stringify(paymentInfo), this.httpOptions);
   }
 }

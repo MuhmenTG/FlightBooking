@@ -8,13 +8,15 @@ import { SearchFlightsComponent } from './search-flights/search-flights.componen
 import { FormsModule } from '@angular/forms';
 import { ShowFlightoffersComponent } from './show-flightoffers/show-flightoffers.component';
 import { BookFlightComponent } from './book-flight/book-flight.component';
+import { PaymentComponent } from './payment/payment.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SearchFlightsComponent,
     ShowFlightoffersComponent,
-    BookFlightComponent
+    BookFlightComponent,
+    PaymentComponent
   ],
   imports: [
     BrowserModule,

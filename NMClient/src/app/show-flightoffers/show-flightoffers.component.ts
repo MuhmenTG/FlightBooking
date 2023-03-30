@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { CustomerInfo } from '../_models/CustomerInfo';
 import { FlightInfoResponse } from '../_models/Flights/FlightInfoResponse';
 import { FlightResponse } from '../_models/Flights/FlightResponse';
@@ -12,8 +12,8 @@ import { Carrier } from '../_models/Flights/Carrier';
 })
 export class ShowFlightoffersComponent {
   @Input() offers!: FlightResponse[];
+  @Input() formSubmitted!: boolean;
   flightInfo = {} as FlightInfoResponse
-
   flightChosen: boolean = false;
 
   constructor(private _flightService: FlightService) { }
