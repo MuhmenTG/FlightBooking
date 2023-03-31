@@ -16,13 +16,19 @@ export class ShowFlightoffersComponent {
   flightInfo = {} as FlightInfoResponse
   flightChosen: boolean = false;
 
+
   constructor(private _flightService: FlightService) { }
 
   chooseFlight(id: string) {
     this._flightService.getFlightInfo(this.offers[parseInt(id) - 1]).subscribe(info => {
       this.flightChosen = true;
       this.flightInfo = info;
+
     })
+  }
+
+  reset() {
+    this.flightChosen = false;
   }
 
   getCarrier(carrierCode: string) {

@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { ShowFlightoffersComponent } from '../show-flightoffers/show-flightoffers.component';
 import { FlightResponse } from '../_models/Flights/FlightResponse';
 import { SearchFlightsRequest } from '../_models/Flights/SearchFlightsRequest';
 import { SearchFlightsResponses } from '../_models/Flights/SearchFlightsResponses';
@@ -10,7 +11,9 @@ import { FlightService } from '../_services/flight.service';
   templateUrl: './search-flights.component.html',
   styleUrls: ['./search-flights.component.css']
 })
-export class SearchFlightsComponent implements OnInit {
+export class SearchFlightsComponent {
+  @ViewChildren(ShowFlightoffersComponent)
+  child = {} as QueryList<ShowFlightoffersComponent>
   classes = ['First class', 'Business class', 'Economy class']
   adults = [1, 2, 3, 4, 5]
   model: SearchFlightsRequest = { travelType: 0, originLocationCode: '', destinationLocationCode: '', departureDate: '', returnDate: '', adults: this.adults[0], class: this.classes[0] }
@@ -20,7 +23,8 @@ export class SearchFlightsComponent implements OnInit {
 
   constructor(private _flightService: FlightService) { }
 
-  ngOnInit(): void {
+  resetAll() {
+    this.child.forEach(c => c.reset()); // or whatever you want to do to it here
   }
 
   submitForm(form: NgForm) {
