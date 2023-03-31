@@ -12,8 +12,7 @@ import { FlightService } from '../_services/flight.service';
   styleUrls: ['./search-flights.component.css']
 })
 export class SearchFlightsComponent {
-  @ViewChildren(ShowFlightoffersComponent)
-  child = {} as QueryList<ShowFlightoffersComponent>
+  @ViewChildren('ShowFlightoffersComponent') child!: ShowFlightoffersComponent;
   classes = ['First class', 'Business class', 'Economy class']
   adults = [1, 2, 3, 4, 5]
   model: SearchFlightsRequest = { travelType: 0, originLocationCode: '', destinationLocationCode: '', departureDate: '', returnDate: '', adults: this.adults[0], class: this.classes[0] }
@@ -24,7 +23,7 @@ export class SearchFlightsComponent {
   constructor(private _flightService: FlightService) { }
 
   resetAll() {
-    this.child.forEach(c => c.reset()); // or whatever you want to do to it here
+    this.child.reset() // or whatever you want to do to it here
   }
 
   submitForm(form: NgForm) {
