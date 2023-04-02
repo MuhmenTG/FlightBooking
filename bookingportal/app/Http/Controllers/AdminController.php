@@ -59,7 +59,7 @@ class AdminController extends Controller
 
         $userId = $request->input('userId');
 
-        $user = Useraccount::ById($userId)->first();
+        $user = Useraccount::ByUserId($userId)->first();
         if($user){
             return response()->json($user, 200);
         }
@@ -80,22 +80,23 @@ class AdminController extends Controller
 
         $userId = $request->input('userId');
 
-        $user = Useraccount::ById($userId)->first();
+        
+        $user = Useraccount::ByUserId($userId)->first();
 
         $user->setStatus(0);
-        $user->save();
+        return $user->save();
 
     }
 
     public function editAgentDetails(Request $request){
         
         $validator = Validator::make($request->all(), [
-            'firstName'               => 'required|string',
-            'lastName'                => 'required|string',
-            'email'                   => 'required|string',
-            'status'                  => 'required|int',
-            'role'                    => 'required|int',
-            'userId'                  => 'required|int',
+            'firstName'               => 'nullable|string',
+            'lastName'                => 'nullable|string',
+            'email'                   => 'nullable|string',
+            'status'                  => 'nullable|int',
+            'role'                    => 'nullable|int',
+            'userId'                  => 'nullable|int',
 
         ]);
 
@@ -111,7 +112,8 @@ class AdminController extends Controller
         
         $userId = $request->input('userId');
 
-        $userAccount = Useraccount::ById($userId)->first();
+        $userAccount = Useraccount::ByUserId($userId)->first();
+
         $userAccount->setFirstName($firstName);
         $userAccount->setLastName($lastName);
         $userAccount->setEmail($email);
@@ -124,7 +126,7 @@ class AdminController extends Controller
 
     public function showListOfAgent(){
 
-        $agents = Useraccount::ByRolea(0)->all();
+        $agents = Useraccount::all();
         return [
             "agents" => $agents
         ];

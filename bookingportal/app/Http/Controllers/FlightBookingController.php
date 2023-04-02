@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
 use App\Factories\BookingFactory;
 use App\Factories\PaymentFactory;
@@ -44,12 +45,11 @@ class FlightBookingController extends Controller
         }
         
     }
-
     public function searchFlights(Request $request) 
     {
-        $validator = Validator::make($request->all(), [
+       $validator = Validator::make($request->all(), [
             'originLocationCode'        => 'required|string',
-            'destinationLocationCode'   => 'required|string',
+            'destinationLocationCode'        => 'required|string',
             'departureDate'             => 'required|string',
             'returnDate'                => 'nullable|string',
             'adults'                    => 'required|integer|min:1',
@@ -60,33 +60,36 @@ class FlightBookingController extends Controller
         }
         
         $url = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
-
+    
         $originLocationCode = $request->input('originLocationCode');
         $destinationLocationCode = $request->input('destinationLocationCode');
         $departureDate = $request->input('departureDate');
         $returnDate = $request->input('returnDate');
-        $adults =  $request->input('adults');
-        $accessToken = $request->bearerToken();
-
-        $data = [
-            'originLocationCode'      => $originLocationCode,
-            'destinationLocationCode' => $destinationLocationCode,
-            'departureDate'           => $departureDate,
-            'returnDate'              => $returnDate,
-            'adults'                  => $adults
+        $adults =  $request->input('adults');        
+    
+        $queryParams = [
+            'originLocationCode' => $originLocationCode,
+            'destinationLocationCode' => $destinationLocationCode,   
+            'departureDate' => $departureDate,
+            'returnDate' => $returnDate,
+            'adults' => $adults
         ];
-
-        $searchData = Arr::query($data);
+    
+        $searchData = Arr::query($queryParams);
         $url .= '?' . $searchData;
-
-        $response = $this->httpRequest($url, $accessToken, "get");
-
+    
+        $accessToken = "qFocfRbQIyxYglLazG1nWBsqO3qv";
+    
+    
+        $response = $this->httpRequest($url, $accessToken, "GET");
+    
         if($response == null){
             return response()->json("No flight result found", Response::HTTP_NOT_FOUND);
         }
-
+    
         return $response;
     }
+    
 
     public function chooseFlightOffer(Request $request)
     {
@@ -119,16 +122,39 @@ class FlightBookingController extends Controller
 
     public function FlightConfirmation(Request $request)
     {
+
+        $validator = Validator::make($request->json()->all(), [
+            'passengers'    => 'required|array',
+            'itineraries'   => 'required|array',
+            'itineraries.*.segments' => 'required|array',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
         
         $flightData = $request->json()->all();
-
+        if (empty($flightData)) {
+            return response()->json(['message' => 'Empty flight data'], Response::HTTP_BAD_REQUEST);
+        }
+        
         $bookingReferenceNumber = BookingFactory::generateBookingReference();
         
-        $passengers = BookingFactory::createPassengerRecord($flightData["passengers"], $bookingReferenceNumber);
+        $passengerData = $flightData[PassengerInfo::PASSENGERS_ARRAY];
+        if(!$passengerData){
+            return response()->json('Could not find passenger records', Response::HTTP_BAD_REQUEST);
+        }
+        
+        $issuingAirline = $flightData[PassengerInfo::VALIDATINGAIRLINE][0];
+        if(!$issuingAirline){
+            return response()->json('Could not find issueing airline', Response::HTTP_BAD_REQUEST);
+        }
+
+        $passengers = BookingFactory::createPassengerRecord($passengerData, $issuingAirline, $bookingReferenceNumber);
         if(!$passengers){
             return response()->json('Could not create passenger record', Response::HTTP_BAD_REQUEST);
         }
-
+        
         $flightSegments = BookingFactory::createFlightBookingRecord($flightData, $bookingReferenceNumber);
         if(!$flightSegments){
             return response()->json('Could not create flight segments record', Response::HTTP_BAD_REQUEST);
@@ -168,6 +194,7 @@ class FlightBookingController extends Controller
 
 
         $unPaidflightBooking = FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 0)->get();
+        
         $bookedPassengers = PassengerInfo::ByBookingReference($bookingReference)->get();
         foreach($bookedPassengers as $bookedPassenger){
             $email = $bookedPassenger->getEmail();
@@ -182,8 +209,10 @@ class FlightBookingController extends Controller
             return response()->json('Could not create transaction', Response::HTTP_BAD_REQUEST);
         }
 
-        FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISPAID => 1]);
-        $paidflightBooking = FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 1)->get();
+        $isPaymentOK = FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISPAID => 1]);
+        if($isPaymentOK){
+            $paidflightBooking = FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 1)->get();
+        }
 
         $booking = [
             'success' => true,
@@ -195,9 +224,7 @@ class FlightBookingController extends Controller
 
         SendEmail::sendEmailWithAttachments("Muhmen", $email, $bookingReference);
     
-
         return response()->json($booking, 200);
-
         
     }
 

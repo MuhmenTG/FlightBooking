@@ -20,7 +20,7 @@ class Controller extends BaseController
                 'Authorization' => 'Bearer ' . $accessTtoken
             ];
 
-            if ($method === 'get') {
+            if ($method === 'GET') {
                 $response = $client->get($url, [
                     'headers' => $headers,
                 ]);

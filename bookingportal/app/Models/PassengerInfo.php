@@ -12,6 +12,7 @@ class PassengerInfo extends Model
 //      protected $guarded = [];
 //      protected $fillable = [];
 
+
     const COL_ID = 'id';
     const COL_PNR = 'PNR';
     const COL_PAYMENTINFOID = 'PaymentInfoId';
@@ -23,6 +24,9 @@ class PassengerInfo extends Model
     const COL_TICKETNUMBER = 'ticketNumber';
     const COL_CREATED_AT = 'created_at';
     const COL_UPDATED_AT = 'updated_at';
+
+    const PASSENGERS_ARRAY = 'passengers';
+    const VALIDATINGAIRLINE = 'validatingAirlineCodes';
 
     /*
      * Eloquent Scopes

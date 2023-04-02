@@ -11,21 +11,17 @@ class UserAccount extends Authenticatable
         
     use HasFactory, Notifiable, HasApiTokens;
     
-        protected $table = 'user_accounts';
-        protected $primaryKey = 'id';
-      protected $guarded = [];
-      protected $fillable = [];
+        //      protected $fillable = [];
 
-        const COL_ID = 'id';
         const COL_USERID = 'userId';
         const COL_FIRSTNAME = 'firstName';
         const COL_LASTNAME = 'lastName';
         const COL_EMAIL = 'email';
         const COL_PASSWORD = 'password';
-        const COL_EMAILCONFIRMATION = 'emailConfirmation';
+        const COL_EMAILCONFIRMATION = 'emailConfirmation';     
         const COL_STATUS = 'status';
         const COL_ROLE = 'role';
-        const COL_FIRSTTIMELOGGEDIN = 'firstTimeLoggedIn';
+        const COL_FIRSTTIMELOGGEDIN = 'firstTimeLoggedIn';     
         const COL_REGISTEREDAT = 'registeredAt';
         const COL_DEACTIVATEDAT = 'deactivatedAt';
         const COL_CREATED_AT = 'created_at';
@@ -35,34 +31,18 @@ class UserAccount extends Authenticatable
          * Eloquent Scopes
          */
 
-        public function scopeById($query, $val) {
-                $query->where('userId', $val);
-        }
-
         public function scopeByStatus($query, $val) {
                 $query->where('status', $val);
         }
-
-        public function scopeByEmail($query, $val) {
-                $query->where('email', $val);
+        public function scopeByUserId($query, $val) {
+                $query->where('userId', $val);
         }
-
-        public function scopeByRole($query, $val) {
-                $query->where('role', $val);
-        }
-
-        
-
         /*
          * GET / SET
          */
 
-        public function getUserAccountId() {
-                return $this->id;
-        }
-
         public function getUserId() {
-                return $this->userId;
+                return intval($this->userId);
         }
 
         public function setUserId($value) {
@@ -126,7 +106,7 @@ class UserAccount extends Authenticatable
         }
 
         public function getFirstTimeLoggedIn() {
-                return intval($this->firstTimeLoggedIn);
+                return intval($this->firstTimeLoggedIn);       
         }
 
         public function setFirstTimeLoggedIn($value) {
@@ -153,7 +133,4 @@ class UserAccount extends Authenticatable
                 return $this->created_at;
         }
 
-        public function getUpdatedAt() {
-                return $this->updated_at;
-        }
 }

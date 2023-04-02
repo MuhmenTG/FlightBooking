@@ -35,7 +35,9 @@ class HotelBookingController extends Controller
         $adults = $request->input('adults');
         $checkInDate = $request->input('checkInDate');
         $checkOutDate = $request->input('checkOutDate');
-        $accessToken = $request->bearerToken();
+        //$accessToken = $request->bearerToken();
+
+        $accessToken = "JGw2fx2CUhuG6jyRBNVlPs3eGXbf";
 
         $data = ['cityCode' => $cityCode];
         $searchData = Arr::query($data);
@@ -69,12 +71,12 @@ class HotelBookingController extends Controller
         return $finalHotelList;
     }
 
-    public function getSpecificHotelsRoomAvailability($hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $accessToken)
+    public function getSpecificHotelsRoomAvailability(string $hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $accessToken)
     {
        
-        $isCommaSeparatedArray = implode(",", explode(",", $hotelIds)) === $hotelIds;
+        $isCommaSeparatedString = implode(",", explode(",", $hotelIds)) === $hotelIds;
 
-        if (!$isCommaSeparatedArray || empty($hotelIds)) {
+        if (!$isCommaSeparatedString || empty($hotelIds)) {
             throw new InvalidArgumentException("Invalid hotelIds parameter. Expecting a non-empty array.");
         }
 

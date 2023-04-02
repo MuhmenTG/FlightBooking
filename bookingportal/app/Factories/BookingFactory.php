@@ -3,21 +3,31 @@
 declare(strict_types=1);
 namespace App\Factories;
 
+use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
 use App\DTO\HotelSelectionDTO;
+use App\Models\Airline;
 use App\Models\FlightBooking;
 use App\Models\HotelBooking;
 use App\Models\PassengerInfo;
 use DateTime;
-use Illuminate\Support\Arr;
+use InvalidArgumentException;
 
 class BookingFactory{
 
     public static function createFlightBookingRecord(array $flightData, string $bookingReference)
     {
-        
+        if (!isset($flightData["itineraries"]) || !is_array($flightData["itineraries"])) {
+            throw new InvalidArgumentException("Invalid flight data provided.");
+        }
         foreach ($flightData["itineraries"] as $itinerary) {
+            if (!isset($itinerary["segments"]) || !is_array($itinerary["segments"])) {
+                continue;
+            }
             foreach ($itinerary["segments"] as $segment) {
+                if (!is_array($segment) || empty($segment)) {
+                    continue;
+                }
                 $flightSegment = new FlightSelectionDTO($segment);
                 $flightBooking = new FlightBooking();
                 $flightBooking->setBookingReference($bookingReference);
@@ -25,10 +35,14 @@ class BookingFactory{
                 $flightBooking->setFlightNumber($flightSegment->flightNumber);
                 $flightBooking->setDepartureFrom($flightSegment->departureFrom);
                 $flightBooking->setDepartureDateTime($flightSegment->departureDateTime);
-                $flightBooking->setDepartureTerminal($flightSegment->departureTerminal ?? null);
+                if (isset($flightSegment->departureTerminal)) {
+                    $flightBooking->setDepartureTerminal($flightSegment->departureTerminal);
+                }
                 $flightBooking->setArrivelTo($flightSegment->arrivelTo);
                 $flightBooking->setArrivelDate($flightSegment->arrivelDateTime);
-                $flightBooking->setArrivelTerminal($flightSegment->arrivelTerminal ?? null);
+                if (isset($flightSegment->arrivelTerminal)) {
+                    $flightBooking->setArrivelTerminal($flightSegment->arrivelTerminal);
+                }
                 $flightBooking->setFlightDuration($flightSegment->flightDuration);
                 $flightBooking->setIsBookingConfirmed(true);
                 $flightBooking->setIsPaid(false);
@@ -38,6 +52,7 @@ class BookingFactory{
         $bookedSegments = FlightBooking::ByBookingReference($bookingReference)->get();
         return $bookedSegments;
     }
+    
 
     public static function createHotelRecord(HotelSelectionDTO $HotelSelectionDTO, string $bookingReference, string $firstName, string $lastName, string $email, string $paymentId){
 
@@ -67,31 +82,39 @@ class BookingFactory{
         return $bookedHotel;
     }
 
-    public static function createPassengerRecord(array $passengersData, string $bookingReference)
+    public static function createPassengerRecord(array $passengerData, string $validatingAirlineCodes, string $bookingReference)
     {
-        foreach ($passengersData as $passenger) {
+        $passengers = [];
+        foreach ($passengerData as $data) {
+            $passengers[] = new FlightOfferPassengerDTO($data);
+        }
+        foreach ($passengers as $passenger) {
             $passengerInfo = new PassengerInfo();
             $passengerInfo->setPNR($bookingReference);
             $passengerInfo->setPaymentInfoId(1);
-            $passengerInfo->setFirstName($passenger["firstName"]);
-            $passengerInfo->setLastName($passenger["lastName"]);
-            $passengerInfo->setDateOfBirth($passenger["dateOfBirth"]);
-            $passengerInfo->setEmail($passenger["email"]);
-            $passengerInfo->setPassengerType($passenger["passengerType"]);
-            $passengerInfo->setTicketNumber(BookingFactory::generateTicketNumber(14));
+            $passengerInfo->setFirstName($passenger->firstName);
+            $passengerInfo->setLastName($passenger->lastName);
+            $passengerInfo->setDateOfBirth($passenger->dateOfBirth);
+            $passengerInfo->setEmail($passenger->email);
+            $passengerInfo->setPassengerType($passenger->passengerType);
+            $passengerInfo->setTicketNumber(BookingFactory::generateTicketNumber($validatingAirlineCodes));
             $passengerInfo->save();
-        }
-        
+        }       
         $bookedPassengers = PassengerInfo::ByBookingReference($bookingReference)->get();
         return $bookedPassengers;
     }
 
-    public static function generateTicketNumber($length) {
-        $result = '';
-        for($i = 0; $i < $length; $i++) {
-            $result .= mt_rand(0, 9);
+    public static function generateTicketNumber(string $validatingAirline) {
+        $validatingCarrier = Airline::ByIataDesignator($validatingAirline)->first();
+        $validatingAirlineDigits = $validatingCarrier->ByThreeDigitAirlineCode();
+        
+        $ticketNumber = '';
+        for($i = 0; $i < 11; $i++) {
+            $ticketNumber .= mt_rand(0, 9);
         }
-        return $result;
+        
+        $generatedTicketNumber = $validatingAirlineDigits."-".$ticketNumber;
+        return $generatedTicketNumber;
     }
 
     public static function generateBookingReference() : string{
@@ -103,20 +126,5 @@ class BookingFactory{
         return $result;
     }
     
-    public static function getTotalPrice($response)
-    {
-        $travelerPricings = $response['travelerPricings'];
-        $totalPrice = 0;
-    
-        if (count($travelerPricings) > 1) {
-            foreach ($travelerPricings as $travelerPricing) {
-                $totalPrice += $travelerPricing['price']['total'];
-            }
-        } else {
-            $totalPrice = $travelerPricings[0]['price']['total'];
-        }
-    
-        return $totalPrice;
-    }
     
 }
