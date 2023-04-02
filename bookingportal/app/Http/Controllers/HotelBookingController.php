@@ -25,6 +25,11 @@ class HotelBookingController extends Controller
             'adults'        => 'required|integer|min:1',
             'checkInDate'   => 'required|date|date_format:Y-m-d',
             'checkOutDate'  => 'required|date|date_format:Y-m-d',
+            'roomQuantity'  => 'required|string',
+            'priceRange'    => 'nullable|string',
+            'paymentPolicy' => 'nullable|string',
+            'boardType'     => 'nullable|string',
+
         ]);
 
         if ($validator->fails()) {
@@ -35,9 +40,14 @@ class HotelBookingController extends Controller
         $adults = $request->input('adults');
         $checkInDate = $request->input('checkInDate');
         $checkOutDate = $request->input('checkOutDate');
+        $roomQuantity = $request->input('roomQuantity');
+        $priceRange = $request->input('priceRange');
+        $paymentPolicy = $request->input('paymentPolicy');
+        $boardType = $request->input('boardType');
+      
         //$accessToken = $request->bearerToken();
 
-        $accessToken = "JGw2fx2CUhuG6jyRBNVlPs3eGXbf";
+        $accessToken = "k6phwxse7g5tXgDMIU5QGlWFrn1N";
 
         $data = ['cityCode' => $cityCode];
         $searchData = Arr::query($data);
@@ -60,7 +70,7 @@ class HotelBookingController extends Controller
         }, $hotelResponse['data']));
 
         try {
-            $finalHotelList = $this->getSpecificHotelsRoomAvailability($hotelIds, $adults, $checkInDate, $checkOutDate, $accessToken);
+            $finalHotelList = $this->getSpecificHotelsRoomAvailability($hotelIds, $adults, $checkInDate, $checkOutDate, $roomQuantity, $priceRange, $paymentPolicy, $boardType, $accessToken);
         } 
         catch (InvalidArgumentException $e) 
         {
@@ -71,7 +81,8 @@ class HotelBookingController extends Controller
         return $finalHotelList;
     }
 
-    public function getSpecificHotelsRoomAvailability(string $hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $accessToken)
+    public function getSpecificHotelsRoomAvailability(string $hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $roomQuantity, string $priceRange = null,
+    string $paymentPolicy = null, string $boardType = null,  string $accessToken)
     {
        
         $isCommaSeparatedString = implode(",", explode(",", $hotelIds)) === $hotelIds;
@@ -98,16 +109,31 @@ class HotelBookingController extends Controller
             'hotelIds'      => $hotelIds,
             'adults'        => $adults,
             'checkInDate'   => $checkInDate,
-            'checkOutDate'  => $checkOutDate
+            'checkOutDate'  => $checkOutDate,
+            'roomQuantity'  => $roomQuantity,
+            'currency'      => 'DKK'
         ];
+
+        if ($priceRange !== null) {
+            $data['priceRange'] = $priceRange;
+        }
+    
+        if ($paymentPolicy !== null) {
+            $data['paymentPolicy'] = $paymentPolicy;
+        }
+    
+        if ($boardType !== null) {
+            $data['boardType'] = $boardType;
+        }
 
         $searchData = Arr::query($data);
         $specificHotelOfferUrl .= '?' . $searchData;
 
         $response = $this->httpRequest($specificHotelOfferUrl, $accessToken);
-        return $response;
+        if($response !== 400){
+            return $response;
+        }
     }
-
 
     public function reviewSelectedHotelOfferInfo(string $hotelOfferId, string $accessToken)
     {
@@ -134,7 +160,7 @@ class HotelBookingController extends Controller
             'cardNumber'           => 'required|string',
             'expireMonth'          => 'required|string',
             'expireYear'           => 'required|string',
-            'cvcDigits'             => 'required|string',
+            'cvcDigits'            => 'required|string',
         ]);
     
         if ($validator->fails()) {
@@ -148,8 +174,8 @@ class HotelBookingController extends Controller
         $cardNumber = $request->input('cardNumber');
         $expireMonth = $request->input('expireMonth');
         $expireYear = $request->input('expireYear');
-        $cvcDigits = $request->input('cvcDigts');
-        $accessToken = $request->bearerToken();
+        $cvcDigits = $request->input('cvcDigits');
+        $accessToken = "dAiIEB20koYt2G3NSWRgPxFCpXWn";
     
         try {
             $selectedHotelOfferResponse = $this->reviewSelectedHotelOfferInfo($hotelOfferId, $accessToken);
@@ -168,9 +194,8 @@ class HotelBookingController extends Controller
             }
     
             $hotelBooking = BookingFactory::createHotelRecord($hotelOfferDTO, $bookingReferenceNumber, $firstName, $lastName, $email, $transaction->getPaymentInfoId());
-            if(!$hotelBooking){
-                return response()->json('Could not create hotel record', Response::HTTP_BAD_REQUEST);
-            }
+            
+            
     
             $response = [
                 'success' => true,

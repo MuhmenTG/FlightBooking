@@ -7,11 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class PassengerInfo extends Model
 {
+ 
+
+    const PASSENGERS_ARRAY = 'passengers';
+    const VALIDATINGAIRLINE = 'validatingAirlineCodes';
     protected $table = 'passenger_info';
     protected $primaryKey = 'id';
 //      protected $guarded = [];
 //      protected $fillable = [];
-
 
     const COL_ID = 'id';
     const COL_PNR = 'PNR';
@@ -22,11 +25,9 @@ class PassengerInfo extends Model
     const COL_EMAIL = 'email';
     const COL_PASSENGERTYPE = 'passengerType';
     const COL_TICKETNUMBER = 'ticketNumber';
+    const COL_ISCANCELLED = 'isCancelled';
     const COL_CREATED_AT = 'created_at';
     const COL_UPDATED_AT = 'updated_at';
-
-    const PASSENGERS_ARRAY = 'passengers';
-    const VALIDATINGAIRLINE = 'validatingAirlineCodes';
 
     /*
      * Eloquent Scopes
@@ -36,13 +37,9 @@ class PassengerInfo extends Model
             $query->where('id', $val);
     }
 
-    public function scopeByEmail($query, $val) {
-        $query->where('email', $val);
-    }
-
     public function scopeByBookingReference($query, $val) {
         $query->where('PNR', $val);
-    }
+}
 
     /*
      * GET / SET
@@ -109,11 +106,19 @@ class PassengerInfo extends Model
     }
 
     public function getTicketNumber() {
-            return intval($this->ticketNumber);
+            return $this->ticketNumber;
     }
 
     public function setTicketNumber($value) {
             $this->ticketNumber = $value;
+    }
+
+    public function getIsCancelled() {
+            return $this->isCancelled;
+    }
+
+    public function setIsCancelled($value) {
+            $this->isCancelled = $value;
     }
 
     public function getCreatedAt() {

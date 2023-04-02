@@ -36,7 +36,7 @@ Route::post('/flight/payConfirmFlight', [FlightBookingController::class, 'payFli
 //Hotel seaching
 Route::post('/hotel/searchSelectHotel', [HotelBookingController::class, 'searchHotel']);
 Route::get('/hotel/reviewSelectedHotelOfferInfo/{hotelOfferId}', [HotelBookingController::class, 'reviewSelectedHotelOfferInfo']);
-Route::post('/hotel/confirmHotel', [HotelBookingController::class, 'hotelConfirmation']);
+Route::post('/hotel/bookHotel', [HotelBookingController::class, 'bookHotel']);
 
 //find booking both hotel and/or flight(costumer-page)
 route::post('/booking/retriveBooking', [ManageBookingController::class, 'retrieveBookingInformation']);

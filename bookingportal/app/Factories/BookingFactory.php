@@ -60,13 +60,14 @@ class BookingFactory{
         $hotelBooking->setHotelBookingReference($bookingReference);
         $date = new DateTime();
         $hotelBooking->setIssueDate($date);
-        $hotelBooking->setHotelId($HotelSelectionDTO->hotelId);
+        $hotelBooking->setHotelId($HotelSelectionDTO->hotelId ?? "0");
+        $hotelBooking->setHotelOfferId($HotelSelectionDTO->hotelOfferId);
         $hotelBooking->setHotelName($HotelSelectionDTO->name);
         $hotelBooking->setHotelLocation($HotelSelectionDTO->countryCode);
         $hotelBooking->setHotelCity($HotelSelectionDTO->cityCode);
         $hotelBooking->setHotelContact("Something place holder");
         $hotelBooking->setCheckInDate($HotelSelectionDTO->checkInDate);
-        $hotelBooking->setCheckOutDate($HotelSelectionDTO->checkInDate);
+        $hotelBooking->setCheckOutDate($HotelSelectionDTO->checkOutDate);
         $hotelBooking->setRoomType($HotelSelectionDTO->roomType);
         $hotelBooking->setNumberOfAdults($HotelSelectionDTO->guestsAdults);
         $hotelBooking->setMainGuestFirstName($firstName);
@@ -78,8 +79,7 @@ class BookingFactory{
         $hotelBooking->setDescription($HotelSelectionDTO->description);
         $hotelBooking->setPaymentInfoId($paymentId);
         $hotelBooking->save();
-        $bookedHotel = HotelBooking::ByHotelBookingReference($bookingReference)->get();
-        return $bookedHotel;
+        return $hotelBooking;
     }
 
     public static function createPassengerRecord(array $passengerData, string $validatingAirlineCodes, string $bookingReference)

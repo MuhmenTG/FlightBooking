@@ -6,6 +6,7 @@ class HotelSelectionDTO
 {
     public bool $available;
     public string $hotelId;
+    public string $hotelOfferId;
     public string $name;
     public string $cityCode;
     public string $countryCode;
@@ -35,17 +36,18 @@ class HotelSelectionDTO
         $offerData = $data['data']['offers'][0];
 
         $this->available = $data['data']['available'] ?? false;
-        $this->hotelId = $hotelData['hotelId'] ?? '';
-        $this->name = $hotelData['name'] ?? '';
-        $this->cityCode = $hotelData['cityCode'] ?? '';
-        $this->countryCode = $hotelData['address']['countryCode'] ?? '';
+        $this->hotelId = $hotelData['hotelId'] ?? "";
+        $this->hotelOfferId = $offerData['id'];
+        $this->name = $hotelData['name'];
+        $this->cityCode = $hotelData['cityCode'];
+        $this->countryCode = $hotelData['address']['countryCode'];
         $this->amenities = $hotelData['amenities'] ?? [];
-        $this->checkInDate = $offerData['checkInDate'] ?? '';
-        $this->checkOutDate = $offerData['checkOutDate'] ?? '';
+        $this->checkInDate = $offerData['checkInDate'];
+        $this->checkOutDate = $offerData['checkOutDate'];
         $this->rateCode = $offerData['rateCode'] ?? '';
         $this->rateFamilyEstimatedCode = $offerData['rateFamilyEstimated']['code'] ?? '';
         $this->rateFamilyEstimatedType = $offerData['rateFamilyEstimated']['type'] ?? '';
-        $this->description = $offerData['description']['text'] ?? '';
+        $this->description = $offerData['description']['text'] ;
         $this->commissionPercentage = isset($offerData['commission']['percentage']) ? (float) $offerData['commission']['percentage'] : null;
         $this->roomType = $offerData['room']['type'] ?? '';
         $this->guestsAdults = $offerData['guests']['adults'] ?? 0;

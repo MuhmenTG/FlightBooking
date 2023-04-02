@@ -6,6 +6,7 @@ use App\Models\UserAccount;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticationController extends Controller
 {
@@ -28,19 +29,19 @@ class AuthenticationController extends Controller
         
         if(!$user || !Hash::check($password, $user->getPassword())){
             return response([
-                'msg' => 'incorrect username or password'
-            ], 401);
+                'msg' => 'Credentials incorrect'
+            ], Response::HTTP_UNAUTHORIZED);
         }
        
 
         $token = $user->createToken('apiToken')->plainTextToken;
 
-        $res = [
+        $response = [
             'user' => $user,
             'token' => $token
         ];
 
-        return response($res, 201);
+        return response($response, Response::HTTP_ACCEPTED);
     }
 
 

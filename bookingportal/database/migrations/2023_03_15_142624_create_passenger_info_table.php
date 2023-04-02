@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('email');
             $table->string('passengerType');
             $table->string('ticketNumber');
+            $table->boolean('isCancelled')->default(false);
             $table->timestamps();
         });
     }

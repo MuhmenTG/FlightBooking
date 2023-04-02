@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('policiesCancellationDeadline')->nullable()->default(Null);
             $table->text('description');
             $table->string('paymentInfoId');
+            $table->boolean('isCancelled')->default(false);
             $table->timestamps();
         });
     }

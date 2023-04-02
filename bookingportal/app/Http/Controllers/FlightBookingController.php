@@ -149,7 +149,7 @@ class FlightBookingController extends Controller
         if(!$issuingAirline){
             return response()->json('Could not find issueing airline', Response::HTTP_BAD_REQUEST);
         }
-
+      
         $passengers = BookingFactory::createPassengerRecord($passengerData, $issuingAirline, $bookingReferenceNumber);
         if(!$passengers){
             return response()->json('Could not create passenger record', Response::HTTP_BAD_REQUEST);
@@ -191,7 +191,6 @@ class FlightBookingController extends Controller
         $cvcDigits = $request->input('cvcDigits');
         $grandTotal = intval($request->input('grandTotal'));
         $grandTotal = $grandTotal * 100;
-
 
         $unPaidflightBooking = FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 0)->get();
         

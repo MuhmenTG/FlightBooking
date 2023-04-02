@@ -56,7 +56,7 @@ return [
     | be assigned to any extra authentication guards you have defined.
     |
     | Supported: "database", "eloquent"
-    |
+    |S
     */
 
     'providers' => [

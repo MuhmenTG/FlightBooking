@@ -29,7 +29,7 @@ class SendEmail
         }*/
        
     
-        $sendgrid = new \SendGrid('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');
+        $sendgrid = new \SendGrid('');
     
         try {
             $response = $sendgrid->send($email);

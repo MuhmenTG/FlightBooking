@@ -10,197 +10,184 @@ class FlightBooking extends Model
 
         protected $table = 'flights_bookings';
         protected $primaryKey = 'id';
-        //      protected $guarded = [];
-        //      protected $fillable = [];
+//      protected $guarded = [];
+//      protected $fillable = [];
 
         const COL_ID = 'id';
-        const COL_BOOKINGREFERENCE = 'bookingReference';
-        const COL_TIME = 'time';
+        const COL_BOOKINGREFERENCE = 'bookingReference';       
         const COL_AIRLINE = 'airline';
         const COL_FLIGHTNUMBER = 'flightNumber';
         const COL_DEPARTUREFROM = 'departureFrom';
-        const COL_DEPARTURETERMINAL = 'departureTerminal';
-        const COL_DEPARTUREDATETIME = 'departureDateTime';
+        const COL_DEPARTURETERMINAL = 'departureTerminal';     
+        const COL_DEPARTUREDATETIME = 'departureDateTime';     
         const COL_ARRIVELTO = 'arrivelTo';
         const COL_ARRIVELTERMINAL = 'arrivelTerminal';
         const COL_ARRIVELDATE = 'arrivelDate';
         const COL_FLIGHTDURATION = 'flightDuration';
-        const COL_ISBOOKINGCONFIRMED = 'isBookingConfirmed';
+        const COL_CABIN = 'cabin';
+        const COL_FAREBASIS = 'fareBasis';
+        const COL_INCLUDEDCHECKEDBAGS = 'includedCheckedBags'; 
+        const COL_ISBOOKINGCONFIRMED = 'isBookingConfirmed';   
         const COL_ISPAID = 'isPaid';
+        const COL_ISCANCELLED = 'isCancelled';
         const COL_CREATED_AT = 'created_at';
         const COL_UPDATED_AT = 'updated_at';
 
         /*
-     * Eloquent Scopes
-     */
+         * Eloquent Scopes
+         */
 
-        public function scopeById($query, $val)
-        {
+        public function scopeById($query, $val) {
                 $query->where('id', $val);
         }
 
-        public function scopeByBookingReference($query, $val)
-        {
+                
+        public function scopeByBookingReference($query, $val) {
                 $query->where('bookingReference', $val);
         }
 
-        public function scopeFromTime($query, $val)
-        {
-                $query->where('time', '>=', $val);
-        }
-
-        public function scopeToTime($query, $val)
-        {
-                $query->where('time', '<', $val);
-        }
-
+        
         /*
-     * GET / SET
-     */
+         * GET / SET
+         */
 
-        public function getFlightsBookingId()
-        {
+        public function getFlightsBookingId() {
                 return $this->id;
         }
 
-        public function getBookingReference()
-        {
+        public function getBookingReference() {
                 return $this->bookingReference;
         }
 
-        public function setBookingReference($value)
-        {
+        public function setBookingReference($value) {
                 $this->bookingReference = $value;
         }
 
-        public function getTime()
-        {
-                return $this->time;
-        }
-
-        public function setTime($value)
-        {
-                $this->time = $value;
-        }
-
-        public function getAirline()
-        {
+        public function getAirline() {
                 return $this->airline;
         }
 
-        public function setAirline($value)
-        {
+        public function setAirline($value) {
                 $this->airline = $value;
         }
 
-        public function getFlightNumber()
-        {
+        public function getFlightNumber() {
                 return $this->flightNumber;
         }
 
-        public function setFlightNumber($value)
-        {
+        public function setFlightNumber($value) {
                 $this->flightNumber = $value;
         }
 
-        public function getDepartureFrom()
-        {
+        public function getDepartureFrom() {
                 return $this->departureFrom;
         }
 
-        public function setDepartureFrom($value)
-        {
+        public function setDepartureFrom($value) {
                 $this->departureFrom = $value;
         }
 
-        public function getDepartureTerminal()
-        {
+        public function getDepartureTerminal() {
                 return $this->departureTerminal;
         }
 
-        public function setDepartureTerminal($value)
-        {
+        public function setDepartureTerminal($value) {
                 $this->departureTerminal = $value;
         }
 
-        public function getDepartureDateTime()
-        {
+        public function getDepartureDateTime() {
                 return $this->departureDateTime;
         }
 
-        public function setDepartureDateTime($value)
-        {
+        public function setDepartureDateTime($value) {
                 $this->departureDateTime = $value;
         }
 
-        public function getArrivelTo()
-        {
+        public function getArrivelTo() {
                 return $this->arrivelTo;
         }
 
-        public function setArrivelTo($value)
-        {
+        public function setArrivelTo($value) {
                 $this->arrivelTo = $value;
         }
 
-        public function getArrivelTerminal()
-        {
+        public function getArrivelTerminal() {
                 return $this->arrivelTerminal;
         }
 
-        public function setArrivelTerminal($value)
-        {
+        public function setArrivelTerminal($value) {
                 $this->arrivelTerminal = $value;
         }
 
-        public function getArrivelDate()
-        {
+        public function getArrivelDate() {
                 return $this->arrivelDate;
         }
 
-        public function setArrivelDate($value)
-        {
+        public function setArrivelDate($value) {
                 $this->arrivelDate = $value;
         }
 
-        public function getFlightDuration()
-        {
+        public function getFlightDuration() {
                 return $this->flightDuration;
         }
 
-        public function setFlightDuration($value)
-        {
+        public function setFlightDuration($value) {
                 $this->flightDuration = $value;
         }
 
-        public function getIsBookingConfirmed()
-        {
+        public function getCabin() {
+                return $this->cabin;
+        }
+
+        public function setCabin($value) {
+                $this->cabin = $value;
+        }
+
+        public function getFareBasis() {
+                return $this->fareBasis;
+        }
+
+        public function setFareBasis($value) {
+                $this->fareBasis = $value;
+        }
+
+        public function getIncludedCheckedBags() {
+                return $this->includedCheckedBags;
+        }
+
+        public function setIncludedCheckedBags($value) {       
+                $this->includedCheckedBags = $value;
+        }
+
+        public function getIsBookingConfirmed() {
                 return $this->isBookingConfirmed;
         }
 
-        public function setIsBookingConfirmed($value)
-        {
+        public function setIsBookingConfirmed($value) {        
                 $this->isBookingConfirmed = $value;
         }
 
-
-        public function getIsPaid()
-        {
+        public function getIsPaid() {
                 return $this->isPaid;
         }
 
-        public function setIsPaid($value)
-        {
+        public function setIsPaid($value) {
                 $this->isPaid = $value;
         }
 
-        public function getCreatedAt()
-        {
+        public function getIsCancelled() {
+                return $this->isCancelled;
+        }
+
+        public function setIsCancelled($value) {
+                $this->isCancelled = $value;
+        }
+
+        public function getCreatedAt() {
                 return $this->created_at;
         }
 
-        public function getUpdatedAt()
-        {
+        public function getUpdatedAt() {
                 return $this->updated_at;
         }
 }

@@ -33,7 +33,10 @@ class Controller extends BaseController
                     'json' => $data,
                 ]);
             }
-            return $response->getBody();
+            if($response->getStatusCode() == 200){
+                return $response->getBody();
+            }
+            return response()->json("Could not find", 404);
         } catch (GuzzleException $exception) {
             print($exception);
             return null;

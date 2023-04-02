@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\SendEmail;
-use App\Models\Useraccount;
+use App\Models\UserAccount;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -59,7 +59,7 @@ class AdminController extends Controller
 
         $userId = $request->input('userId');
 
-        $user = Useraccount::ByUserId($userId)->first();
+        $user = UserAccount::ById($userId)->first();
         if($user){
             return response()->json($user, 200);
         }
@@ -81,9 +81,10 @@ class AdminController extends Controller
         $userId = $request->input('userId');
 
         
-        $user = Useraccount::ByUserId($userId)->first();
+        $user = Useraccount::ById($userId)->first();
 
         $user->setStatus(0);
+        $user->getDeactivatedAt(time());
         return $user->save();
 
     }
@@ -112,16 +113,18 @@ class AdminController extends Controller
         
         $userId = $request->input('userId');
 
-        $userAccount = Useraccount::ByUserId($userId)->first();
+        $userAccount = UserAccount::ById($userId)->first();
+        
 
         $userAccount->setFirstName($firstName);
+    
         $userAccount->setLastName($lastName);
         $userAccount->setEmail($email);
         $userAccount->setStatus($status);
         $userAccount->setRole($role);
-        $user = $userAccount->save();
+        $userAccount->save();
 
-        return response()->json($user, 400);
+        return response()->json($userAccount, 400);
     }
 
     public function showListOfAgent(){
@@ -137,10 +140,10 @@ class AdminController extends Controller
     }
     public function uploadAndEmail(Request $request)
     {
-       /* $request->validate([
+        $request->validate([
             'files' => 'required',
             'files.*' => 'mimes:pdf|max:2048'
-        ])*/
+        ]);
     
         $attachments = $request->allFiles('files');
     
