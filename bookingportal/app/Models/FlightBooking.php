@@ -46,6 +46,9 @@ class FlightBooking extends Model
                 $query->where('bookingReference', $val);
         }
 
+        public function scopeByIsCancelled($query, $val) {
+                $query->where('isCancelled', $val);
+        }
         
         /*
          * GET / SET

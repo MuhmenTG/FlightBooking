@@ -41,6 +41,10 @@ class PassengerInfo extends Model
         $query->where('PNR', $val);
 }
 
+public function scopeByIsCancelled($query, $val) {
+        $query->where('isCancelled', $val);
+}
+
     /*
      * GET / SET
      */

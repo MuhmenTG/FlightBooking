@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Mail\SendEmail;
+use App\Models\FlightBooking;
+use App\Models\HotelBooking;
+use App\Models\PassengerInfo;
 use App\Models\UserAccount;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
+use Symfony\Component\HttpFoundation\Response;
 
 class AdminController extends Controller
 {
@@ -150,8 +153,69 @@ class AdminController extends Controller
         $email = "muhmen@live.ca";
         $name = "MUHMEN";
     
-        SendEmail::sendEmailWithAttachments($name, $email, "Booking");
+        SendEmail::sendEmailWithAttachments($name, $email, "Booking", $attachments);
     
         return response()->json("Booking confirmation has been sent", 200);
     }
+
+    public function cancelFlightBooking(Request $request){
+        $validator = Validator::make($request->all(), [
+            'bookingReference' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json('Validation Failed', Response::HTTP_BAD_REQUEST);
+        }
+
+        $bookingReference = $request->input('bookingReference');
+
+        $bookedFlightSegments = FlightBooking ::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();
+        $bookedFlightPassenger = PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->get();
+        
+        
+        if (!$bookedFlightSegments->isEmpty() && !$bookedFlightPassenger->isEmpty()) {
+            $isflightSegmentsCancelled = FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISCANCELLED => 1]);
+            $isPassengersCancelled = PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->update([PassengerInfo::COL_ISCANCELLED => 1]);
+
+            if($isflightSegmentsCancelled && $isPassengersCancelled){
+                $cancelledBooking = FlightBooking::ByBookingReference($bookingReference)->ByIsCancelled(1)->get();
+                $cancelledBookingPassengers = PassengerInfo::ByBookingReference($bookingReference)->ByIsCancelled(1)->get();
+            }   
+
+            return response()->json([
+                'cancellation' => true,
+                'PAX' => $cancelledBooking,
+                'flight' => $cancelledBookingPassengers
+            ], Response::HTTP_OK);
+
+        }
+        
+        return response()->json('Invalid booking', Response::HTTP_NOT_FOUND);        
+
+    }
+
+
+    public function cancelHotelBooking(Request $request){
+        $validator = Validator::make($request->all(), [
+            'bookingReference' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json('Validation Failed', Response::HTTP_BAD_REQUEST);
+        }
+
+        $bookingReference = $request->input('bookingReference');
+
+        $bookedHotel = HotelBooking::byHotelBookingReference($bookingReference)->first();
+
+        if($bookedHotel){
+            $bookedHotel->setIsCancelled(1);
+            $bookedHotel->save();
+            return $bookedHotel;
+        }
+
+        return response()->json('Invalid booking', Response::HTTP_NOT_FOUND);        
+
+    }
+
 }

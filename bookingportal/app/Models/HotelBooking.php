@@ -46,7 +46,11 @@ class HotelBooking extends Model
         public function scopeById($query, $val) {
                 $query->where('id', $val);
         }
+        public function scopeByHotelBookingReference($query, $val) {
+                $query->where('hotelBookingReference', $val);
+        }
 
+        
         /*
          * GET / SET
          */

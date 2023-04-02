@@ -7,7 +7,7 @@ use SendGrid\Mail\Mail;
 
 class SendEmail
 {
-    public static function sendEmailWithAttachments($recipientName, $recipientEmail, $subject) {
+    public static function sendEmailWithAttachments($recipientName, $recipientEmail, $subject, $attachments) {
         $email = new Mail();
         $email->setFrom('muhmenpk@gmail.com', 'N&M flights booking');
         $email->setSubject($subject);
@@ -17,7 +17,7 @@ class SendEmail
             "Thank you for choosing to book with us. We are pleased to confirm your reservation."
         );
     
-      /* if($attachments != null){   
+        if($attachments != null){   
             foreach ($attachments as $attachment) {
                 $attachmentFile = new \SendGrid\Mail\Attachment();
                 $attachmentFile->setContent(base64_encode(file_get_contents($attachment->getRealPath())));
@@ -26,7 +26,7 @@ class SendEmail
                 $attachmentFile->setDisposition('attachment');
                 $email->addAttachment($attachmentFile);
             }
-        }*/
+        }
        
     
         $sendgrid = new \SendGrid('');

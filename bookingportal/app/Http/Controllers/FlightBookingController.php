@@ -221,7 +221,7 @@ class FlightBookingController extends Controller
         ];
 
 
-        SendEmail::sendEmailWithAttachments("Muhmen", $email, $bookingReference);
+        //SendEmail::sendEmailWithAttachments("Muhmen", $email, $bookingReference);
     
         return response()->json($booking, 200);
         
