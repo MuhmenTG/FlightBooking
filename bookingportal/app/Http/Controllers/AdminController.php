@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Mail\SendEmail;
+use App\Models\Faq;
 use App\Models\FlightBooking;
 use App\Models\HotelBooking;
 use App\Models\PassengerInfo;
 use App\Models\UserAccount;
+use App\Models\UserEnquiry;
+use App\Models\UserEnqury;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -138,9 +142,6 @@ class AdminController extends Controller
         ];
     }
 
-    public function showAllBookings(Request $request){
-
-    }
     public function uploadAndEmail(Request $request)
     {
         $request->validate([
@@ -194,7 +195,6 @@ class AdminController extends Controller
 
     }
 
-
     public function cancelHotelBooking(Request $request){
         $validator = Validator::make($request->all(), [
             'bookingReference' => 'required|string',
@@ -217,5 +217,195 @@ class AdminController extends Controller
         return response()->json('Invalid booking', Response::HTTP_NOT_FOUND);        
 
     }
+    
+    public function getAllUserEnquiries(): JsonResponse
+    {
+        $userEnquiries = UserEnquiry::all();
+    
+        if($userEnquiries->isEmpty()) {
+            return response()->json(['message' => 'No user enquiries found'], Response::HTTP_NOT_FOUND);
+        }
+    
+        return response()->json($userEnquiries, Response::HTTP_OK);
+    }
+
+    public function getSpecificUserEnquiry(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+    
+        $id = $request->input('id');
+    
+        $specificUserEnquiry = UserEnquiry::ById($id);
+    
+        if (!$specificUserEnquiry) {
+            return response()->json(['message' => 'User enquiry not found'], Response::HTTP_NOT_FOUND);
+        }
+    
+        return response()->json($specificUserEnquiry, Response::HTTP_OK);
+    }
+
+    public function setUserEnquiryStatus(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+    
+        $id = $request->input('id');
+    
+        $specificUserEnquiry = UserEnquiry::byId($id);
+    
+        if (!$specificUserEnquiry) {
+            return response()->json(['message' => 'User enquiry not found'], Response::HTTP_NOT_FOUND);
+        }
+    
+        $specificUserEnquiry->setIsSolved(UserEnquiry::CASE_SOLVED);
+    
+        if ($specificUserEnquiry->save()) {
+            return response()->json($specificUserEnquiry, Response::HTTP_OK);
+        }
+    
+        return response()->json(['message' => 'User enquiry could not be marked'], Response::HTTP_BAD_REQUEST);    
+    }
+
+    public function answerUserEnquiry(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+            'responseMessageToUser' => 'required|string',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+    
+        $id = $request->input('id');
+        $responseMessageToUser = $request->input('responseMessageToUser');
+    
+        $specificUserEnquiry = UserEnquiry::byId($id);
+        
+        if(!$specificUserEnquiry){
+            return response()->json('User enquiry not found', Response::HTTP_NOT_FOUND);    
+        }
+        
+        $emailSent = SendEmail::sendEmailWithAttachments(
+            $specificUserEnquiry->getName(),
+            $specificUserEnquiry->getEmail(),
+            "Reply regarding " . $specificUserEnquiry->getSubject(),
+            $responseMessageToUser
+        );
+    
+        if($emailSent){
+            return response()->json("Email replied", Response::HTTP_OK);
+        }
+        
+        return response()->json('Email could not be sent', Response::HTTP_BAD_REQUEST);
+    }
+    
+    
+    public function removeUserEnquiry(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+    
+        $id = intval($request->input('id'));
+    
+        $specificUserEnquiry = UserEnquiry::byId($id)->first();
+        if (!$specificUserEnquiry) {
+            return response()->json('User enquiry not found', Response::HTTP_NOT_FOUND);    
+        }
+        
+        if ($specificUserEnquiry->delete()) {
+            return response()->json('User enquiry deleted successfully', Response::HTTP_OK);
+        }
+    
+        return response()->json('UserEnquiry could not be deleted', Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+    
+    public function createNewFaq(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'nullable|integer',
+            'question' => 'required|string',
+            'answer' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+
+        $id = $request->input('id');
+        $question = $request->input('question');
+        $answer = $request->input('answer');
+
+        $faq = $id ? Faq::byId($id)->first() : new Faq();
+
+        $faq->setQuestion($question);
+        $faq->setAnswer($answer);
+
+        if ($faq->save()) {
+            return response()->json('New FAQ successfully created', Response::HTTP_OK);
+        }
+
+        return response()->json('Failed to create new FAQ', Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+
+    public function getSpecificFaq(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+        
+        $id = intval($request->input('id'));
+
+        $specificFaq = Faq::byId($id)->first();
+
+        if(!$specificFaq){
+            response()->json("Faq not found", Response::HTTP_NOT_FOUND);
+        }
+        
+        response()->json($specificFaq, Response::HTTP_OK);
+    }
+
+    public function removeFaq(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
+        }
+
+        $id = intval($request->input('id'));
+
+        $specificFaq = Faq::byId($id)->first();
+        if(!$specificFaq){
+            return response()->json('Faq to delete not found', Response::HTTP_NOT_FOUND);    
+        }
+        $specificFaq->delete();
+
+        if($specificFaq){
+            response()->json('Faq successfully deleted', Response::HTTP_OK);
+        }
+    }
+
+
 
 }
+

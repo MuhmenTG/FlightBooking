@@ -3,23 +3,22 @@
 namespace App\Mail;
 
 use Exception;
+use Illuminate\Mail\Mailables\Attachment;
+use SendGrid;
 use SendGrid\Mail\Mail;
 
 class SendEmail
 {
-    public static function sendEmailWithAttachments($recipientName, $recipientEmail, $subject, $attachments) {
+    public static function sendEmailWithAttachments($recipientName, $recipientEmail, $subject, $text, $attachments = null) {
         $email = new Mail();
         $email->setFrom('muhmenpk@gmail.com', 'N&M flights booking');
         $email->setSubject($subject);
         $email->addTo($recipientEmail, $recipientName);
-        $email->addContent(
-            "text/plain",
-            "Thank you for choosing to book with us. We are pleased to confirm your reservation."
-        );
+        $email->addContent("text/plain", $text);
     
-        if($attachments != null){   
+        if(!is_null($attachments)){   
             foreach ($attachments as $attachment) {
-                $attachmentFile = new \SendGrid\Mail\Attachment();
+                $attachmentFile = new Attachment();
                 $attachmentFile->setContent(base64_encode(file_get_contents($attachment->getRealPath())));
                 $attachmentFile->setType($attachment->getClientMimeType());
                 $attachmentFile->setFilename($attachment->getClientOriginalName());
@@ -27,15 +26,15 @@ class SendEmail
                 $email->addAttachment($attachmentFile);
             }
         }
-       
     
-        $sendgrid = new \SendGrid('');
-    
+        $sendgrid = new SendGrid('');
         try {
             $response = $sendgrid->send($email);
+            return true;
         } catch (Exception $e) {
-            echo 'Caught exception: '. $e->getMessage() ."\n";
+            return false;
         }
     }
+    
     
 }

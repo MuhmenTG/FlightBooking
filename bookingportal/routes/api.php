@@ -41,11 +41,19 @@ Route::post('/hotel/bookHotel', [HotelBookingController::class, 'bookHotel']);
 //find booking both hotel and/or flight(costumer-page)
 route::post('/booking/retriveBooking', [ManageBookingController::class, 'retrieveBookingInformation']);
 route::post('/booking/updateHotelGuestInfo', [HotelBookingController::class, 'changeGuestDetails']);
+route::post('/booking/sendEnquirySupport', [ManageBookingController::class, 'sendEnquirySupport']);
+route::post('/booking/getAllFaqs', [ManageBookingController::class, 'getAllFaqs']);
 
 //AgentPanel
 Route::post('/admin/cancelHotel', [AdminController::class, 'cancelHotelBooking']);
 Route::post('/admin/cancelFlight', [AdminController::class, 'cancelFlightBooking']);
 Route::post('/admin/sendBooking', [AdminController::class, 'uploadAndEmail']);
+
+Route::post('/admin/getAllUserEnquries', [AdminController::class, 'getAllUserEnquiries']);
+Route::post('/admin/getSpecificUserEnquiry', [AdminController::class, 'getSpecificUserEnquiry']);
+Route::post('/admin/setUserEnquiryStatus', [AdminController::class, 'setUserEnquiryStatus']);
+Route::post('/admin/answerUserEnquiry', [AdminController::class, 'answerUserEnquiry']);
+Route::post('/admin/removeUserEnquiry', [AdminController::class, 'removeUserEnquiry']);
 
 //auth
 Route::post('/auth/login', [AuthenticationController::class, 'loginUser']);
@@ -58,5 +66,18 @@ Route::post('/auth/logout', [AuthenticationController::class, 'logout']);
     Route::post('/admin/removeAgentAccount', [AdminController::class, 'removeAgentAccount']);
     Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgentDetails']);
     Route::post('/admin/showListOfAgent', [AdminController::class, 'showListOfAgent']);
+
+    Route::post('/admin/createNewFaq', [AdminController::class, 'createNewFaq']);
+    Route::post('/admin/editFaq', [AdminController::class, 'createNewFaq']);
+    Route::post('/admin/removeFaq', [AdminController::class, 'removeFaq']);
+    Route::post('/admin/getSpecificFaq', [AdminController::class, 'getSpecificFaq']);
+    
     
 //});
+
+
+
+
+
+
+

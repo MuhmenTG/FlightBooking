@@ -92,6 +92,7 @@ class BookingFactory{
             $passengerInfo = new PassengerInfo();
             $passengerInfo->setPNR($bookingReference);
             $passengerInfo->setPaymentInfoId(1);
+            $passengerInfo->setTitle($passenger->title);
             $passengerInfo->setFirstName($passenger->firstName);
             $passengerInfo->setLastName($passenger->lastName);
             $passengerInfo->setDateOfBirth($passenger->dateOfBirth);

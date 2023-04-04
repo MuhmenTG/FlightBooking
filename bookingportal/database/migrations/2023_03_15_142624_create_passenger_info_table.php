@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('PNR');
             $table->integer('PaymentInfoId');
+            $table->string('title');
             $table->string('firstName');
             $table->string('lastName');
             $table->string('dateOfBirth');

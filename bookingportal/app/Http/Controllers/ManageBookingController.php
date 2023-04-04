@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SendEmail;
+use App\Models\Faq;
 use App\Models\FlightBooking;
 use App\Models\HotelBooking;
 use App\Models\PassengerInfo;
 use App\Models\Payment;
+use App\Models\UserEnquiry;
+use App\Models\UserEnqury;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,6 +53,49 @@ class ManageBookingController extends Controller
             }
 
             return response()->json('Invalid booking', Response::HTTP_NOT_FOUND);
+        }
+
+        public function getAllFaqs(){
+            $faqs = Faq::all();
+            if($faqs->isEmpty()){
+                return response()->json("Faqs could not be found", Response::HTTP_NOT_FOUND);
+            }
+            return response()->json($faqs, Response::HTTP_OK);
+        }
+
+        public function sendEnquirySupport(Request $request){
+            $validator = Validator::make($request->all(), [
+                'name'            =>  'required|string',
+                'email'           =>  'required|string',
+                'subject'         =>  'required|string',
+                'message'         =>  'required|string',
+                'bookingReference' => 'nullable|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
+            }
+
+            $name = $request->input('name');
+            $email = $request->input('email');
+            $subject = $request->input('subject');
+            $message = $request->input('message');
+            $bookingReference = $request->input('bookingReference');
+
+            $enquiry = new UserEnquiry();
+            $enquiry->setName($name);
+            $enquiry->setEmail($email);
+            $enquiry->setSubject($subject);
+            $enquiry->setBookingreference($bookingReference);
+            $enquiry->setMessage($message);
+            $enquiry->setTime(time());
+            $enquiry->save();
+            
+            $userCopy = SendEmail::sendEmailWithAttachments($name, $email, $subject, $message);
+            if($userCopy){
+                return response()->json('Enquiry sent', Response::HTTP_OK);
+            }
+            
         }
 
 }

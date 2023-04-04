@@ -49,7 +49,7 @@ class FlightBookingController extends Controller
     {
        $validator = Validator::make($request->all(), [
             'originLocationCode'        => 'required|string',
-            'destinationLocationCode'        => 'required|string',
+            'destinationLocationCode'   => 'required|string',
             'departureDate'             => 'required|string',
             'returnDate'                => 'nullable|string',
             'adults'                    => 'required|integer|min:1',
