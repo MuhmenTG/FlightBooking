@@ -44,23 +44,8 @@ route::post('/booking/updateHotelGuestInfo', [HotelBookingController::class, 'ch
 route::post('/booking/sendEnquirySupport', [ManageBookingController::class, 'sendEnquirySupport']);
 route::post('/booking/getAllFaqs', [ManageBookingController::class, 'getAllFaqs']);
 
-//AgentPanel
-Route::post('/admin/cancelHotel', [AdminController::class, 'cancelHotelBooking']);
-Route::post('/admin/cancelFlight', [AdminController::class, 'cancelFlightBooking']);
-Route::post('/admin/sendBooking', [AdminController::class, 'uploadAndEmail']);
-Route::post('/admin/getAllUserEnquries', [AdminController::class, 'getAllUserEnquiries']);
-Route::post('/admin/getSpecificUserEnquiry', [AdminController::class, 'getSpecificUserEnquiry']);
-Route::post('/admin/setUserEnquiryStatus', [AdminController::class, 'setUserEnquiryStatus']);
-Route::post('/admin/answerUserEnquiry', [AdminController::class, 'answerUserEnquiry']);
-Route::post('/admin/removeUserEnquiry', [AdminController::class, 'removeUserEnquiry']);
-Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgentDetails']);
-
-//auth
-Route::post('/auth/login', [AuthenticationController::class, 'loginUser']);
-Route::post('/auth/logout', [AuthenticationController::class, 'logout']);
-
-//Route::group(['middleware' => ['auth:sanctum']], function () {
-    //Admin Panel
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    // Admin-only routes here
     Route::post('/admin/createAgent', [AdminController::class, 'createAgent']);
     Route::post('/admin/getSpecificAgentDetails', [AdminController::class, 'getSpecificAgentDetails']);
     Route::post('/admin/removeAgentAccount', [AdminController::class, 'removeAgentAccount']);
@@ -71,8 +56,7 @@ Route::post('/auth/logout', [AuthenticationController::class, 'logout']);
     Route::post('/admin/editFaq', [AdminController::class, 'createNewFaq']);
     Route::post('/admin/removeFaq', [AdminController::class, 'removeFaq']);
     Route::post('/admin/getSpecificFaq', [AdminController::class, 'getSpecificFaq']);
-    
-    
+        
     Route::post('/admin/createNewUserRole', [AdminController::class, 'createOrEditUserRole']);
     Route::post('/admin/editUserRole', [AdminController::class, 'createOrEditUserRole']);
     Route::post('/admin/removeUserRole', [AdminController::class, 'removeUserRole']);
@@ -80,7 +64,28 @@ Route::post('/auth/logout', [AuthenticationController::class, 'logout']);
     Route::post('/admin/showUserRoles', [AdminController::class, 'showSpecificOrAllUserRoles']);
     
     Route::post('/admin/resetAgentPassword', [AdminController::class, 'resetAgentPassword']);
-//});
+    
+});
+
+Route::middleware(['auth:sanctum', 'role:agent'])->group(function () {
+    // Agent-only routes here
+    Route::post('/admin/cancelHotel', [AdminController::class, 'cancelHotelBooking']);
+    Route::post('/admin/cancelFlight', [AdminController::class, 'cancelFlightBooking']);
+    Route::post('/admin/sendBooking', [AdminController::class, 'uploadAndEmail']);
+    Route::post('/admin/getAllUserEnquries', [AdminController::class, 'getAllUserEnquiries']);
+    Route::post('/admin/getSpecificUserEnquiry', [AdminController::class, 'getSpecificUserEnquiry']);
+    Route::post('/admin/setUserEnquiryStatus', [AdminController::class, 'setUserEnquiryStatus']);
+    Route::post('/admin/answerUserEnquiry', [AdminController::class, 'answerUserEnquiry']);
+    Route::post('/admin/removeUserEnquiry', [AdminController::class, 'removeUserEnquiry']);
+    Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgentDetails']);
+});
+
+
+//auth
+Route::post('/auth/login', [AuthenticationController::class, 'loginUser']);
+Route::post('/auth/logout', [AuthenticationController::class, 'logout']);
+
+
 
 
 
