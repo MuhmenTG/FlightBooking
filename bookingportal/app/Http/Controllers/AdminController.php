@@ -10,10 +10,12 @@ use App\Models\PassengerInfo;
 use App\Models\UserAccount;
 use App\Models\UserEnquiry;
 use App\Models\UserEnqury;
+use App\Models\UserRole;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redis;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminController extends Controller
@@ -120,11 +122,17 @@ class AdminController extends Controller
         
         $userId = $request->input('userId');
 
-        $userAccount = UserAccount::ById($userId)->first();
         
+        $loggedInUserId = $request->user()->id;
 
+        if ($loggedInUserId->role === 'admin' || ($loggedInUserId === $userId)) {
+            $userAccount = UserAccount::byId($userId ?? $loggedInUserId)->first();
+            if (!$userAccount) {
+                return response()->json("User account not found", 404);
+            }
+        }
+        $userAccount = UserAccount::ById($userId)->first();
         $userAccount->setFirstName($firstName);
-    
         $userAccount->setLastName($lastName);
         $userAccount->setEmail($email);
         $userAccount->setStatus($status);
@@ -405,7 +413,108 @@ class AdminController extends Controller
         }
     }
 
+    public function createOrEditUserRole(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id'                => 'nullable|integer',
+            'roleName'          => 'required|string',
+            'roleCode'          => 'required|string',
+            'roleDescription'   => 'required|string',
 
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+
+        $id = $request->input('id');
+        $roleName = $request->input('roleName');
+        $roleCode = $request->input('roleCode');
+        $roleDescription = $request->input('roleDescription');
+
+        $userRole = $id ? UserRole::byId($id) : new UserRole();
+        $userRole->setRoleName($roleName);
+        $userRole->setRoleCode($roleCode);
+        $userRole->setRoleDescription($roleDescription);
+       
+        if ($userRole->save()) {
+            return response()->json('New user role successfully created', Response::HTTP_OK);
+        }
+
+        return response()->json('Failed to create new user role', Response::HTTP_INTERNAL_SERVER_ERROR);
+
+    }
+
+    public function removeUserRole(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+    
+        $id = intval($request->input('id'));
+    
+        $userRole = UserRole::byId($id)->first();
+        if (!$userRole) {
+            return response()->json('User enquiry not found', Response::HTTP_NOT_FOUND);    
+        }
+        
+        if ($userRole->delete()) {
+            return response()->json('User enquiry deleted successfully', Response::HTTP_OK);
+        }
+    
+        return response()->json('UserEnquiry could not be deleted', Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    public function showSpecificOrAllUserRoles(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'nullable|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+
+        $id = intval($request->input('id'));
+
+        if ($id) {
+            $userRole = UserRole::byId($id);
+
+            if (!$userRole) {
+                return response()->json(['error' => 'User role not found'], Response::HTTP_NOT_FOUND);
+            }
+
+            return response()->json($userRole, 200);
+        }
+
+        $userRoles = UserRole::all();
+
+        if ($userRoles->isEmpty()) {
+            return response()->json(['error' => 'No user roles found'], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json($userRoles, 200);
+    }
+
+    public function resetAgentPassword(Request $request){
+        
+        $validator = Validator::make($request->all(), [
+            'userId'                  => 'required|int',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+
+        $userId = $request->input('userId');
+        $password = "systemAgentUser";
+
+        $user = UserAccount::ById($userId)->first();
+        $user->setPassword(Hash::make($password));
+        $user->getFirstTimeLoggedIn(0);
+        $user->save();
+    }
 }
 

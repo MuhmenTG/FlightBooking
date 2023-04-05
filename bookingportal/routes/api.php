@@ -48,12 +48,12 @@ route::post('/booking/getAllFaqs', [ManageBookingController::class, 'getAllFaqs'
 Route::post('/admin/cancelHotel', [AdminController::class, 'cancelHotelBooking']);
 Route::post('/admin/cancelFlight', [AdminController::class, 'cancelFlightBooking']);
 Route::post('/admin/sendBooking', [AdminController::class, 'uploadAndEmail']);
-
 Route::post('/admin/getAllUserEnquries', [AdminController::class, 'getAllUserEnquiries']);
 Route::post('/admin/getSpecificUserEnquiry', [AdminController::class, 'getSpecificUserEnquiry']);
 Route::post('/admin/setUserEnquiryStatus', [AdminController::class, 'setUserEnquiryStatus']);
 Route::post('/admin/answerUserEnquiry', [AdminController::class, 'answerUserEnquiry']);
 Route::post('/admin/removeUserEnquiry', [AdminController::class, 'removeUserEnquiry']);
+Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgentDetails']);
 
 //auth
 Route::post('/auth/login', [AuthenticationController::class, 'loginUser']);
@@ -73,6 +73,13 @@ Route::post('/auth/logout', [AuthenticationController::class, 'logout']);
     Route::post('/admin/getSpecificFaq', [AdminController::class, 'getSpecificFaq']);
     
     
+    Route::post('/admin/createNewUserRole', [AdminController::class, 'createOrEditUserRole']);
+    Route::post('/admin/editUserRole', [AdminController::class, 'createOrEditUserRole']);
+    Route::post('/admin/removeUserRole', [AdminController::class, 'removeUserRole']);
+    Route::post('/admin/getUserRole', [AdminController::class, 'showSpecificOrAllUserRoles']);
+    Route::post('/admin/showUserRoles', [AdminController::class, 'showSpecificOrAllUserRoles']);
+    
+    Route::post('/admin/resetAgentPassword', [AdminController::class, 'resetAgentPassword']);
 //});
 
 
