@@ -27,6 +27,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/getAccess', [FlightBookingController::class, 'getAccessToken']);
 
+
+//auth
+Route::post('/auth/login', [AuthenticationController::class, 'loginUser']);
+Route::post('/auth/logout', [AuthenticationController::class, 'logout']);
+
 //Flight searching
 Route::post('/flight/searchFlights', [FlightBookingController::class, 'searchFlights']);
 Route::post('/flight/chooseFlightOffer', [FlightBookingController::class, 'chooseFlightOffer']);
@@ -44,7 +49,8 @@ route::post('/booking/updateHotelGuestInfo', [HotelBookingController::class, 'ch
 route::post('/booking/sendEnquirySupport', [ManageBookingController::class, 'sendEnquirySupport']);
 route::post('/booking/getAllFaqs', [ManageBookingController::class, 'getAllFaqs']);
 
-Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+
+Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
     // Admin-only routes here
     Route::post('/admin/createAgent', [AdminController::class, 'createAgent']);
     Route::post('/admin/getSpecificAgentDetails', [AdminController::class, 'getSpecificAgentDetails']);
@@ -67,7 +73,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     
 });
 
-Route::middleware(['auth:sanctum', 'role:agent'])->group(function () {
+Route::middleware(['auth:sanctum', 'isAgent'])->group(function () {
     // Agent-only routes here
     Route::post('/admin/cancelHotel', [AdminController::class, 'cancelHotelBooking']);
     Route::post('/admin/cancelFlight', [AdminController::class, 'cancelFlightBooking']);
@@ -79,12 +85,6 @@ Route::middleware(['auth:sanctum', 'role:agent'])->group(function () {
     Route::post('/admin/removeUserEnquiry', [AdminController::class, 'removeUserEnquiry']);
     Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgentDetails']);
 });
-
-
-//auth
-Route::post('/auth/login', [AuthenticationController::class, 'loginUser']);
-Route::post('/auth/logout', [AuthenticationController::class, 'logout']);
-
 
 
 

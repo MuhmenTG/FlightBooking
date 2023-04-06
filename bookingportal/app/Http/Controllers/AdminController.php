@@ -30,19 +30,18 @@ class AdminController extends Controller
             'lastName'                => 'required|string',
             'email'                   => 'required|string',
             'status'                  => 'required|int',
-            'role'                    => 'required|int'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json("Validation Failed", 400);
-        }
 
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+    
         $firstName = $request->input('firstName');
         $lastName = $request->input('lastName');
         $email = $request->input('email');
         $password = "systemAgentUser";
         $status = $request->input('status');
-        $role = $request->input('role');
 
         $userAccount = new UserAccount();
         $userAccount->setFirstName($firstName);
@@ -50,7 +49,6 @@ class AdminController extends Controller
         $userAccount->setEmail($email);
         $userAccount->setPassword(Hash::make($password));
         $userAccount->setStatus($status);
-        $userAccount->setRole($role);
 
         return response()->json($userAccount->save(), 200);
 

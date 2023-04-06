@@ -19,7 +19,9 @@ return new class extends Migration
             $table->string('password');
             $table->boolean('emailConfirmation')->default(false);
             $table->string('status');
-            $table->string('role');
+            //$table->string('role');
+            $table->boolean('isAgent')->default(0);
+            $table->boolean('isAdmin')->default(1);
             $table->integer('firstTimeLoggedIn')->default(0);
             $table->timestamp('registeredAt')->useCurrent();
             $table->integer('deactivatedAt')->default(0);
