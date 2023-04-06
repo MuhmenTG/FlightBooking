@@ -30,6 +30,9 @@ class AdminController extends Controller
             'lastName'                => 'required|string',
             'email'                   => 'required|string',
             'status'                  => 'required|int',
+            'isAdmin'                 => 'nullable|int',
+            'isAgent'                 => 'nullable|int'
+
         ]);
 
 
@@ -42,12 +45,17 @@ class AdminController extends Controller
         $email = $request->input('email');
         $password = "systemAgentUser";
         $status = $request->input('status');
+        $isAdmin = $request->input('isAdmin');
+        $isAgent = $request->input('isAgent');
+
 
         $userAccount = new UserAccount();
         $userAccount->setFirstName($firstName);
         $userAccount->setLastName($lastName);
         $userAccount->setEmail($email);
         $userAccount->setPassword(Hash::make($password));
+        $userAccount->setIsAgent($isAgent);
+        $userAccount->setIsAdmin($isAdmin);
         $userAccount->setStatus($status);
 
         return response()->json($userAccount->save(), 200);
@@ -60,8 +68,9 @@ class AdminController extends Controller
             'userId'                  => 'required|int',
         ]);
 
+        
         if ($validator->fails()) {
-            return response()->json("Validation Failed", 400);
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
         }
 
         $userId = $request->input('userId');
@@ -81,14 +90,15 @@ class AdminController extends Controller
             'userId'                  => 'required|int',
         ]);
 
+       
         if ($validator->fails()) {
-            return response()->json("Validation Failed", 400);
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
         }
 
         $userId = $request->input('userId');
 
         
-        $user = Useraccount::ById($userId)->first();
+        $user = UserAccount::ById($userId)->first();
 
         $user->setStatus(0);
         $user->getDeactivatedAt(time());
@@ -99,13 +109,14 @@ class AdminController extends Controller
     public function editAgentDetails(Request $request){
         
         $validator = Validator::make($request->all(), [
-            'firstName'               => 'nullable|string',
-            'lastName'                => 'nullable|string',
-            'email'                   => 'nullable|string',
-            'status'                  => 'nullable|int',
-            'role'                    => 'nullable|int',
-            'userId'                  => 'nullable|int',
+            'firstName'               => 'required|string',
+            'lastName'                => 'required|string',
+            'email'                   => 'required|string',
+            'status'                  => 'required|int',
+            'isAdmin'                 => 'nullable|int',
+            'isAgent'                 => 'nullable|int',
 
+            'userId'                  => 'nullable|int',
         ]);
 
         if ($validator->fails()) {
@@ -116,8 +127,9 @@ class AdminController extends Controller
         $lastName = $request->input('lastName');
         $email = $request->input('email');
         $status = $request->input('status');
-        $role = $request->input('role');
-        
+        $isAdmin = $request->input('isAdmin');
+        $isAgent = $request->input('isAgent');
+
         $userId = $request->input('userId');
 
         
@@ -129,12 +141,14 @@ class AdminController extends Controller
                 return response()->json("User account not found", 404);
             }
         }
+
         $userAccount = UserAccount::ById($userId)->first();
         $userAccount->setFirstName($firstName);
         $userAccount->setLastName($lastName);
         $userAccount->setEmail($email);
+        $userAccount->setIsAgent($isAgent);
+        $userAccount->setIsAdmin($isAdmin);
         $userAccount->setStatus($status);
-        $userAccount->setRole($role);
         $userAccount->save();
 
         return response()->json($userAccount, 400);
