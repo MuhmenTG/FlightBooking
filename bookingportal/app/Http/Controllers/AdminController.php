@@ -48,6 +48,11 @@ class AdminController extends Controller
         $isAdmin = $request->input('isAdmin');
         $isAgent = $request->input('isAgent');
 
+        $user = UserAccount::ByEmail($email)->first();
+        if($user){
+            
+            return response()->json("User already registered", 200);
+        }
 
         $userAccount = new UserAccount();
         $userAccount->setFirstName($firstName);
@@ -58,7 +63,7 @@ class AdminController extends Controller
         $userAccount->setIsAdmin($isAdmin);
         $userAccount->setStatus($status);
 
-        return response()->json($userAccount->save(), 200);
+        return response()->json("User registered", 200);
 
     }
 
