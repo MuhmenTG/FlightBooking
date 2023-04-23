@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Factories;
+namespace App\Services;
 
 use App\Models\Payment;
 use Stripe\BalanceTransaction;
 
 
-class PaymentFactory {
+class PaymentService {
     public static function createCharge(int $amount, string $currency, string $cardNumber, string $expYear, string $expMonth, string $cvc, string $description) 
     {
-        $stripe = PaymentFactory::createCardRecord($cardNumber, $expYear, $expMonth, $cvc);
+        $stripe = PaymentService::createCardRecord($cardNumber, $expYear, $expMonth, $cvc);
         
         if ($amount < 0) {
             throw new \InvalidArgumentException('Invalid amount.');

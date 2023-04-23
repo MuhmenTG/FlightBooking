@@ -27,7 +27,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/getAccess', [FlightBookingController::class, 'getAccessToken']);
 
-
 //auth
 Route::post('/auth/login', [AuthenticationController::class, 'loginUser']);
 Route::post('/auth/logout', [AuthenticationController::class, 'logout']);

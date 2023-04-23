@@ -95,20 +95,17 @@ class AdminController extends Controller
             'userId'                  => 'required|int',
         ]);
 
-       
         if ($validator->fails()) {
             return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
         }
 
         $userId = $request->input('userId');
-
         
         $user = UserAccount::ById($userId)->first();
 
         $user->setStatus(0);
         $user->getDeactivatedAt(time());
         return $user->save();
-
     }
 
     public function editAgentDetails(Request $request){
@@ -124,8 +121,9 @@ class AdminController extends Controller
             'userId'                  => 'nullable|int',
         ]);
 
+
         if ($validator->fails()) {
-            return response()->json("Validation Failed", 400);
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
         }
 
         $firstName = $request->input('firstName');

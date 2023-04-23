@@ -5,6 +5,7 @@ use App\DTO\HotelSelectionDTO;
 use App\Factories\BookingFactory;
 use App\Factories\PaymentFactory;
 use App\Models\HotelBooking;
+use App\Services\AmadeusService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,8 +19,6 @@ class HotelBookingController extends Controller
 
     public function searchHotel(Request $request)
     {
-        $listOfHotelByCityUrl = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city";
-
         $validator = Validator::make($request->all(), [
             'cityCode'      => 'required|string',
             'adults'        => 'required|integer|min:1',
@@ -49,105 +48,17 @@ class HotelBookingController extends Controller
 
         $accessToken = "k6phwxse7g5tXgDMIU5QGlWFrn1N";
 
-        $data = ['cityCode' => $cityCode];
-        $searchData = Arr::query($data);
-        $listOfHotelByCityUrl .= '?' . $searchData;
-
-        $hotelResponse = $this->httpRequest($listOfHotelByCityUrl, $accessToken);
-
-        if (empty($hotelResponse)) {
-            return response()->json(['message' => 'Error retrieving hotel data'], 500);
-        }
-
-        $hotelResponse = json_decode($hotelResponse, true);
-
-        if (!isset($hotelResponse['data'])) {
-            return response()->json(['message' => 'No hotels found in the specified city'], 404);
-        }
-
-        $hotelIds = implode(',', array_map(function ($item) {
-            return $item['hotelId'];
-        }, $hotelResponse['data']));
+        $hotelIds = AmadeusService::AmadeusGetHotelList($cityCode, $accessToken);
 
         try {
-            $finalHotelList = $this->getSpecificHotelsRoomAvailability($hotelIds, $adults, $checkInDate, $checkOutDate, $roomQuantity, $priceRange, $paymentPolicy, $boardType, $accessToken);
+            $finalHotelList = AmadeusService::AmadeusGetSpecificHotelsRoomAvailability($hotelIds, $adults, $checkInDate, $checkOutDate, $roomQuantity, $priceRange, $paymentPolicy, $boardType, $accessToken);
         } 
         catch (InvalidArgumentException $e) 
         {
             return response()->json(['message' => $e->getMessage()], 400);
         } 
-        
 
         return $finalHotelList;
-    }
-
-    public function getSpecificHotelsRoomAvailability(string $hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $roomQuantity, string $priceRange = null,
-    string $paymentPolicy = null, string $boardType = null,  string $accessToken)
-    {
-       
-        $isCommaSeparatedString = implode(",", explode(",", $hotelIds)) === $hotelIds;
-
-        if (!$isCommaSeparatedString || empty($hotelIds)) {
-            throw new InvalidArgumentException("Invalid hotelIds parameter. Expecting a non-empty array.");
-        }
-
-        if (!is_numeric($adults) || $adults < 1) {
-            throw new InvalidArgumentException("Invalid adults parameter. Expecting a positive integer.");
-        }
-
-        if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $checkInDate)) {
-            throw new InvalidArgumentException("Invalid checkInDate parameter. Expecting date format yyyy-mm-dd.");
-        }
-    
-        if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $checkOutDate)) {
-            throw new InvalidArgumentException("Invalid checkOutDate parameter. Expecting date format yyyy-mm-dd.");
-        }
-    
-        $specificHotelOfferUrl = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
-
-        $data = [
-            'hotelIds'      => $hotelIds,
-            'adults'        => $adults,
-            'checkInDate'   => $checkInDate,
-            'checkOutDate'  => $checkOutDate,
-            'roomQuantity'  => $roomQuantity,
-            'currency'      => 'DKK'
-        ];
-
-        if ($priceRange !== null) {
-            $data['priceRange'] = $priceRange;
-        }
-    
-        if ($paymentPolicy !== null) {
-            $data['paymentPolicy'] = $paymentPolicy;
-        }
-    
-        if ($boardType !== null) {
-            $data['boardType'] = $boardType;
-        }
-
-        $searchData = Arr::query($data);
-        $specificHotelOfferUrl .= '?' . $searchData;
-
-        $response = $this->httpRequest($specificHotelOfferUrl, $accessToken);
-        if($response !== 400){
-            return $response;
-        }
-    }
-
-    public function reviewSelectedHotelOfferInfo(string $hotelOfferId, string $accessToken)
-    {
-
-        $url = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
-
-        if($hotelOfferId == null){
-            throw new InvalidArgumentException("Invalid hotelOfferId found");
-        }
-
-        $url .= '/' . $hotelOfferId;
-
-        $response = $this->httpRequest($url, $accessToken);
-        return $response;
     }
 
     public function bookHotel(Request $request)
@@ -178,7 +89,7 @@ class HotelBookingController extends Controller
         $accessToken = "dAiIEB20koYt2G3NSWRgPxFCpXWn";
     
         try {
-            $selectedHotelOfferResponse = $this->reviewSelectedHotelOfferInfo($hotelOfferId, $accessToken);
+            $selectedHotelOfferResponse = AmadeusService::reviewSelectedHotelOfferInfo($hotelOfferId, $accessToken);
             if(!$selectedHotelOfferResponse){
                 return response()->json('Could not find booking', Response::HTTP_BAD_REQUEST);
             }
@@ -195,8 +106,6 @@ class HotelBookingController extends Controller
     
             $hotelBooking = BookingFactory::createHotelRecord($hotelOfferDTO, $bookingReferenceNumber, $firstName, $lastName, $email, $transaction->getPaymentInfoId());
             
-            
-    
             $response = [
                 'success' => true,
                 'hotelBooking'  => $hotelBooking,

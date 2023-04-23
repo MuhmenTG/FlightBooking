@@ -1,19 +1,24 @@
 <?php
 
 declare(strict_types=1);
-namespace App\Factories;
+namespace App\Services;
 
 use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
 use App\DTO\HotelSelectionDTO;
+use App\Factories\PaymentFactory;
+use App\Mail\SendEmail;
 use App\Models\Airline;
 use App\Models\FlightBooking;
 use App\Models\HotelBooking;
 use App\Models\PassengerInfo;
+use App\Models\Payment;
+use App\Models\UserEnquiry;
 use DateTime;
+use Exception;
 use InvalidArgumentException;
 
-class BookingFactory{
+class BookingService {
 
     public static function createFlightBookingRecord(array $flightData, string $bookingReference)
     {
@@ -82,6 +87,81 @@ class BookingFactory{
         return $hotelBooking;
     }
 
+    public static function bookFlight(array $flightData): array
+    {
+        if (empty($flightData)) {
+            throw new \InvalidArgumentException('Empty flight data');
+        }
+
+        $bookingReferenceNumber = BookingService::generateBookingReference();
+
+        $passengerData = $flightData[PassengerInfo::PASSENGERS_ARRAY];
+        if(!$passengerData){
+            throw new \RuntimeException('Could not find passenger records');
+        }
+
+        $issuingAirline = $flightData[PassengerInfo::VALIDATINGAIRLINE][0];
+        if(!$issuingAirline){
+            throw new \RuntimeException('Could not find issueing airline');
+        }
+
+        $passengers = BookingService::createPassengerRecord($passengerData, $issuingAirline, $bookingReferenceNumber);
+        if(!$passengers){
+            throw new \RuntimeException('Could not create passenger record');
+        }
+
+        $flightSegments = BookingService::createFlightBookingRecord($flightData, $bookingReferenceNumber);
+        if(!$flightSegments){
+            throw new \RuntimeException('Could not create flight segments record');
+        }
+
+        return [
+            'success' => true,
+            'bookingReference' => $bookingReferenceNumber
+        ];
+    }
+
+    public static function payFlightConfirmation(string $bookingReference, string $cardNumber, string $expireMonth, string $expireYear, string $cvcDigits, int $grandTotal)
+    {
+        $unPaidflightBooking = FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 0)->get();
+
+        $bookedPassengers = PassengerInfo::ByBookingReference($bookingReference)->get();
+
+        if($unPaidflightBooking->count() == 0){
+            throw new Exception('Invalid booking');
+        }
+
+        $grandTotal = $grandTotal * 100;
+
+        $transaction = PaymentFactory::createCharge($grandTotal, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReference);
+
+        if(!$transaction){
+            throw new Exception('Could not create transaction');
+        }
+
+        $isPaymentOK = FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISPAID => 1]);
+
+        if($isPaymentOK){
+            $paidflightBooking = FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 1)->get();
+        }
+
+        $booking = [
+            'success' => true,
+            'itinerary' => $paidflightBooking,
+            'passengers' => $bookedPassengers,
+            'transaction' => $transaction
+        ];
+
+        $email = null;
+        foreach($bookedPassengers as $bookedPassenger){
+            $email = $bookedPassenger->getEmail();
+        }
+
+        SendEmail::sendEmailWithAttachments("Muhmen", $email, $bookingReference, "Booking");
+
+        return $booking;
+    }
+
     public static function createPassengerRecord(array $passengerData, string $validatingAirlineCodes, string $bookingReference)
     {
         $passengers = [];
@@ -98,11 +178,40 @@ class BookingFactory{
             $passengerInfo->setDateOfBirth($passenger->dateOfBirth);
             $passengerInfo->setEmail($passenger->email);
             $passengerInfo->setPassengerType($passenger->passengerType);
-            $passengerInfo->setTicketNumber(BookingFactory::generateTicketNumber($validatingAirlineCodes));
+            $passengerInfo->setTicketNumber(BookingService::generateTicketNumber($validatingAirlineCodes));
             $passengerInfo->save();
         }       
         $bookedPassengers = PassengerInfo::ByBookingReference($bookingReference)->get();
         return $bookedPassengers;
+    }
+
+    public static function retrieveBookingInformation(string $bookingReference)
+    {
+        $bookedFlightSegments = FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();
+        $bookedFlightPassenger = PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->get();
+
+        $bookedHotel = HotelBooking::byHotelBookingReference($bookingReference)->first();
+
+        $paymentDetails = Payment::ByNote($bookingReference)->first();
+
+        if (!$bookedFlightSegments->isEmpty() && !$bookedFlightPassenger->isEmpty()) {
+            return [
+                'success' => true,
+                'PAX' => $bookedFlightPassenger,
+                'flight' => $bookedFlightSegments,
+                'payment' => $paymentDetails
+            ];
+        }
+
+        if ($bookedHotel) {
+            return [
+                'success' => true,
+                'hotelVoucher' => $bookedHotel,
+                'payment' => $paymentDetails
+            ];
+        }
+
+        return false;
     }
 
     public static function generateTicketNumber(string $validatingAirline) {
@@ -125,6 +234,24 @@ class BookingFactory{
             $result .= $characters[rand(0, strlen($characters) - 1)];
         }
         return $result;
+    }
+
+    public static function sendRquestContactForm(string $name, string $email, string $subject, string $message, string $bookingReference = null){
+        
+        $enquiry = new UserEnquiry();
+        $enquiry->setName($name);
+        $enquiry->setEmail($email);
+        $enquiry->setSubject($subject);
+        $enquiry->setBookingreference($bookingReference ?? "Ikke relevant");
+        $enquiry->setMessage($message);
+        $enquiry->setTime(time());
+        $enquiry->save();
+        
+        $userCopy = SendEmail::sendEmailWithAttachments($name, $email, $subject, $message);
+        if($userCopy){
+            return true;
+        }            
+        return false;
     }
     
     

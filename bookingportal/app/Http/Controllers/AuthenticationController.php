@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserAccount;
+use App\Services\AuthenticationService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticationController extends Controller
 {
     public function loginUser(Request $request)
     {
-        
         $validator = Validator::make($request->all(), [
             'email' => 'required|string',
             'password' => 'required|string'
@@ -24,26 +22,17 @@ class AuthenticationController extends Controller
 
         $email = $request->input('email');
         $password = $request->input('password');
-        $user = UserAccount::ByEmail($email)->first();
-        
-        
-        if(!$user || !Hash::check($password, $user->getPassword())){
+
+        $response = AuthenticationService::authenticate($email, $password);
+
+        if (!$response) {
             return response([
                 'msg' => 'Credentials incorrect'
             ], Response::HTTP_UNAUTHORIZED);
         }
-       
-
-        $token = $user->createToken('apiToken')->plainTextToken;
-
-        $response = [
-            'user' => $user,
-            'token' => $token
-        ];
 
         return response($response, Response::HTTP_ACCEPTED);
     }
-
 
     public function logout(Request $request)
     {
@@ -51,6 +40,5 @@ class AuthenticationController extends Controller
         return response([
             'Succesfully logout'
         ], 200);
-  
     }
 }
