@@ -1,4 +1,4 @@
-import { CustomerInfo } from "../CustomerInfo";
+import { FlightOffer } from "./FlightOffer";
 
 export interface FlightInfoResponse {
     data: Data;
@@ -13,22 +13,6 @@ export interface Data {
 export interface BookingRequirements {
     emailAddressRequired: boolean;
     mobilePhoneNumberRequired: boolean;
-}
-
-export interface FlightOffer {
-    passengers: CustomerInfo[]
-    type: string;
-    id: string;
-    source: string;
-    instantTicketingRequired: boolean;
-    nonHomogeneous: boolean;
-    paymentCardRequired: boolean;
-    lastTicketingDate: Date;
-    itineraries: Itinerary[];
-    price: FlightOfferPrice;
-    pricingOptions: PricingOptions;
-    validatingAirlineCodes: string[];
-    travelerPricings: TravelerPricing[];
 }
 
 export interface Itinerary {
