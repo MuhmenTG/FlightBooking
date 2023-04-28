@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 use App\DTO\HotelSelectionDTO;
-use App\Factories\BookingFactory;
-use App\Factories\PaymentFactory;
 use App\Models\HotelBooking;
 use App\Services\AmadeusService;
 use App\Services\BookingService;
