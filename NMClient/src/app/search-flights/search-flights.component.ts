@@ -3,7 +3,6 @@ import { NgForm } from '@angular/forms';
 import { ShowFlightoffersComponent } from '../show-flightoffers/show-flightoffers.component';
 import { FlightResponse } from '../_models/Flights/FlightResponse';
 import { SearchFlightsRequest } from '../_models/Flights/SearchFlightsRequest';
-import { SearchFlightsResponses } from '../_models/Flights/SearchFlightsResponses';
 import { FlightService } from '../_services/flight.service';
 
 @Component({

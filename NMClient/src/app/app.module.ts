@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { ShowFlightoffersComponent } from './show-flightoffers/show-flightoffers.component';
 import { BookFlightComponent } from './book-flight/book-flight.component';
 import { PaymentComponent } from './payment/payment.component';
+import { SearchHotelsComponent } from './search-hotels/search-hotels.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { PaymentComponent } from './payment/payment.component';
     SearchFlightsComponent,
     ShowFlightoffersComponent,
     BookFlightComponent,
-    PaymentComponent
+    PaymentComponent,
+    SearchHotelsComponent
   ],
   imports: [
     BrowserModule,

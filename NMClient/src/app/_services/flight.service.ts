@@ -6,9 +6,10 @@ import { AccessTokenResponse } from '../_models/AccessTokenResponse';
 import { SearchFlightsResponses } from '../_models/Flights/SearchFlightsResponses';
 import { SearchFlightsRequest } from '../_models/Flights/SearchFlightsRequest';
 import { FlightResponse } from '../_models/Flights/FlightResponse';
-import { FlightInfoResponse, FlightOffer } from '../_models/Flights/FlightInfoResponse';
+import { FlightInfoResponse } from '../_models/Flights/FlightInfoResponse';
 import { BookingResponse } from '../_models/Flights/BookingResponse';
 import { PaymentInfo } from '../_models/PaymentInfo';
+import { FlightOffer } from '../_models/Flights/FlightOffer';
 
 @Injectable({
   providedIn: 'root'
