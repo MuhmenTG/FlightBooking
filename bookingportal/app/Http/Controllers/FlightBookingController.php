@@ -46,28 +46,51 @@ class FlightBookingController extends Controller
             'originLocationCode'        => 'required|string',
             'destinationLocationCode'   => 'required|string',
             'departureDate'             => 'required|string',
+            'adults'                    => 'required|integer',
             'returnDate'                => 'nullable|string',
-            'adults'                    => 'required|integer|min:1',
+            'children'                  => 'nullable|integer',
+            'infants'                   => 'nullable|integer',
+            'travelClass'               => 'nullable|string',
+            'includedAirlineCodes'      => 'nullable|string',
+            'excludedAirlineCodes'      => 'nullable|string',
+            'nonStop'                   => 'nullable|boolean',
+            'maxPrice'                  => 'nullable|integer|min:0',
         ]);
-    
+        
         if ($validator->fails()) {
             return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
         }
-
+        
         $originLocationCode = $request->input('originLocationCode');
         $destinationLocationCode = $request->input('destinationLocationCode');
         $departureDate = $request->input('departureDate');
         $returnDate = $request->input('returnDate');
         $adults = $request->input('adults');
+        $children = intval($request->input('children'));
+        $infants = intval($request->input('infants'));
+        $travelClass = $request->input('travelClass');
+        $includedAirlineCodes = $request->input('includedAirlineCodes');
+        $excludedAirlineCodes = $request->input('excludedAirlineCodes');
+        $nonStop = $request->input('nonStop');
+        $maxPrice = intval($request->input('maxPrice'));
+    
+
         $accessToken = $request->bearerToken();
         
         $amadeusResponse = AmadeusService::AmadeusSearch(
+            $accessToken,
             $originLocationCode,
             $destinationLocationCode,
             $departureDate,
-            $returnDate,
             $adults,
-            $accessToken
+            $returnDate,
+            $children,
+            $infants,
+            $travelClass,
+            $includedAirlineCodes,
+            $excludedAirlineCodes,
+            $nonStop,
+            $maxPrice,    
         );
 
         if(!$amadeusResponse){
@@ -100,11 +123,6 @@ class FlightBookingController extends Controller
         try {
             $bookingReferenceNumber = BookingService::bookFlight($request->json()->all());
             
-            /*$response = [
-                'success' => true,
-                'bookingReference' => $bookingReferenceNumber
-            ];*/
-
             return response()->json($bookingReferenceNumber, Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);

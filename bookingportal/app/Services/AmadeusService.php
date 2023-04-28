@@ -23,29 +23,73 @@ class AmadeusService {
     const FLIGHT_DATA = 'data';
     const FLIGHT_OFFERS_PRICING = 'flight-offers-pricing';
 
-    public static function AmadeusSearch(string $originLocationCode, string $destinationLocationCode, string $departureDate, 
-    string $returnDate, string $numberOfAdults, string $accessToken){
-         
+    public static function AmadeusSearch(
+        string $accessToken,
+        string $originLocationCode,
+        string $destinationLocationCode,
+        string $departureDate,
+        string $numberOfAdults,
+        ?string $returnDate = null,
+        ?int $children = null,
+        ?int $infant = null,
+        ?string $travelClass = null,
+        ?string $includedAirlineCodes = null,
+        ?string $excludedAirlineCodes = null,
+        bool $nonStop = false,
+        ?int $maxPrice = null
+      ) {
+        
         $url = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
-
         $queryParams = [
-            'originLocationCode' => $originLocationCode,
-            'destinationLocationCode' => $destinationLocationCode,   
-            'departureDate' => $departureDate,
-            'returnDate' => $returnDate,
-            'adults' => $numberOfAdults
+          'originLocationCode' => $originLocationCode,
+          'destinationLocationCode' => $destinationLocationCode,   
+          'departureDate' => $departureDate,
+          'adults' => $numberOfAdults
         ];
-    
-        $searchData = Arr ::query($queryParams);
-        $url .= '?' . $searchData;
-    
-        $response = AmadeusService::httpRequest($url, $accessToken, "GET");
-    
-        if($response == null){
-            return false;
+      
+        if ($returnDate !== null) {
+          $queryParams['returnDate'] = $returnDate;
         }
+        
+        if ($children !== null) {
+          $queryParams['children'] = $children;
+        }
+      
+        if ($infant !== null) {
+          $queryParams['infants'] = $infant;
+        }
+      
+        if ($travelClass !== null) {
+          $queryParams['travelClass'] = $travelClass;
+        }
+      
+        if ($includedAirlineCodes !== null) {
+          $queryParams['includedAirlineCodes'] = $includedAirlineCodes;
+        }
+      
+        if ($excludedAirlineCodes !== null) {
+          $queryParams['excludedAirlineCodes'] = $excludedAirlineCodes;
+        }
+      
+        if ($nonStop !== false) {
+          $queryParams['nonStop'] = $nonStop;
+        }
+      
+        if ($maxPrice !== null) {
+          $queryParams['maxPrice'] = $maxPrice;
+        }
+      
+        $searchData = Arr::query($queryParams);
+        $url .= '?' . $searchData;
+      
+        $response = AmadeusService::httpRequest($url, $accessToken, "GET");
+      
+        if($response == null){
+          return false;
+        }
+      
         return $response;
-    }
+      }      
 
     public static function AmadeusChooseFlightOffer(array $jsonFlightData, string $accessToken)
     {

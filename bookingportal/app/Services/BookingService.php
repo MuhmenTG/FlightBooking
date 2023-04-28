@@ -214,7 +214,7 @@ class BookingService {
         return false;
     }
 
-    public static function generateTicketNumber(string $validatingAirline) {
+    public static function generateTicketNumber(string $validatingAirline) : string {
         $validatingCarrier = Airline::ByIataDesignator($validatingAirline)->first();
         $validatingAirlineDigits = $validatingCarrier->ByThreeDigitAirlineCode();
         
@@ -228,12 +228,13 @@ class BookingService {
     }
 
     public static function generateBookingReference() : string{
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $result = '';
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $bookingNumber = '';
         for ($i = 0; $i < 6; $i++) {
-            $result .= $characters[rand(0, strlen($characters) - 1)];
+            $bookingNumber .= $characters[rand(0, strlen($characters) - 1)];
         }
-        return $result;
+        $bookingNumber = strtoupper($bookingNumber);
+        return $bookingNumber;
     }
 
     public static function sendRquestContactForm(string $name, string $email, string $subject, string $message, string $bookingReference = null){

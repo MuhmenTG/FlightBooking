@@ -15,7 +15,7 @@ class FlightOfferPassengerDTO
 
     public function __construct(array $passengerData)
     {
-        $this->firstName = $passengerData['title'];
+        $this->title = $passengerData['title'];
         $this->firstName = $passengerData['firstName'];
         $this->lastName = $passengerData['lastName'];
         $this->dateOfBirth = $passengerData['dateOfBirth'];

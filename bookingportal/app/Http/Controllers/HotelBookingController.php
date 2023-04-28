@@ -44,7 +44,7 @@ class HotelBookingController extends Controller
       
         //$accessToken = $request->bearerToken();
 
-        $accessToken = "k6phwxse7g5tXgDMIU5QGlWFrn1N";
+        $accessToken = "AG8WVRxV13FuTk21UHoQWhqSHgnk";
 
         $hotelIds = AmadeusService::AmadeusGetHotelList($cityCode, $accessToken);
 
