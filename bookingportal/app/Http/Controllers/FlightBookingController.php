@@ -8,7 +8,6 @@ use Exception;
 use Illuminate\Http\Request;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\Response;
 
 class FlightBookingController extends Controller
@@ -34,7 +33,7 @@ class FlightBookingController extends Controller
 
             $response = $response->getBody();
             $accessTtoken = json_decode($response)->access_token;
-            echo $accessTtoken;
+            return $accessTtoken;
         } catch (GuzzleException $exception) {
             dd($exception);
         }
@@ -83,31 +82,30 @@ class FlightBookingController extends Controller
     {
         $jsonFlightData = $request->json()->all();
         $accessToken = $request->bearerToken();
-    
+        
         if (empty($jsonFlightData)) {
             return response()->json(['message' => 'Empty flight data'], Response::HTTP_BAD_REQUEST);
         }
-    
+
         try {
             $amadeusResponse = AmadeusService::AmadeusChooseFlightOffer($jsonFlightData, $accessToken);
             return $amadeusResponse;
         } catch (Exception $e) {
             return response()->json(['message' => 'Request failed', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }        
+        }     
     }
     
     public function FlightConfirmation(Request $request)
     {
         try {
-
             $bookingReferenceNumber = BookingService::bookFlight($request->json()->all());
             
-            $response = [
+            /*$response = [
                 'success' => true,
                 'bookingReference' => $bookingReferenceNumber
-            ];
+            ];*/
 
-            return response()->json($response, Response::HTTP_OK);
+            return response()->json($bookingReferenceNumber, Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }

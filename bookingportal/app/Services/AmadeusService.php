@@ -4,8 +4,24 @@ namespace App\Services;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
+use PhpParser\Node\Expr\Exit_;
 
 class AmadeusService {
+
+    const CONTENT_TYPE_JSON = 'application/json';
+    const AUTHORIZATION_BEARER = 'Bearer ';
+    const HEADER_ACCEPT = 'Accept';
+    const HEADER_AUTHORIZATION = 'Authorization';
+    const HEADER_CONTENT_TYPE = 'Content-Type';
+    const HEADER_HTTP_METHOD_OVERRIDE = 'X-HTTP-Method-Override';
+    const HTTP_METHOD_GET = 'GET';
+    const HTTP_STATUS_OK = 200;
+    const HTTP_STATUS_BAD_REQUEST = 400;
+    const HTTP_STATUS_UNAUTHORIZED = 401;
+    const HTTP_STATUS_NOT_FOUND = 404;
+    const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
+    const FLIGHT_DATA = 'data';
+    const FLIGHT_OFFERS_PRICING = 'flight-offers-pricing';
 
     public static function AmadeusSearch(string $originLocationCode, string $destinationLocationCode, string $departureDate, 
     string $returnDate, string $numberOfAdults, string $accessToken){
@@ -23,24 +39,22 @@ class AmadeusService {
         $searchData = Arr ::query($queryParams);
         $url .= '?' . $searchData;
     
-        $accessToken = "qFocfRbQIyxYglLazG1nWBsqO3qv";
-    
-    
         $response = AmadeusService::httpRequest($url, $accessToken, "GET");
     
         if($response == null){
             return false;
         }
+        return $response;
     }
 
-    public static function AmadeusChooseFlightOffer(array $jsonFlightData, $accessToken)
+    public static function AmadeusChooseFlightOffer(array $jsonFlightData, string $accessToken)
     {
         $url = 'https://test.api.amadeus.com/v1/shopping/flight-offers/pricing';
      
         $data = array(
-            "data" => array(
-                "type" => "flight-offers-pricing",
-                "flightOffers" => [$jsonFlightData]
+            self::FLIGHT_DATA => array(
+                "type" => self::FLIGHT_OFFERS_PRICING,
+                "flightOffers" => array($jsonFlightData)
             )
         );
 
@@ -148,37 +162,44 @@ class AmadeusService {
         }
     }
 
-
-    private static function httpRequest(string $url, string $accessTtoken, string $method = 'GET',  array $data = null)
+    public static function httpRequest(string $url, string $accessToken, string $method = self::HTTP_METHOD_GET, array $data = null)
     {  
         $client = new \GuzzleHttp\Client();
         try {
             $headers = [
-                'Accept' => 'application/json',
-                'Authorization' => 'Bearer ' . $accessTtoken
+                self::HEADER_ACCEPT => self::CONTENT_TYPE_JSON,
+                self::HEADER_AUTHORIZATION => self::AUTHORIZATION_BEARER . $accessToken,
             ];
 
-            if ($method === 'GET') {
+            if ($method === self::HTTP_METHOD_GET) {
                 $response = $client->get($url, [
                     'headers' => $headers,
                 ]);
             } else {
-                $headers['Content-Type'] = 'application/json';
-                $headers['X-HTTP-Method-Override'] = 'GET';
+                $headers[self::HEADER_CONTENT_TYPE] = self::CONTENT_TYPE_JSON;
+                $headers[self::HEADER_HTTP_METHOD_OVERRIDE] = self::HTTP_METHOD_GET;
 
                 $response = $client->post($url, [
                     'headers' => $headers,
                     'json' => $data,
                 ]);
             }
-            if($response->getStatusCode() == 200){
-                return $response->getBody();
+
+            switch ($response->getStatusCode()) {
+                case self::HTTP_STATUS_OK:
+                    return $response->getBody();
+                case self::HTTP_STATUS_BAD_REQUEST:
+                    return response()->json(['error' => 'Choose another flight']);
+                case self::HTTP_STATUS_UNAUTHORIZED:
+                    return response()->json(['error' => 'Unauthorized']);
+                case self::HTTP_STATUS_NOT_FOUND:
+                    return response()->json(['error' => 'Not Found']);
+                default:
+                    return response()->json(['error' => 'Something went wrong']);
             }
-            return response()->json("Could not find", 404);
         } catch (GuzzleException $exception) {
-            print($exception);
-            return null;
+            return response()->json(['error' => $exception->getMessage()], $exception->getCode());
         }
-        
     }
+
 }

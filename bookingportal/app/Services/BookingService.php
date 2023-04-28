@@ -6,7 +6,6 @@ namespace App\Services;
 use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
 use App\DTO\HotelSelectionDTO;
-use App\Factories\PaymentFactory;
 use App\Mail\SendEmail;
 use App\Models\Airline;
 use App\Models\FlightBooking;
@@ -89,6 +88,7 @@ class BookingService {
 
     public static function bookFlight(array $flightData): array
     {
+        
         if (empty($flightData)) {
             throw new \InvalidArgumentException('Empty flight data');
         }
@@ -97,22 +97,22 @@ class BookingService {
 
         $passengerData = $flightData[PassengerInfo::PASSENGERS_ARRAY];
         if(!$passengerData){
-            throw new \RuntimeException('Could not find passenger records');
+            throw new Exception('Could not find passenger records');
         }
 
         $issuingAirline = $flightData[PassengerInfo::VALIDATINGAIRLINE][0];
         if(!$issuingAirline){
-            throw new \RuntimeException('Could not find issueing airline');
+            throw new Exception('Could not find issueing airline');
         }
 
         $passengers = BookingService::createPassengerRecord($passengerData, $issuingAirline, $bookingReferenceNumber);
         if(!$passengers){
-            throw new \RuntimeException('Could not create passenger record');
+            throw new Exception('Could not create passenger record');
         }
 
         $flightSegments = BookingService::createFlightBookingRecord($flightData, $bookingReferenceNumber);
         if(!$flightSegments){
-            throw new \RuntimeException('Could not create flight segments record');
+            throw new Exception('Could not create flight segments record');
         }
 
         return [
@@ -133,7 +133,7 @@ class BookingService {
 
         $grandTotal = $grandTotal * 100;
 
-        $transaction = PaymentFactory::createCharge($grandTotal, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReference);
+        $transaction = PaymentService::createCharge($grandTotal, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReference);
 
         if(!$transaction){
             throw new Exception('Could not create transaction');

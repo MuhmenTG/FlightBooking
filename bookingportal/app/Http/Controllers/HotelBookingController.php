@@ -6,11 +6,11 @@ use App\Factories\BookingFactory;
 use App\Factories\PaymentFactory;
 use App\Models\HotelBooking;
 use App\Services\AmadeusService;
+use App\Services\BookingService;
+use App\Services\PaymentService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
-use Illuminate\Support\Arr;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -97,14 +97,14 @@ class HotelBookingController extends Controller
             $data = json_decode($selectedHotelOfferResponse, true);
             $hotelOfferDTO = new HotelSelectionDTO($data);
     
-            $bookingReferenceNumber = BookingFactory::generateBookingReference();
+            $bookingReferenceNumber = BookingService::generateBookingReference();
     
-            $transaction = PaymentFactory::createCharge($hotelOfferDTO->priceTotal, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReferenceNumber);
+            $transaction = PaymentService::createCharge($hotelOfferDTO->priceTotal, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReferenceNumber);
             if(!$transaction){
                 return response()->json('Could not create transaction', Response::HTTP_BAD_REQUEST);
             }
-    
-            $hotelBooking = BookingFactory::createHotelRecord($hotelOfferDTO, $bookingReferenceNumber, $firstName, $lastName, $email, $transaction->getPaymentInfoId());
+            
+            $hotelBooking = BookingService::createHotelRecord($hotelOfferDTO, $bookingReferenceNumber, $firstName, $lastName, $email, $transaction->getPaymentInfoId());
             
             $response = [
                 'success' => true,
