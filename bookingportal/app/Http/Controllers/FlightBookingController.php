@@ -104,8 +104,9 @@ class FlightBookingController extends Controller
     public function chooseFlightOffer(Request $request)
     {
         $jsonFlightData = $request->json()->all();
-        $accessToken = $request->bearerToken();
         
+        $accessToken = $request->bearerToken();
+
         if (empty($jsonFlightData)) {
             return response()->json(['message' => 'Empty flight data'], Response::HTTP_BAD_REQUEST);
         }
@@ -120,9 +121,26 @@ class FlightBookingController extends Controller
     
     public function FlightConfirmation(Request $request)
     {
+        $validator = Validator::make($request->all(), [    
+            'itineraries' => 'required|array',
+            'itineraries.*.duration' => 'required|string',
+            'itineraries.*.segments' => 'required|array',
+            'passengers' => 'required|array',
+            'passengers.*.title' => 'required|string',
+            'passengers.*.firstName' => 'required|string',
+            'passengers.*.lastName' => 'required|string',
+            'passengers.*.dateOfBirth' => 'required|string',
+            'passengers.*.email' => 'required|email',
+            'passengers.*.passengerType' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
+        }
+
         try {
             $bookingReferenceNumber = BookingService::bookFlight($request->json()->all());
-            
+
             return response()->json($bookingReferenceNumber, Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);

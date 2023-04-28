@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\Agent;
+use App\Http\Middleware\EnsureflightDataIsPresent;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -69,6 +70,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'isAdmin' => Admin::class,
-        'isAgent' => Agent::class
+        'isAgent' => Agent::class,
+        'EnsureflightDataIsPresent' => EnsureflightDataIsPresent::class  
     ];
 }
