@@ -42,9 +42,7 @@ class HotelBookingController extends Controller
         $paymentPolicy = $request->input('paymentPolicy');
         $boardType = $request->input('boardType');
       
-        //$accessToken = $request->bearerToken();
-
-        $accessToken = "AG8WVRxV13FuTk21UHoQWhqSHgnk";
+        $accessToken = $request->bearerToken();
 
         $hotelIds = AmadeusService::AmadeusGetHotelList($cityCode, $accessToken);
 
@@ -84,8 +82,8 @@ class HotelBookingController extends Controller
         $expireMonth = $request->input('expireMonth');
         $expireYear = $request->input('expireYear');
         $cvcDigits = $request->input('cvcDigits');
-        $accessToken = "dAiIEB20koYt2G3NSWRgPxFCpXWn";
-    
+        $accessToken = $request->bearerToken();
+
         try {
             $selectedHotelOfferResponse = AmadeusService::reviewSelectedHotelOfferInfo($hotelOfferId, $accessToken);
             if(!$selectedHotelOfferResponse){

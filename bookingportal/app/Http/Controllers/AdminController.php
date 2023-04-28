@@ -9,13 +9,12 @@ use App\Models\HotelBooking;
 use App\Models\PassengerInfo;
 use App\Models\UserAccount;
 use App\Models\UserEnquiry;
-use App\Models\UserEnqury;
 use App\Models\UserRole;
+use App\Services\AdminService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redis;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminController extends Controller
@@ -43,27 +42,24 @@ class AdminController extends Controller
         $firstName = $request->input('firstName');
         $lastName = $request->input('lastName');
         $email = $request->input('email');
-        $password = "systemAgentUser";
         $status = $request->input('status');
         $isAdmin = $request->input('isAdmin');
         $isAgent = $request->input('isAgent');
 
-        $user = UserAccount::ByEmail($email)->first();
-        if($user){
-            
-            return response()->json("User already registered", 200);
+        $newAgent = AdminService::createOrEditAgent(
+            $firstName,
+            $lastName,
+            $email,
+            $status,
+            intval($isAdmin),
+            intval($isAgent)
+        );
+
+        if($newAgent){
+            return response()->json($newAgent, Response::HTTP_OK);
         }
-
-        $userAccount = new UserAccount();
-        $userAccount->setFirstName($firstName);
-        $userAccount->setLastName($lastName);
-        $userAccount->setEmail($email);
-        $userAccount->setPassword(Hash::make($password));
-        $userAccount->setIsAgent($isAgent);
-        $userAccount->setIsAdmin($isAdmin);
-        $userAccount->setStatus($status);
-
-        return response()->json("User registered", 200);
+        
+        return response()->json("User already registered", Response::HTTP_IM_USED);
 
     }
 
@@ -78,18 +74,18 @@ class AdminController extends Controller
             return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
         }
 
-        $userId = $request->input('userId');
+        $userId = intval($request->input('userId'));
 
-        $user = UserAccount::ById($userId)->first();
-        if($user){
-            return response()->json($user, 200);
+        $agent = AdminService::getSpecificAgentDetails($userId);
+
+        if($agent){
+            return response()->json($agent, Response::HTTP_OK);
         }
 
-        return response()->json("Agent could not be found", 404);
-
+        return response()->json("Agent could not be found", Response::HTTP_NOT_FOUND);
     }
 
-    public function removeAgentAccount(Request $request){
+    public function setAgentAccountToDeactive(Request $request){
         
         $validator = Validator::make($request->all(), [
             'userId'                  => 'required|int',
