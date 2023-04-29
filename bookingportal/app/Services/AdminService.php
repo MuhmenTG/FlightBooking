@@ -35,7 +35,6 @@ class AdminService {
         return $userAccount;
     }
 
-
     public static function getSpecificAgentDetails(int $userId) : UserAccount
     {
         $user = UserAccount::ById($userId)->first();
@@ -59,12 +58,5 @@ class AdminService {
     }
 
 
-    public static function showListOfAgent()
-    {
-        $agents = Useraccount::all();
-        return [
-            "agents" => $agents
-        ];
-    }
-
+    
 }

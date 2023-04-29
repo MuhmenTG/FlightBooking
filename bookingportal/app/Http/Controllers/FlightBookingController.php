@@ -71,12 +71,13 @@ class FlightBookingController extends Controller
         $travelClass = $request->input('travelClass');
         $includedAirlineCodes = $request->input('includedAirlineCodes');
         $excludedAirlineCodes = $request->input('excludedAirlineCodes');
-        $nonStop = $request->input('nonStop');
+  //      $nonStop = true;
         $maxPrice = intval($request->input('maxPrice'));
     
 
-        $accessToken = $request->bearerToken();
         
+
+        $accessToken = $request->bearerToken();
         $amadeusResponse = AmadeusService::AmadeusSearch(
             $accessToken,
             $originLocationCode,
@@ -89,7 +90,7 @@ class FlightBookingController extends Controller
             $travelClass,
             $includedAirlineCodes,
             $excludedAirlineCodes,
-            $nonStop,
+          //  $nonStop,
             $maxPrice,    
         );
 

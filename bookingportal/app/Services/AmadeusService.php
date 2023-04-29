@@ -35,8 +35,8 @@ class AmadeusService {
         ?string $travelClass = null,
         ?string $includedAirlineCodes = null,
         ?string $excludedAirlineCodes = null,
-        bool $nonStop = false,
-        ?int $maxPrice = null
+     //   bool $nonStop = false,
+       // ?int $maxPrice = null
       ) {
         
         $url = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
@@ -71,13 +71,13 @@ class AmadeusService {
           $queryParams['excludedAirlineCodes'] = $excludedAirlineCodes;
         }
       
-        if ($nonStop !== false) {
+      /*  if ($nonStop !== false) {
           $queryParams['nonStop'] = $nonStop;
-        }
+        }*/
       
-        if ($maxPrice !== null) {
+        /*if ($maxPrice !== null) {
           $queryParams['maxPrice'] = $maxPrice;
-        }
+        }*/
       
         $searchData = Arr::query($queryParams);
         $url .= '?' . $searchData;
