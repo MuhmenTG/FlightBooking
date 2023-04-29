@@ -71,8 +71,8 @@ class FlightBookingController extends Controller
         $travelClass = $request->input('travelClass');
         $includedAirlineCodes = $request->input('includedAirlineCodes');
         $excludedAirlineCodes = $request->input('excludedAirlineCodes');
-        $nonStop = $request->input('nonStop');
-        $maxPrice = intval($request->input('maxPrice'));
+        // $nonStop = $request->input('nonStop');
+        // $maxPrice = intval($request->input('maxPrice'));
     
 
         $accessToken = $request->bearerToken();
@@ -89,8 +89,8 @@ class FlightBookingController extends Controller
             $travelClass,
             $includedAirlineCodes,
             $excludedAirlineCodes,
-            $nonStop,
-            $maxPrice,    
+            // $nonStop,
+            // $maxPrice,    
         );
 
         if(!$amadeusResponse){
@@ -123,7 +123,7 @@ class FlightBookingController extends Controller
     {
         $validator = Validator::make($request->all(), [    
             'itineraries' => 'required|array',
-            'itineraries.*.duration' => 'required|string',
+            'itineraries.*.segments.*.duration' => 'required|string',
             'itineraries.*.segments' => 'required|array',
             'passengers' => 'required|array',
             'passengers.*.title' => 'required|string',
