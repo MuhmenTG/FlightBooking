@@ -53,8 +53,7 @@ class FlightBookingController extends Controller
             'travelClass'               => 'nullable|string',
             'includedAirlineCodes'      => 'nullable|string',
             'excludedAirlineCodes'      => 'nullable|string',
-            'nonStop'                   => 'nullable|boolean',
-            'maxPrice'                  => 'nullable|integer|min:0',
+            'nonStop'                   => 'nullable',
         ]);
         
         if ($validator->fails()) {
@@ -71,13 +70,9 @@ class FlightBookingController extends Controller
         $travelClass = $request->input('travelClass');
         $includedAirlineCodes = $request->input('includedAirlineCodes');
         $excludedAirlineCodes = $request->input('excludedAirlineCodes');
-        // $nonStop = $request->input('nonStop');
-        // $maxPrice = intval($request->input('maxPrice'));'
-    
-
-        
-
+        $nonStop = boolval($request->input('nonStop'));
         $accessToken = $request->bearerToken();
+
         $amadeusResponse = AmadeusService::AmadeusSearch(
             $accessToken,
             $originLocationCode,
@@ -90,9 +85,7 @@ class FlightBookingController extends Controller
             $travelClass,
             $includedAirlineCodes,
             $excludedAirlineCodes,
-
-            // $nonStop,
-            // $maxPrice,  
+            $nonStop  
         );
 
         if(!$amadeusResponse){
@@ -106,7 +99,7 @@ class FlightBookingController extends Controller
     public function chooseFlightOffer(Request $request)
     {
         $jsonFlightData = $request->json()->all();
-        
+              
         $accessToken = $request->bearerToken();
 
         if (empty($jsonFlightData)) {

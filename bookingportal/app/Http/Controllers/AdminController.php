@@ -280,18 +280,6 @@ class AdminController extends Controller
     
         $id = $request->input('id');
     
-        $specificUserEnquiry = UserEnquiry::byId($id);
-    
-        if (!$specificUserEnquiry) {
-            return response()->json(['message' => 'User enquiry not found'], Response::HTTP_NOT_FOUND);
-        }
-    
-        $specificUserEnquiry->setIsSolved(UserEnquiry::CASE_SOLVED);
-    
-        if ($specificUserEnquiry->save()) {
-            return response()->json($specificUserEnquiry, Response::HTTP_OK);
-        }
-    
         return response()->json(['message' => 'User enquiry could not be marked'], Response::HTTP_BAD_REQUEST);    
     }
 
