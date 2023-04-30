@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
@@ -165,7 +166,7 @@ class AmadeusService {
             'checkInDate'   => $checkInDate,
             'checkOutDate'  => $checkOutDate,
             'roomQuantity'  => $roomQuantity,
-            'currency'      => 'DKK'
+            'currencyCode'  => 'DKK'
         ];
 
         if ($priceRange !== null) {
@@ -188,6 +189,78 @@ class AmadeusService {
             return $response;
         }
     }
+
+    public static function AmadeusGetSpecificHotelsRoomAvailability1(string $hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $roomQuantity, string $priceRange = null,
+    string $paymentPolicy = null, string $boardType = null, string $accessToken)
+{
+
+    $hotelIdsString = trim($hotelIds, ","); // Remove trailing commas from the hotelIds string
+    
+
+    $hotelIdChunks = explode(",", $hotelIdsString); // Split the hotelIds string into chunks of 30
+
+    $finalHotelList = [];
+
+    $numChunks = ceil(count($hotelIdChunks) / 30); // Calculate the number of chunks
+
+    for ($i = 0; $i < $numChunks; $i++) {
+        $chunk = array_slice($hotelIdChunks, $i * 30, 30); // Get the next chunk of 30 hotel IDs
+        
+        $chunkedHotelIdsString = implode(",", $chunk);
+
+        if (!is_numeric($adults) || $adults < 1) {
+            throw new InvalidArgumentException("Invalid adults parameter. Expecting a positive integer.");
+        }
+
+        if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $checkInDate)) {
+            throw new InvalidArgumentException("Invalid checkInDate parameter. Expecting date format yyyy-mm-dd.");
+        }
+
+        if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $checkOutDate)) {
+            throw new InvalidArgumentException("Invalid checkOutDate parameter. Expecting date format yyyy-mm-dd.");
+        }
+
+        $specificHotelOfferUrl = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
+
+        $data = [
+            'hotelIds'      => $chunkedHotelIdsString,
+            'adults'        => $adults,
+            'checkInDate'   => $checkInDate,
+            'checkOutDate'  => $checkOutDate,
+            'roomQuantity'  => $roomQuantity,
+            'currencyCode'  => 'DKK'
+        ];
+
+        if ($priceRange !== null) {
+            $data['priceRange'] = $priceRange;
+        }
+
+        if ($paymentPolicy !== null) {
+            $data['paymentPolicy'] = $paymentPolicy;
+        }
+
+        if ($boardType !== null) {
+            $data['boardType'] = $boardType;
+        }
+
+        $searchData = Arr::query($data);
+        $specificHotelOfferUrl .= '?' . $searchData;
+
+        echo $chunkedHotelIdsString;exit;
+        $response = AmadeusService::httpRequest($specificHotelOfferUrl, $accessToken);
+
+        if ($response !== 200) {
+            throw new Exception("Error getting hotel offers: " );
+        }
+
+        $hotels = json_decode($response, true);
+
+        $finalHotelList = array_merge($finalHotelList, $hotels);
+    }
+
+    return $finalHotelList;
+}
+
 
     public static function reviewSelectedHotelOfferInfo(string $hotelOfferId, string $accessToken)
     {

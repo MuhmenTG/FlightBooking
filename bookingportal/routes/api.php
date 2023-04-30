@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\FlightBookingController;
 use App\Http\Controllers\HotelBookingController;
 use App\Http\Controllers\ManageBookingController;
+use App\Http\Controllers\TravelAgentController;
 use App\Models\FlightBooking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -74,15 +75,15 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
 
 Route::middleware(['auth:sanctum', 'isAgent'])->group(function () {
     // Agent-only routes here
-    Route::post('/admin/cancelHotel', [AdminController::class, 'cancelHotelBooking']);
-    Route::post('/admin/cancelFlight', [AdminController::class, 'cancelFlightBooking']);
-    Route::post('/admin/sendBooking', [AdminController::class, 'uploadAndEmail']);
-    Route::post('/admin/getAllUserEnquries', [AdminController::class, 'getAllUserEnquiries']);
-    Route::post('/admin/getSpecificUserEnquiry', [AdminController::class, 'getSpecificUserEnquiry']);
-    Route::post('/admin/setUserEnquiryStatus', [AdminController::class, 'setUserEnquiryStatus']);
-    Route::post('/admin/answerUserEnquiry', [AdminController::class, 'answerUserEnquiry']);
-    Route::post('/admin/removeUserEnquiry', [AdminController::class, 'removeUserEnquiry']);
-    Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgentDetails']);
+    Route::post('/travelAgent/cancelHotel', [TravelAgentController::class, 'cancelHotelBooking']);
+    Route::post('/travelAgent/cancelFlight', [TravelAgentController::class, 'cancelFlightBooking']);
+    Route::post('/travelAgent/sendBooking', [TravelAgentController::class, 'resendBookingConfirmationPDF']);
+    Route::post('/travelAgent/getAllUserEnquries', [TravelAgentController::class, 'getAllUserEnquiries']);
+    Route::post('/travelAgent/getSpecificUserEnquiry', [TravelAgentController::class, 'getSpecificUserEnquiry']);
+    Route::post('/travelAgent/setUserEnquiryStatus', [TravelAgentController::class, 'setUserEnquiryStatus']);
+    Route::post('/travelAgent/answerUserEnquiry', [TravelAgentController::class, 'answerUserEnquiry']);
+    Route::post('/travelAgent/removeUserEnquiry', [TravelAgentController::class, 'removeUserEnquiry']);
+    Route::post('/travelAgent/editAgentDetails', [AdminController::class, 'editAgentDetails']);
 });
 
 

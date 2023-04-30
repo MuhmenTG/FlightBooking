@@ -121,7 +121,7 @@ class BookingService {
         ];
     }
 
-    public static function payFlightConfirmation(string $bookingReference, string $cardNumber, string $expireMonth, string $expireYear, string $cvcDigits, int $grandTotal)
+    public static function payFlightConfirmation(string $bookingReference, string $cardNumber, string $expireMonth, string $expireYear, string $cvcDigits, int $grandTotal) : ?array
     {
         $unPaidflightBooking = FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 0)->get();
 
@@ -185,7 +185,7 @@ class BookingService {
         return $bookedPassengers;
     }
 
-    public static function retrieveBookingInformation(string $bookingReference)
+    public static function retrieveBookingInformation(string $bookingReference) : ?array
     {
         $bookedFlightSegments = FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();
         $bookedFlightPassenger = PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->get();
@@ -255,5 +255,23 @@ class BookingService {
         return false;
     }
     
+    public static function cancelHotelBooking(string $bookingReference) : ?HotelBooking{
+        $bookedHotel = HotelBooking::byHotelBookingReference($bookingReference)->first();
+
+        if($bookedHotel){
+            $bookedHotel->setIsCancelled(1);
+            $bookedHotel->save();
+            return $bookedHotel;
+        }
+
+        return false;
+    }
     
+    public static function gethotelBookingByBookingReference(string $bookingReference){
+        $bookedHotel = HotelBooking::byHotelBookingReference($bookingReference)->first();
+        if($bookedHotel){
+            return true;
+        }
+        return false;
+    } 
 }

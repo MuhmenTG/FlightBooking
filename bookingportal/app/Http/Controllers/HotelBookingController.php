@@ -42,12 +42,12 @@ class HotelBookingController extends Controller
         $paymentPolicy = $request->input('paymentPolicy');
         $boardType = $request->input('boardType');
       
-        $accessToken = $request->bearerToken();
+        $accessToken = 'hUGA55eFQBAdj6OXypIcwGGSBtH4';
 
         $hotelIds = AmadeusService::AmadeusGetHotelList($cityCode, $accessToken);
 
         try {
-            $finalHotelList = AmadeusService::AmadeusGetSpecificHotelsRoomAvailability($hotelIds, $adults, $checkInDate, $checkOutDate, $roomQuantity, $priceRange, $paymentPolicy, $boardType, $accessToken);
+            $finalHotelList = AmadeusService::AmadeusGetSpecificHotelsRoomAvailability1($hotelIds, $adults, $checkInDate, $checkOutDate, $roomQuantity, $priceRange, $paymentPolicy, $boardType, $accessToken);
         } 
         catch (InvalidArgumentException $e) 
         {
@@ -56,6 +56,7 @@ class HotelBookingController extends Controller
 
         return $finalHotelList;
     }
+
 
     public function bookHotel(Request $request)
     {

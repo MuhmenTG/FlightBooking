@@ -9,7 +9,7 @@ use SendGrid\Mail\Mail;
 
 class SendEmail
 {
-    public static function sendEmailWithAttachments($recipientName, $recipientEmail, $subject, $text, $attachments = null) {
+    public static function sendEmailWithAttachments(string $recipientName, string $recipientEmail, string $subject, string $text, array $attachments = null) : bool{
         $email = new Mail();
         $email->setFrom('muhmenpk@gmail.com', 'N&M flights booking');
         $email->setSubject($subject);

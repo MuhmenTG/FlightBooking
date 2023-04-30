@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Mail\SendEmail;
@@ -11,6 +12,7 @@ use App\Models\UserAccount;
 use App\Models\UserEnquiry;
 use App\Models\UserRole;
 use App\Services\AdminService;
+use App\Services\BackOfficeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -46,7 +48,7 @@ class AdminController extends Controller
         $isAdmin = $request->input('isAdmin');
         $isAgent = $request->input('isAgent');
 
-        $newAgent = AdminService::createOrEditAgent(
+        $newAgent = BackOfficeService::createOrEditAgent(
             $firstName,
             $lastName,
             $email,
@@ -76,7 +78,7 @@ class AdminController extends Controller
 
         $userId = intval($request->input('userId'));
 
-        $agent = AdminService::getSpecificAgentDetails($userId);
+        $agent = BackOfficeService::getSpecificAgentDetails($userId);
 
         if($agent){
             return response()->json($agent, Response::HTTP_OK);
@@ -104,54 +106,6 @@ class AdminController extends Controller
         return $user->save();
     }
 
-    public function editAgentDetails(Request $request){
-        
-        $validator = Validator::make($request->all(), [
-            'firstName'               => 'required|string',
-            'lastName'                => 'required|string',
-            'email'                   => 'required|string',
-            'status'                  => 'required|int',
-            'isAdmin'                 => 'nullable|int',
-            'isAgent'                 => 'nullable|int',
-
-            'userId'                  => 'nullable|int',
-        ]);
-
-
-        if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
-        }
-
-        $firstName = $request->input('firstName');
-        $lastName = $request->input('lastName');
-        $email = $request->input('email');
-        $status = $request->input('status');
-        $isAdmin = $request->input('isAdmin');
-        $isAgent = $request->input('isAgent');
-
-        $userId = $request->input('userId');
-
-        
-        $loggedInUserId = $request->user()->id;
-
-        if ($loggedInUserId->role === 'admin' || ($loggedInUserId === $userId)) {
-            $userAccount = UserAccount::byId($userId ?? $loggedInUserId)->first();
-            if (!$userAccount) {
-                return response()->json("User account not found", 404);
-            }
-        }
-
-        $userAccount = UserAccount::ById($userId)->first();
-        $userAccount->setFirstName($firstName);
-        $userAccount->setLastName($lastName);
-        $userAccount->setEmail($email);
-        $userAccount->setIsAgent($isAgent);
-        $userAccount->setIsAdmin($isAdmin);
-        $userAccount->setStatus($status);
-        $userAccount->save();
-
-        return response()->json($userAccount, 400);
-    }
 
     public function showListOfAgent(){
 
@@ -161,113 +115,9 @@ class AdminController extends Controller
         ];
     }
 
-    public function uploadAndEmail(Request $request)
-    {
-        $request->validate([
-            'files' => 'required',
-            'files.*' => 'mimes:pdf|max:2048'
-        ]);
     
-        $attachments = $request->allFiles('files');
-    
-        $email = "muhmen@live.ca";
-        $name = "MUHMEN";
-    
-        SendEmail::sendEmailWithAttachments($name, $email, "Booking", $attachments);
-    
-        return response()->json("Booking confirmation has been sent", 200);
-    }
 
-    public function cancelFlightBooking(Request $request){
-        $validator = Validator::make($request->all(), [
-            'bookingReference' => 'required|string',
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json('Validation Failed', Response::HTTP_BAD_REQUEST);
-        }
-
-        $bookingReference = $request->input('bookingReference');
-
-        $bookedFlightSegments = FlightBooking ::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();
-        $bookedFlightPassenger = PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->get();
-        
-        
-        if (!$bookedFlightSegments->isEmpty() && !$bookedFlightPassenger->isEmpty()) {
-            $isflightSegmentsCancelled = FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISCANCELLED => 1]);
-            $isPassengersCancelled = PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->update([PassengerInfo::COL_ISCANCELLED => 1]);
-
-            if($isflightSegmentsCancelled && $isPassengersCancelled){
-                $cancelledBooking = FlightBooking::ByBookingReference($bookingReference)->ByIsCancelled(1)->get();
-                $cancelledBookingPassengers = PassengerInfo::ByBookingReference($bookingReference)->ByIsCancelled(1)->get();
-            }   
-
-            return response()->json([
-                'cancellation' => true,
-                'PAX' => $cancelledBooking,
-                'flight' => $cancelledBookingPassengers
-            ], Response::HTTP_OK);
-
-        }
-        
-        return response()->json('Invalid booking', Response::HTTP_NOT_FOUND);        
-
-    }
-
-    public function cancelHotelBooking(Request $request){
-        $validator = Validator::make($request->all(), [
-            'bookingReference' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json('Validation Failed', Response::HTTP_BAD_REQUEST);
-        }
-
-        $bookingReference = $request->input('bookingReference');
-
-        $bookedHotel = HotelBooking::byHotelBookingReference($bookingReference)->first();
-
-        if($bookedHotel){
-            $bookedHotel->setIsCancelled(1);
-            $bookedHotel->save();
-            return $bookedHotel;
-        }
-
-        return response()->json('Invalid booking', Response::HTTP_NOT_FOUND);        
-
-    }
-    
-    public function getAllUserEnquiries(): JsonResponse
-    {
-        $userEnquiries = UserEnquiry::all();
-    
-        if($userEnquiries->isEmpty()) {
-            return response()->json(['message' => 'No user enquiries found'], Response::HTTP_NOT_FOUND);
-        }
-    
-        return response()->json($userEnquiries, Response::HTTP_OK);
-    }
-
-    public function getSpecificUserEnquiry(Request $request): JsonResponse
-    {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
-        ]);
-    
-        if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
-        }
-    
-        $id = $request->input('id');
-    
-        $specificUserEnquiry = UserEnquiry::ById($id);
-    
-        if (!$specificUserEnquiry) {
-            return response()->json(['message' => 'User enquiry not found'], Response::HTTP_NOT_FOUND);
-        }
-    
-        return response()->json($specificUserEnquiry, Response::HTTP_OK);
-    }
 
     public function setUserEnquiryStatus(Request $request){
         $validator = Validator::make($request->all(), [
@@ -283,91 +133,31 @@ class AdminController extends Controller
         return response()->json(['message' => 'User enquiry could not be marked'], Response::HTTP_BAD_REQUEST);    
     }
 
-    public function answerUserEnquiry(Request $request){
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
-            'responseMessageToUser' => 'required|string',
-        ]);
     
-        if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
-        }
-    
-        $id = $request->input('id');
-        $responseMessageToUser = $request->input('responseMessageToUser');
-    
-        $specificUserEnquiry = UserEnquiry::byId($id);
-        
-        if(!$specificUserEnquiry){
-            return response()->json('User enquiry not found', Response::HTTP_NOT_FOUND);    
-        }
-        
-        $emailSent = SendEmail::sendEmailWithAttachments(
-            $specificUserEnquiry->getName(),
-            $specificUserEnquiry->getEmail(),
-            "Reply regarding " . $specificUserEnquiry->getSubject(),
-            $responseMessageToUser
-        );
-    
-        if($emailSent){
-            return response()->json("Email replied", Response::HTTP_OK);
-        }
-        
-        return response()->json('Email could not be sent', Response::HTTP_BAD_REQUEST);
-    }
-    
-    
-    public function removeUserEnquiry(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
-        ]);
-    
-        if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
-        }
-    
-        $id = intval($request->input('id'));
-    
-        $specificUserEnquiry = UserEnquiry::byId($id)->first();
-        if (!$specificUserEnquiry) {
-            return response()->json('User enquiry not found', Response::HTTP_NOT_FOUND);    
-        }
-        
-        if ($specificUserEnquiry->delete()) {
-            return response()->json('User enquiry deleted successfully', Response::HTTP_OK);
-        }
-    
-        return response()->json('UserEnquiry could not be deleted', Response::HTTP_INTERNAL_SERVER_ERROR);
-    }
-    
+
     public function createNewFaq(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'nullable|integer',
-            'question' => 'required|string',
-            'answer' => 'required|string',
+            'question'  => 'required|string',
+            'answer'    => 'required|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
         }
 
-        $id = $request->input('id');
         $question = $request->input('question');
         $answer = $request->input('answer');
 
-        $faq = $id ? Faq::byId($id)->first() : new Faq();
+        $result = BackOfficeService::createOrUpdateFaq($question, $answer);
 
-        $faq->setQuestion($question);
-        $faq->setAnswer($answer);
-
-        if ($faq->save()) {
+        if ($result) {
             return response()->json('New FAQ successfully created', Response::HTTP_OK);
         }
 
         return response()->json('Failed to create new FAQ', Response::HTTP_INTERNAL_SERVER_ERROR);
     }
+
 
 
     public function getSpecificFaq(Request $request){
