@@ -3,17 +3,10 @@
 declare(strict_types=1);
 namespace App\Http\Controllers;
 
-use App\Mail\SendEmail;
 use App\Models\Faq;
-use App\Models\FlightBooking;
-use App\Models\HotelBooking;
-use App\Models\PassengerInfo;
 use App\Models\UserAccount;
-use App\Models\UserEnquiry;
 use App\Models\UserRole;
-use App\Services\AdminService;
 use App\Services\BackOfficeService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -24,8 +17,7 @@ class AdminController extends Controller
     //
 
     public function createAgent(Request $request){
-
-        
+   
         $validator = Validator::make($request->all(), [
             'firstName'               => 'required|string',
             'lastName'                => 'required|string',

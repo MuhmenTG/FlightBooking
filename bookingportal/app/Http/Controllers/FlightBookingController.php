@@ -151,6 +151,9 @@ class FlightBookingController extends Controller
             'expireMonth'          => 'required|string',
             'expireYear'           => 'required|string',
             'cvcDigits'            => 'required|string',
+            'supportPackage'       => 'nullable|boolean',
+            'changableTicket'      => 'nullable|boolean',
+            'cancellationableTicket' => 'nullable|boolean'
         ]);
 
         if ($validator->fails()) {
@@ -164,6 +167,16 @@ class FlightBookingController extends Controller
         $cvcDigits = $request->input('cvcDigits');
         $grandTotal = intval($request->input('grandTotal'));
 
+        if ($request->input('supportPackage')) {
+            $grandTotal += 750;
+        }
+        if ($request->input('changableTicket')) {
+            $grandTotal += 750;
+        }
+        if ($request->input('cancellationableTicket')) {
+            $grandTotal += 750;
+        }
+        
         try {
             $booking = BookingService::payFlightConfirmation($bookingReference, $cardNumber, $expireMonth, $expireYear, $cvcDigits, $grandTotal);
         } catch (Exception $e) {
