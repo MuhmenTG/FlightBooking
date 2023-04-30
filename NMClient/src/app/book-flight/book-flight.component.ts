@@ -13,7 +13,7 @@ import { FlightService } from '../_services/flight.service';
 export class BookFlightComponent {
   @Input() flightInfo!: FlightInfoResponse;
   formSubmitted: boolean = false;
-  model: CustomerInfo = { firstName: "", lastName: "", email: "", dateOfBirth: Date(), passengerType: "Adult" }
+  model: CustomerInfo = { title: "Mr.", firstName: "", lastName: "", email: "", dateOfBirth: Date(), passengerType: "Adult" }
   bookingResponse: BookingResponse = { bookingReference: "", success: false };
   constructor(private _flightService: FlightService) { }
 

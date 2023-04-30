@@ -71,13 +71,6 @@ class AmadeusService {
           $queryParams['excludedAirlineCodes'] = $excludedAirlineCodes;
         }
       
-      /*  if ($nonStop !== false) {
-          $queryParams['nonStop'] = $nonStop;
-        }*/
-      
-        /*if ($maxPrice !== null) {
-          $queryParams['maxPrice'] = $maxPrice;
-        }*/
       
         $searchData = Arr::query($queryParams);
         $url .= '?' . $searchData;
