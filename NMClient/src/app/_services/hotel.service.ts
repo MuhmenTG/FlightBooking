@@ -27,7 +27,7 @@ export class HotelService {
   }
 
   getHotels(body: SearchHotelsRequest): Observable<SearchHotelsResponses> {
-    return this.http.post<SearchHotelsResponses>(this.apiUrl + "/searchSelectHotel", body, this.httpOptions);
+    return this.http.post<SearchHotelsResponses>(this.apiUrl + "/searchSelectHotel", JSON.stringify(body), this.httpOptions);
   }
 
   getHotelInfo(hotelOffer: string): Observable<HotelInfoResponse> {
