@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 use App\DTO\HotelSelectionDTO;
-use App\Models\HotelBooking;
 use App\Services\AmadeusService;
 use App\Services\BookingService;
 use App\Services\PaymentService;
@@ -115,30 +114,5 @@ class HotelBookingController extends Controller
         }
     }
     
-    public function changeGuestDetails(Request $request){
-        
-        $validator = Validator::make($request->all(), [
-            'bookingReference'     => 'required|string',
-            'firstName'            => 'required|string',
-            'lastName'             => 'required|string',
-            'email'                => 'required|email',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json("Validation Failed", 400);
-        }
-
-        $bookingReference = $request->input('bookingReference');
-        $firstName = $request->input('firstName');
-        $lastName = $request->input('lastName');
-        $email = $request->input('email');
-        
-        $bookedHotel = HotelBooking::ByHotelBookingReference($bookingReference)->first();
-        $bookedHotel->setMainGuestFirstName($firstName);
-        $bookedHotel->setMainGuestLasName($lastName);
-        $bookedHotel->setMainGuestEmail($email);
-      
-        return response()->json($bookedHotel, 200);
-    }
 
 }

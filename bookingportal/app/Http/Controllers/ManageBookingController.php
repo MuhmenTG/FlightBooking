@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\SendEmail;
 use App\Models\Faq;
 use App\Services\BookingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
-class ManageBookingController extends Controller
+class PublicSiteController extends Controller
 {
         public function retrieveBookingInformation(Request $request)
         {

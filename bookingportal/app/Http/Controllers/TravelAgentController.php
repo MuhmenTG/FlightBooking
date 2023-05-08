@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Mail\SendEmail;
 use App\Models\FlightBooking;
+use App\Models\HotelBooking;
 use App\Models\PassengerInfo;
 use App\Models\UserAccount;
 use App\Models\UserEnquiry;
-use App\Services\AdminService;
 use App\Services\BackOfficeService;
 use App\Services\BookingService;
 use Illuminate\Http\Request;
@@ -156,7 +156,7 @@ class TravelAgentController extends Controller
         $id = $request->input('id');
         $responseMessageToUser = $request->input('responseMessageToUser');
     
-        $specificUserEnquiry = UserEnquiry::byId($id);
+        $specificUserEnquiry = BackOfficeService::findUserEnquiryById($id);
         
         if(!$specificUserEnquiry){
             return response()->json('User enquiry not found', Response::HTTP_NOT_FOUND);    
@@ -249,6 +249,32 @@ class TravelAgentController extends Controller
         $userAccount->save();
 
         return response()->json($userAccount, 400);
+    }
+
+    public function changeGuestDetails(Request $request){
+        
+        $validator = Validator::make($request->all(), [
+            'bookingReference'     => 'required|string',
+            'firstName'            => 'required|string',
+            'lastName'             => 'required|string',
+            'email'                => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json("Validation Failed", 400);
+        }
+
+        $bookingReference = $request->input('bookingReference');
+        $firstName = $request->input('firstName');
+        $lastName = $request->input('lastName');
+        $email = $request->input('email');
+        
+        $bookedHotel = HotelBooking::ByHotelBookingReference($bookingReference)->first();
+        $bookedHotel->setMainGuestFirstName($firstName);
+        $bookedHotel->setMainGuestLasName($lastName);
+        $bookedHotel->setMainGuestEmail($email);
+      
+        return response()->json($bookedHotel, 200);
     }
 
 }

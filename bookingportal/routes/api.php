@@ -57,20 +57,16 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
     Route::post('/admin/removeAgentAccount', [AdminController::class, 'removeAgentAccount']);
     Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgentDetails']);
     Route::post('/admin/showListOfAgent', [AdminController::class, 'showListOfAgent']);
-
     Route::post('/admin/createNewFaq', [AdminController::class, 'createNewFaq']);
     Route::post('/admin/editFaq', [AdminController::class, 'createNewFaq']);
     Route::post('/admin/removeFaq', [AdminController::class, 'removeFaq']);
     Route::post('/admin/getSpecificFaq', [AdminController::class, 'getSpecificFaq']);
-        
     Route::post('/admin/createNewUserRole', [AdminController::class, 'createOrEditUserRole']);
     Route::post('/admin/editUserRole', [AdminController::class, 'createOrEditUserRole']);
     Route::post('/admin/removeUserRole', [AdminController::class, 'removeUserRole']);
     Route::post('/admin/getUserRole', [AdminController::class, 'showSpecificOrAllUserRoles']);
     Route::post('/admin/showUserRoles', [AdminController::class, 'showSpecificOrAllUserRoles']);
-    
     Route::post('/admin/resetAgentPassword', [AdminController::class, 'resetAgentPassword']);
-    
 });
 
 Route::middleware(['auth:sanctum', 'isAgent'])->group(function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ValidationHelper;
 use App\Services\AmadeusService;
 use App\Services\BookingService;
 use Exception;
@@ -42,19 +43,7 @@ class FlightBookingController extends Controller
 
     public function searchFlights(Request $request) 
     {
-        $validator = Validator::make($request->all(), [
-            'originLocationCode'        => 'required|string',
-            'destinationLocationCode'   => 'required|string',
-            'departureDate'             => 'required|string',
-            'adults'                    => 'required|integer',
-            'returnDate'                => 'nullable|string',
-            'children'                  => 'nullable|integer',
-            'infants'                   => 'nullable|integer',
-            'travelClass'               => 'nullable|string',
-            'includedAirlineCodes'      => 'nullable|string',
-            'excludedAirlineCodes'      => 'nullable|string',
-            'nonStop'                   => 'nullable',
-        ]);
+        $validator = ValidationHelper::validateFlightSearchRequest($request);
         
         if ($validator->fails()) {
             return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
@@ -94,7 +83,6 @@ class FlightBookingController extends Controller
     
         return $amadeusResponse;
     }
-    
 
     public function chooseFlightOffer(Request $request)
     {
@@ -116,18 +104,7 @@ class FlightBookingController extends Controller
     
     public function FlightConfirmation(Request $request)
     {
-        $validator = Validator::make($request->all(), [    
-            'itineraries' => 'required|array',
-            'itineraries.*.segments.*.duration' => 'required|string',
-            'itineraries.*.segments' => 'required|array',
-            'passengers' => 'required|array',
-            'passengers.*.title' => 'required|string',
-            'passengers.*.firstName' => 'required|string',
-            'passengers.*.lastName' => 'required|string',
-            'passengers.*.dateOfBirth' => 'required|string',
-            'passengers.*.email' => 'required|email',
-            'passengers.*.passengerType' => 'required|string',
-        ]);
+        $validator = ValidationHelper::validateFlightConfirmationRequest($request);
 
         if ($validator->fails()) {
             return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
@@ -144,18 +121,8 @@ class FlightBookingController extends Controller
 
     public function payFlightConfirmation(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'bookingReference'     => 'required|string',
-            'grandTotal'           => 'required|string',
-            'cardNumber'           => 'required|string',
-            'expireMonth'          => 'required|string',
-            'expireYear'           => 'required|string',
-            'cvcDigits'            => 'required|string',
-            'supportPackage'       => 'nullable|boolean',
-            'changableTicket'      => 'nullable|boolean',
-            'cancellationableTicket' => 'nullable|boolean'
-        ]);
-
+        $validator = ValidationHelper::validateFlightPayRequest($request);
+        
         if ($validator->fails()) {
             return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
         }
@@ -170,9 +137,11 @@ class FlightBookingController extends Controller
         if ($request->input('supportPackage')) {
             $grandTotal += 750;
         }
+
         if ($request->input('changableTicket')) {
             $grandTotal += 750;
         }
+        
         if ($request->input('cancellationableTicket')) {
             $grandTotal += 750;
         }
