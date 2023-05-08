@@ -107,10 +107,6 @@ class AdminController extends Controller
         ];
     }
 
-    
-
-
-
     public function setUserEnquiryStatus(Request $request){
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer',
