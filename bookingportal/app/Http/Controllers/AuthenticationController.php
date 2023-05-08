@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
 use App\Services\AuthenticationService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class AuthenticationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json("Validation Failed", 400);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
         $email = $request->input('email');
@@ -26,19 +27,15 @@ class AuthenticationController extends Controller
         $response = AuthenticationService::authenticate($email, $password);
 
         if (!$response) {
-            return response([
-                'msg' => 'Credentials incorrect'
-            ], Response::HTTP_UNAUTHORIZED);
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::CREDENTIALS_WRONG, Response::HTTP_FORBIDDEN);
         }
 
-        return response($response, Response::HTTP_ACCEPTED);
+        return ResponseHelper::jsonResponseMessage($response, Response::HTTP_OK);
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        return response([
-            'Succesfully logout'
-        ], 200);
+        return ResponseHelper::jsonResponseMessage(ResponseHelper::LOGOUT_SUCCESS, Response::HTTP_OK);
     }
 }

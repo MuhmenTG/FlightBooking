@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
 use App\Models\Faq;
 use App\Services\BookingService;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class PublicSiteController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
+                return ResponseHelper::validationErrorResponse($validator->errors());
             }
 
             $bookingReference = $request->input('bookingReference');
@@ -25,10 +26,10 @@ class PublicSiteController extends Controller
             $bookingInfo = BookingService::retrieveBookingInformation($bookingReference);
     
             if ($bookingInfo) {
-                return response()->json($bookingInfo, Response::HTTP_OK);
+                return ResponseHelper::jsonResponseMessage($bookingInfo, Response::HTTP_OK);
             }
     
-            return response()->json('Invalid booking', Response::HTTP_NOT_FOUND);    
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
 
 
@@ -42,7 +43,7 @@ class PublicSiteController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
+                return ResponseHelper::validationErrorResponse($validator->errors());
             }
 
             $name = $request->input('name');
@@ -56,7 +57,7 @@ class PublicSiteController extends Controller
             );
 
             if($response){
-                return response()->json("Your enquiry has been sent", Response::HTTP_OK);
+                return ResponseHelper::jsonResponseMessage("Your enquiry has been sent", Response::HTTP_OK);
             }
             return response()->json("Something went wrong", Response::HTTP_BAD_REQUEST);
 

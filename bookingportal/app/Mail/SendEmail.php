@@ -29,7 +29,7 @@ class SendEmail
     
         $sendgrid = new SendGrid('');
         try {
-            $response = $sendgrid->send($email);
+            $sendgrid->send($email);
             return true;
         } catch (Exception $e) {
             return false;

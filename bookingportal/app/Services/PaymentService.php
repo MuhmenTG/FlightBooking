@@ -2,12 +2,12 @@
 declare(strict_types=1);
 
 namespace App\Services;
-
 use App\Models\Payment;
 use Stripe\BalanceTransaction;
 
 
 class PaymentService {
+    
     public static function createCharge(int $amount, string $currency, string $cardNumber, string $expYear, string $expMonth, string $cvc, string $description) 
     {
         $stripe = PaymentService::createCardRecord($cardNumber, $expYear, $expMonth, $cvc);

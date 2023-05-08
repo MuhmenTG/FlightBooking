@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
 use App\Helpers\ValidationHelper;
 use App\Services\AmadeusService;
 use App\Services\BookingService;
 use Exception;
 use Illuminate\Http\Request;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class FlightBookingController extends Controller
@@ -46,7 +46,7 @@ class FlightBookingController extends Controller
         $validator = ValidationHelper::validateFlightSearchRequest($request);
         
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
         
         $originLocationCode = $request->input('originLocationCode');
@@ -78,7 +78,7 @@ class FlightBookingController extends Controller
         );
 
         if(!$amadeusResponse){
-            return response()->json(['Could not find any flights'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::FLIGHTS_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
     
         return $amadeusResponse;
@@ -91,14 +91,14 @@ class FlightBookingController extends Controller
         $accessToken = $request->bearerToken();
 
         if (empty($jsonFlightData)) {
-            return response()->json(['message' => 'Empty flight data'], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::EMPTY_FLIGHT_ARRAY, Response::HTTP_BAD_REQUEST);
         }
 
         try {
             $amadeusResponse = AmadeusService::AmadeusChooseFlightOffer($jsonFlightData, $accessToken);
             return $amadeusResponse;
         } catch (Exception $e) {
-            return response()->json(['message' => 'Request failed', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }     
     }
     
@@ -107,15 +107,16 @@ class FlightBookingController extends Controller
         $validator = ValidationHelper::validateFlightConfirmationRequest($request);
 
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
         try {
-            $bookingReferenceNumber = BookingService::bookFlight($request->json()->all());
+            $bookedFlight = BookingService::bookFlight($request->json()->all());
 
-            return response()->json($bookingReferenceNumber, Response::HTTP_OK);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponseMessage($bookedFlight, Response::HTTP_OK);
+
+        } catch (Exception $e) {
+            return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -124,7 +125,7 @@ class FlightBookingController extends Controller
         $validator = ValidationHelper::validateFlightPayRequest($request);
         
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
         $bookingReference = $request->input('bookingReference');
@@ -149,7 +150,7 @@ class FlightBookingController extends Controller
         try {
             $booking = BookingService::payFlightConfirmation($bookingReference, $cardNumber, $expireMonth, $expireYear, $cvcDigits, $grandTotal);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         return response()->json($booking, Response::HTTP_OK);

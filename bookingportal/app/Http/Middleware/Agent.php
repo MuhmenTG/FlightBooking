@@ -16,7 +16,7 @@ class Agent
     public function handle(Request $request, Closure $next): Response
     {
         if(!auth()->check() || !auth()->user()->isAgent){
-            abort(403, "Not allowed bitch");
+            abort(403, "Not allowed");
         }
         return $next($request);
     }

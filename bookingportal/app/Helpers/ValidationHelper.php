@@ -54,4 +54,33 @@ class ValidationHelper
             'cancellationableTicket' => 'nullable|boolean'
         ]);
     }  
+
+    public static function validateHotelSearchRequest(Request $request){
+        
+        return Validator::make($request->all(), [
+            'cityCode'      => 'required|string',
+            'adults'        => 'required|integer|min:1',
+            'checkInDate'   => 'required|date|date_format:Y-m-d',
+            'checkOutDate'  => 'required|date|date_format:Y-m-d',
+            'roomQuantity'  => 'required|string',
+            'priceRange'    => 'nullable|string',
+            'paymentPolicy' => 'nullable|string',
+            'boardType'     => 'nullable|string',
+
+        ]);
+    }
+
+    public static function validateBookHotelRequest(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'hotelOfferId'         => 'required|string',
+            'firstName'            => 'required|string',
+            'lastName'             => 'required|string',
+            'email'                => 'required|email',
+            'cardNumber'           => 'required|string',
+            'expireMonth'          => 'required|string',
+            'expireYear'           => 'required|string',
+            'cvcDigits'            => 'required|string',
+        ]);
+    }
 }

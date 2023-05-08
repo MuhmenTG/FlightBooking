@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
 use App\Mail\SendEmail;
 use App\Models\FlightBooking;
 use App\Models\HotelBooking;
@@ -24,25 +25,29 @@ class TravelAgentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json('Validation Failed', Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
         }
 
         $bookingReference = $request->input('bookingReference');
 
         $isBookingExist = BookingService::gethotelBookingByBookingReference($bookingReference);
         if(!$isBookingExist){
-            return response()->json('Invalid booking', Response::HTTP_NOT_FOUND);        
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
+      
         }
 
         $hotelBooking = BookingService::cancelHotelBooking($bookingReference);
         if(!$hotelBooking){
-            return response()->json('Booking could not be cancelled', Response::HTTP_BAD_REQUEST);        
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::NOT_CANCELLABLE, Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json([
+        $response = [
             'cancellation' => true,
             'hotel' => $hotelBooking,
-        ], Response::HTTP_OK);
+        ];
+
+        return ResponseHelper::jsonResponseMessage($response, Response::HTTP_OK);
+
     }
  
     public function cancelFlightBooking(Request $request){
@@ -51,13 +56,13 @@ class TravelAgentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json('Validation Failed', Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
         }
 
         $bookingReference = $request->input('bookingReference');
 
-        $bookedFlightSegments = FlightBooking ::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();
-        $bookedFlightPassenger = PassengerInfo ::where(PassengerInfo::COL_PNR, $bookingReference)->get();
+        $bookedFlightSegments = FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();
+        $bookedFlightPassenger = PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->get();
         
         
         if (!$bookedFlightSegments->isEmpty() && !$bookedFlightPassenger->isEmpty()) {
@@ -77,7 +82,7 @@ class TravelAgentController extends Controller
 
         }
         
-        return response()->json('Invalid booking', Response::HTTP_NOT_FOUND);        
+        return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
     }   
 
     public function resendBookingConfirmationPDF(Request $request)
@@ -86,26 +91,29 @@ class TravelAgentController extends Controller
             'email'     => 'required|email',
             'name'      => 'required|string',
             'text'      => 'required|string',
+            'subject'   => 'required|string',
             'files'     => 'required',
             'files.*'   => 'mimes:pdf|max:2048',
         ]);
     
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
         }
     
         $attachments = $request->allFiles('files');
         $email = $request->input('email');
         $name = $request->input('name');
         $text = $request->input('text');
+        $subject = $request->input('subject');
     
-        $isSend = SendEmail::sendEmailWithAttachments($name, $email, "Booking", $text, $attachments);
+        $isSend = SendEmail::sendEmailWithAttachments($name, $email, $subject, $text, $attachments);
         
         if($isSend){
-            return response()->json([
+            $response = [
                 "success" => true,
                 "Booking confirmation has been sent",
-            ], Response::HTTP_OK);
+            ];
+            return ResponseHelper::jsonResponseMessage($response, Response::HTTP_OK);
         }
 
         return response()->json('Something went wrong while sending confirmation', Response::HTTP_BAD_REQUEST);        
@@ -129,7 +137,7 @@ class TravelAgentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
         }
 
         $id = $request->input('id');
@@ -150,7 +158,7 @@ class TravelAgentController extends Controller
         ]);
     
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
         }
     
         $id = $request->input('id');
@@ -165,7 +173,7 @@ class TravelAgentController extends Controller
         $emailSent = SendEmail::sendEmailWithAttachments(
             $specificUserEnquiry->getName(),
             $specificUserEnquiry->getEmail(),
-            "Reply regarding " . $specificUserEnquiry->getSubject(),
+            $specificUserEnquiry->getSubject(),
             $responseMessageToUser
         );
     
@@ -184,7 +192,7 @@ class TravelAgentController extends Controller
         ]);
     
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
         }
     
         $id = intval($request->input('id'));
@@ -217,7 +225,7 @@ class TravelAgentController extends Controller
 
 
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
         }
 
         $firstName = $request->input('firstName');
@@ -261,7 +269,7 @@ class TravelAgentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json("Validation Failed", 400);
+            return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
         }
 
         $bookingReference = $request->input('bookingReference');

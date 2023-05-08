@@ -6,7 +6,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
 use PhpParser\Node\Expr\Exit_;
-
+ini_set('max_execution_time', 300);
 class AmadeusService {
 
     const CONTENT_TYPE_JSON = 'application/json';
@@ -186,6 +186,7 @@ class AmadeusService {
 
         $response = AmadeusService::httpRequest($specificHotelOfferUrl, $accessToken);
         if($response !== 400){
+            
             return $response;
         }
     }
