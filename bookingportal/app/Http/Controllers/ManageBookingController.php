@@ -57,7 +57,7 @@ class PublicSiteController extends Controller
             );
 
             if($response){
-                return ResponseHelper::jsonResponseMessage("Your enquiry has been sent", Response::HTTP_OK);
+                return ResponseHelper::jsonResponseMessage(ResponseHelper::ENQUIRY_SENT, Response::HTTP_OK);
             }
             return response()->json("Something went wrong", Response::HTTP_BAD_REQUEST);
 
