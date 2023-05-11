@@ -15,6 +15,7 @@ class ResponseHelper
     const LOGOUT_SUCCESS = 'You have been logged out';
     const BOOKING_NOT_FOUND = 'Could not find any records';
     const NOT_CANCELLABLE = 'Could not cancel booking';
+    const ENQUIRY_SENT = 'Your enquiry has been sent';
 
     /**
     * Generate a validation error response.
