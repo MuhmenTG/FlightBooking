@@ -62,7 +62,7 @@ class HotelBookingController extends Controller
         $priceRange = $request->input('priceRange');
         $paymentPolicy = $request->input('paymentPolicy');
         $boardType = $request->input('boardType');
-        $accessToken = 'E3Xt5A7nKnOgayc2u5CcskXpNEKK';
+        $accessToken = 'YVSkll8EitJZPpwECSI9uNCfchop';
 
         $hotelIds = AmadeusService::AmadeusGetHotelList($cityCode, $accessToken);
 
@@ -91,7 +91,7 @@ class HotelBookingController extends Controller
                 // Decode the JSON string into an associative array
                 $hotelIds = json_decode($jsonString, true);
         
-                // Merge the batch hotels with the final hotel list
+                // Merge the batch hotels with the final hotel list11
                 $finalHotelList = array_merge($finalHotelList, $hotelIds);
             } catch (InvalidArgumentException $e) {
                 return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_BAD_REQUEST);
