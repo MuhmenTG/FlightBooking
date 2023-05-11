@@ -5,8 +5,8 @@ use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\FlightBookingController;
 use App\Http\Controllers\HotelBookingController;
 use App\Http\Controllers\ManageBookingController;
+use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\TravelAgentController;
-use App\Models\FlightBooking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,26 +28,30 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/getAccess', [FlightBookingController::class, 'getAccessToken']);
 
-//auth
-Route::post('/auth/login', [AuthenticationController::class, 'loginUser']);
-Route::post('/auth/logout', [AuthenticationController::class, 'logout']);
+Route::prefix('auth')->group(function () {
+    Route::post('login', [AuthenticationController::class, 'login']);
+    Route::post('logout', [AuthenticationController::class, 'logout']);
+});
 
-//Flight searching
-Route::post('/flight/searchFlights', [FlightBookingController::class, 'searchFlights']);
-Route::post('/flight/chooseFlightOffer', [FlightBookingController::class, 'chooseFlightOffer']);
-Route::post('/flight/confirmFlight', [FlightBookingController::class, 'flightConfirmation']);
-Route::post('/flight/payConfirmFlight', [FlightBookingController::class, 'payFlightConfirmation']);
+Route::prefix('flight')->group(function () {
+    Route::post('searchFlights', [FlightBookingController::class, 'searchFlights']);
+    Route::post('chooseFlightOffer', [FlightBookingController::class, 'chooseFlightOffer']);
+    Route::post('confirmFlight', [FlightBookingController::class, 'flightConfirmation']);
+    Route::post('payConfirmFlight', [FlightBookingController::class, 'payFlightConfirmation']);
+});
 
-//Hotel seaching
-Route::post('/hotel/searchSelectHotel', [HotelBookingController::class, 'searchHotel']);
-Route::get('/hotel/reviewSelectedHotelOfferInfo/{hotelOfferId}', [HotelBookingController::class, 'reviewSelectedHotelOfferInfo']);
-Route::post('/hotel/bookHotel', [HotelBookingController::class, 'bookHotel']);
+Route::prefix('hotel')->group(function () {
+    Route::post('searchSelectHotel', [HotelBookingController::class, 'searchHotel']);
+    Route::get('reviewSelectedHotelOfferInfo/{hotelOfferId}', [HotelBookingController::class, 'reviewSelectedHotelOfferInfo']);
+    Route::post('bookHotel', [HotelBookingController::class, 'bookHotel']);
+});
 
-//find booking both hotel and/or flight(costumer-page)
-route::post('/booking/retriveBooking', [ManageBookingController::class, 'retrieveBookingInformation']);
-route::post('/booking/updateHotelGuestInfo', [HotelBookingController::class, 'changeGuestDetails']);
-route::post('/booking/sendEnquirySupport', [ManageBookingController::class, 'sendEnquirySupport']);
-route::post('/booking/getAllFaqs', [ManageBookingController::class, 'getAllFaqs']);
+Route::prefix('booking')->group(function () {
+    Route::get('retriveBooking/{bookingReference}', [PublicSiteController::class, 'retrieveBookingInformation']);
+    Route::put('updateHotelGuestInfo/{hotelBookingReference}', [TravelAgentController::class, 'changeGuestDetails']);
+    Route::post('sendEnquirySupport', [PublicSiteController::class, 'sendEnquirySupport']);
+    Route::get('getAllFaqs', [PublicSiteController::class, 'getAllFaqs']);
+});
 
 
 Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {

@@ -74,7 +74,7 @@ class TravelAgentController extends Controller
                 $cancelledBookingPassengers = PassengerInfo::ByBookingReference($bookingReference)->ByIsCancelled(1)->get();
             }   
 
-            return response()->json([
+            return ResponseHelper::jsonResponseMessage([
                 'cancellation' => true,
                 'PAX' => $cancelledBooking,
                 'flight' => $cancelledBookingPassengers
@@ -116,7 +116,7 @@ class TravelAgentController extends Controller
             return ResponseHelper::jsonResponseMessage($response, Response::HTTP_OK);
         }
 
-        return response()->json('Something went wrong while sending confirmation', Response::HTTP_BAD_REQUEST);        
+        return ResponseHelper::jsonResponseMessage('Something went wrong while sending confirmation', Response::HTTP_BAD_REQUEST);        
     }
 
     public function getAllUserEnquiries()
@@ -124,10 +124,10 @@ class TravelAgentController extends Controller
         $userEnquiries = UserEnquiry::all();
     
         if($userEnquiries->isEmpty()) {
-            return response()->json(['message' => 'No user enquiries found'], Response::HTTP_NOT_FOUND);
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::COSTUMER_ENQUIRY_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
     
-        return response()->json($userEnquiries, Response::HTTP_OK);
+        return ResponseHelper::jsonResponseMessage($userEnquiries, Response::HTTP_OK);
     }
     
     public function getSpecificUserEnquiry(Request $request)
@@ -145,15 +145,15 @@ class TravelAgentController extends Controller
         $specificUserEnquiry = BackOfficeService::findUserEnquiryById($id);
 
         if (!$specificUserEnquiry) {
-            return response()->json(['message' => 'User enquiry not found'], Response::HTTP_NOT_FOUND);
+            return ResponseHelper::jsonResponseMessage(['message' => 'User enquiry not found'], Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json($specificUserEnquiry, Response::HTTP_OK);
+        return ResponseHelper::jsonResponseMessage($specificUserEnquiry, Response::HTTP_OK);
     }
 
     public function answerUserEnquiry(Request $request){
         $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
+            'id'                    => 'required|integer',
             'responseMessageToUser' => 'required|string',
         ]);
     
@@ -167,21 +167,18 @@ class TravelAgentController extends Controller
         $specificUserEnquiry = BackOfficeService::findUserEnquiryById($id);
         
         if(!$specificUserEnquiry){
-            return response()->json('User enquiry not found', Response::HTTP_NOT_FOUND);    
+            return ResponseHelper::jsonResponseMessage('User enquiry not found', Response::HTTP_NOT_FOUND);    
         }
         
-        $emailSent = SendEmail::sendEmailWithAttachments(
-            $specificUserEnquiry->getName(),
-            $specificUserEnquiry->getEmail(),
-            $specificUserEnquiry->getSubject(),
-            $responseMessageToUser
+        $emailSent = SendEmail::sendEmailWithAttachments($specificUserEnquiry->getName(), $specificUserEnquiry->getEmail(),
+            $specificUserEnquiry->getSubject(), $responseMessageToUser
         );
     
         if($emailSent){
-            return response()->json("Email replied", Response::HTTP_OK);
+            return ResponseHelper::jsonResponseMessage("Email replied", Response::HTTP_OK);
         }
         
-        return response()->json('Email could not be sent', Response::HTTP_BAD_REQUEST);
+        return ResponseHelper::jsonResponseMessage('Email could not be sent', Response::HTTP_BAD_REQUEST);
     }
     
     
@@ -199,14 +196,14 @@ class TravelAgentController extends Controller
     
         $specificUserEnquiry = UserEnquiry::byId($id)->first();
         if (!$specificUserEnquiry) {
-            return response()->json('User enquiry not found', Response::HTTP_NOT_FOUND);    
+            return ResponseHelper::jsonResponseMessage('User enquiry not found', Response::HTTP_NOT_FOUND);    
         }
         
         if ($specificUserEnquiry->delete()) {
-            return response()->json('User enquiry deleted successfully', Response::HTTP_OK);
+            return ResponseHelper::jsonResponseMessage('User enquiry deleted successfully', Response::HTTP_OK);
         }
     
-        return response()->json('UserEnquiry could not be deleted', Response::HTTP_INTERNAL_SERVER_ERROR);
+        return ResponseHelper::jsonResponseMessage('UserEnquiry could not be deleted', Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     
@@ -243,7 +240,7 @@ class TravelAgentController extends Controller
         if ($loggedInUserId->role === 'admin' || ($loggedInUserId === $userId)) {
             $userAccount = UserAccount::byId($userId ?? $loggedInUserId)->first();
             if (!$userAccount) {
-                return response()->json("User account not found", 404);
+                return ResponseHelper::jsonResponseMessage("User account not found", 404);
             }
         }
 
@@ -256,17 +253,21 @@ class TravelAgentController extends Controller
         $userAccount->setStatus($status);
         $userAccount->save();
 
-        return response()->json($userAccount, 400);
+        return ResponseHelper::jsonResponseMessage($userAccount, 400);
     }
 
-    public function changeGuestDetails(Request $request){
+    public function changeGuestDetails(string $bookingReference, Request $request){
         
         $validator = Validator::make($request->all(), [
-            'bookingReference'     => 'required|string',
             'firstName'            => 'required|string',
             'lastName'             => 'required|string',
             'email'                => 'required|email',
         ]);
+
+        $isBookingExist = BookingService::gethotelBookingByBookingReference($bookingReference);
+        if(!$isBookingExist){
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
+        }
 
         if ($validator->fails()) {
             return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
@@ -282,7 +283,7 @@ class TravelAgentController extends Controller
         $bookedHotel->setMainGuestLasName($lastName);
         $bookedHotel->setMainGuestEmail($email);
       
-        return response()->json($bookedHotel, 200);
+        return ResponseHelper::jsonResponseMessage($bookedHotel, 200);
     }
 
 }

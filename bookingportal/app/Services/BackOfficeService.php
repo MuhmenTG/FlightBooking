@@ -122,4 +122,17 @@ class BackOfficeService {
         }
         return false;
     }
+
+    public static function deactivateEmployee(int $userId){
+        
+        $user = UserAccount::ById($userId)->first();
+        if(!$user){
+            return false;
+        }
+
+        $user->setStatus(0);
+        $user->getDeactivatedAt(time());
+        $user->save();
+        return $user;
+    }
 }

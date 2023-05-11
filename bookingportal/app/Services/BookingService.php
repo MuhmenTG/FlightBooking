@@ -211,7 +211,7 @@ class BookingService {
             ];
         }
 
-        return false;
+        return null;
     }
 
     public static function generateTicketNumber(string $validatingAirline) : string {

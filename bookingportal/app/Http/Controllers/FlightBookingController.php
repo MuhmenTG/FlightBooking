@@ -153,7 +153,7 @@ class FlightBookingController extends Controller
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        return response()->json($booking, Response::HTTP_OK);
+        return ResponseHelper::jsonResponseMessage($booking, Response::HTTP_OK);
     }
 
 }

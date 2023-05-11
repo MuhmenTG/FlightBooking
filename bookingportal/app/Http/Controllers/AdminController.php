@@ -3,6 +3,7 @@
 declare(strict_types=1);
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
 use App\Models\Faq;
 use App\Models\UserAccount;
 use App\Models\UserRole;
@@ -30,7 +31,7 @@ class AdminController extends Controller
 
 
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
     
         $firstName = $request->input('firstName');
@@ -50,10 +51,10 @@ class AdminController extends Controller
         );
 
         if($newAgent){
-            return response()->json($newAgent, Response::HTTP_OK);
+            return ResponseHelper::jsonResponseMessage($newAgent, Response::HTTP_OK);
         }
         
-        return response()->json("User already registered", Response::HTTP_IM_USED);
+        return ResponseHelper::jsonResponseMessage("User already registered", Response::HTTP_IM_USED);
 
     }
 
@@ -65,7 +66,7 @@ class AdminController extends Controller
 
         
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
         $userId = intval($request->input('userId'));
@@ -73,10 +74,10 @@ class AdminController extends Controller
         $agent = BackOfficeService::getSpecificAgentDetails($userId);
 
         if($agent){
-            return response()->json($agent, Response::HTTP_OK);
+            return ResponseHelper::jsonResponseMessage($agent, Response::HTTP_OK);
         }
 
-        return response()->json("Agent could not be found", Response::HTTP_NOT_FOUND);
+        return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
     }
 
     public function setAgentAccountToDeactive(Request $request){
@@ -86,18 +87,18 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
         $userId = $request->input('userId');
         
-        $user = UserAccount::ById($userId)->first();
+        $deactivatedEmployee = BackOfficeService::deactivateEmployee($userId);
+        if(!$deactivatedEmployee){
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
+        }
 
-        $user->setStatus(0);
-        $user->getDeactivatedAt(time());
-        return $user->save();
+        return ResponseHelper::jsonResponseMessage($deactivatedEmployee, Response::HTTP_OK);
     }
-
 
     public function showListOfAgent(){
 
@@ -113,15 +114,13 @@ class AdminController extends Controller
         ]);
     
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
     
         $id = $request->input('id');
     
-        return response()->json(['message' => 'User enquiry could not be marked'], Response::HTTP_BAD_REQUEST);    
+        return ResponseHelper::jsonResponseMessage(['message' => 'User enquiry could not be marked'], Response::HTTP_BAD_REQUEST);    
     }
-
-    
 
     public function createNewFaq(Request $request)
     {
@@ -131,21 +130,20 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
         $question = $request->input('question');
         $answer = $request->input('answer');
 
         $result = BackOfficeService::createOrUpdateFaq($question, $answer);
-
+        
         if ($result) {
-            return response()->json('New FAQ successfully created', Response::HTTP_OK);
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_CREATED_SUCCESS, Response::HTTP_OK);
         }
-
-        return response()->json('Failed to create new FAQ', Response::HTTP_INTERNAL_SERVER_ERROR);
+        
+        return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_CREATION_FAILED, Response::HTTP_INTERNAL_SERVER_ERROR);
     }
-
 
 
     public function getSpecificFaq(Request $request){
@@ -154,7 +152,7 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
         
         $id = intval($request->input('id'));
@@ -162,10 +160,10 @@ class AdminController extends Controller
         $specificFaq = Faq::byId($id)->first();
 
         if(!$specificFaq){
-            response()->json("Faq not found", Response::HTTP_NOT_FOUND);
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
         
-        response()->json($specificFaq, Response::HTTP_OK);
+        return ResponseHelper::jsonResponseMessage($specificFaq, Response::HTTP_OK);
     }
 
     public function removeFaq(Request $request){
@@ -174,19 +172,19 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 400);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
         $id = intval($request->input('id'));
 
         $specificFaq = Faq::byId($id)->first();
         if(!$specificFaq){
-            return response()->json('Faq to delete not found', Response::HTTP_NOT_FOUND);    
+            return ResponseHelper::jsonResponseMessage('Faq to delete not found', Response::HTTP_NOT_FOUND);    
         }
         $specificFaq->delete();
 
         if($specificFaq){
-            response()->json('Faq successfully deleted', Response::HTTP_OK);
+            ResponseHelper::jsonResponseMessage('Faq successfully deleted', Response::HTTP_OK);
         }
     }
 
@@ -200,7 +198,7 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
         $id = $request->input('id');
@@ -214,10 +212,10 @@ class AdminController extends Controller
         $userRole->setRoleDescription($roleDescription);
        
         if ($userRole->save()) {
-            return response()->json('New user role successfully created', Response::HTTP_OK);
+            return ResponseHelper::jsonResponseMessage('New user role successfully created', Response::HTTP_OK);
         }
 
-        return response()->json('Failed to create new user role', Response::HTTP_INTERNAL_SERVER_ERROR);
+        return ResponseHelper::jsonResponseMessage('Failed to create new user role', Response::HTTP_INTERNAL_SERVER_ERROR);
 
     }
 
@@ -227,21 +225,21 @@ class AdminController extends Controller
         ]);
     
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
     
         $id = intval($request->input('id'));
     
         $userRole = UserRole::byId($id)->first();
         if (!$userRole) {
-            return response()->json('User enquiry not found', Response::HTTP_NOT_FOUND);    
+            return ResponseHelper::jsonResponseMessage('User enquiry not found', Response::HTTP_NOT_FOUND);    
         }
         
         if ($userRole->delete()) {
-            return response()->json('User enquiry deleted successfully', Response::HTTP_OK);
+            return ResponseHelper::jsonResponseMessage('User enquiry deleted successfully', Response::HTTP_OK);
         }
     
-        return response()->json('UserEnquiry could not be deleted', Response::HTTP_INTERNAL_SERVER_ERROR);
+        return ResponseHelper::jsonResponseMessage('UserEnquiry could not be deleted', Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     public function showSpecificOrAllUserRoles(Request $request)
@@ -251,7 +249,7 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
         $id = intval($request->input('id'));
@@ -260,19 +258,19 @@ class AdminController extends Controller
             $userRole = UserRole::byId($id);
 
             if (!$userRole) {
-                return response()->json(['error' => 'User role not found'], Response::HTTP_NOT_FOUND);
+                return ResponseHelper::jsonResponseMessage(['error' => 'User role not found'], Response::HTTP_NOT_FOUND);
             }
 
-            return response()->json($userRole, 200);
+            return ResponseHelper::jsonResponseMessage($userRole, 200);
         }
 
         $userRoles = UserRole::all();
 
         if ($userRoles->isEmpty()) {
-            return response()->json(['error' => 'No user roles found'], Response::HTTP_NOT_FOUND);
+            return ResponseHelper::jsonResponseMessage(['error' => 'No user roles found'], Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json($userRoles, 200);
+        return ResponseHelper::jsonResponseMessage($userRoles, 200);
     }
 
     public function resetAgentPassword(Request $request){
@@ -282,7 +280,7 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
         $userId = $request->input('userId');

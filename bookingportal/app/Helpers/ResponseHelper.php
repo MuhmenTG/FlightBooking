@@ -16,7 +16,13 @@ class ResponseHelper
     const BOOKING_NOT_FOUND = 'Could not find any records';
     const NOT_CANCELLABLE = 'Could not cancel booking';
     const ENQUIRY_SENT = 'Your enquiry has been sent';
-
+    const ENQUIRY_NOT_SENT = 'Your enquiry could not be sent';
+    const COSTUMER_ENQUIRY_NOT_FOUND = 'No Costumer enquiries found';
+    const AGENT_NOT_FOUND = "Agent could not be found";
+    const FAQ_CREATED_SUCCESS = 'New FAQ successfully created';
+    const FAQ_CREATION_FAILED = 'Failed to create new FAQ';
+    const FAQ_NOT_FOUND = 'Faq not found';
+    const BOOKING_REFERENCE_NOT_PROVIDED = 'Booking reference not provided';
     /**
     * Generate a validation error response.
     *

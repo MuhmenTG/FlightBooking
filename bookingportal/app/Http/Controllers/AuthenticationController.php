@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticationController extends Controller
 {
-    public function loginUser(Request $request)
+    public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|string',
