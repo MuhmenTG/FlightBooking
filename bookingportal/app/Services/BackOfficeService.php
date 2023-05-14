@@ -4,64 +4,78 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Faq;
-use App\Models\FlightBooking;
-use App\Models\PassengerInfo;
 use App\Models\UserAccount;
 use App\Models\UserEnquiry;
+use App\Repositories\BackOfficeRepository;
+use Exception;
 use Illuminate\Support\Facades\Hash;
 
 class BackOfficeService {
+    protected $backOfficeRepository;
 
-    public static function createOrEditAgent(string $firstName, string $lastName, string $email, string $status, int $isAdmin, int $isAgent, $userId = null) : UserAccount
+    public function __construct(BackOfficeRepository $backOfficeRepository)
     {
-        if ($userId) {
-            $userAccount = UserAccount::ById($userId)->first();
-            if (!$userAccount) {
-                return false;
-            }
-        } else {
-            $userAccount = UserAccount::ByEmail($email)->first();
-            if ($userAccount) {
-                return false;
-            }
-            $password = "systemAgentUser";
-            $userAccount = new UserAccount();
-            $userAccount->setPassword(Hash::make($password));
+        $this->backOfficeRepository = $backOfficeRepository;
+    }
+    
+    public function createAgent(string $firstName, string $lastName, string $email, string $status, int $isAdmin, int $isAgent): UserAccount
+    {
+        $existingUserAccount = $this->backOfficeRepository->findAgentByEmail($email);
+        if ($existingUserAccount) {
+            throw new Exception("Agent with the same email already exists.");
         }
-
-        $userAccount->setFirstName($firstName);
-        $userAccount->setLastName($lastName);
-        $userAccount->setEmail($email);
-        $userAccount->setIsAgent($isAgent);
-        $userAccount->setIsAdmin($isAdmin);
-        $userAccount->setStatus($status);
-        $userAccount->save();
-
+    
+        $password = "systemAgentUser";
+        $hashedPassword = Hash::make($password);
+    
+        $userAccount = $this->backOfficeRepository->createAgent($hashedPassword, $firstName, $lastName, $email, $isAdmin, $isAgent, $status);
+    
         return $userAccount;
     }
-
-    public static function getSpecificAgentDetails(int $userId) : UserAccount
+    
+    public function editAgent(int $agentId, string $firstName, string $password, string $lastName, string $email, string $status, int $isAdmin, int $isAgent): UserAccount
     {
-        $user = UserAccount::ById($userId)->first();
-        if ($user) {
-            return $user;
+        $existingUserAccount = $this->backOfficeRepository->findAgentById($agentId);
+        if (!$existingUserAccount) {
+            throw new Exception("Agent not found.");
         }
-
-        return false;
+    
+        $userAccount = $this->backOfficeRepository->updateAgent($agentId, Hash::make($password), $firstName, $lastName, $email, $isAdmin, $isAgent, $status);
+    
+        return $userAccount;
     }
-
-    public static function removeAgentAccount(int $userId) : bool
+    
+    public function getAgentById(int $agentId): ?UserAccount
     {
-        $user = UserAccount::ById($userId)->first();
-        if ($user) {
-            $user->setStatus(0);
-            $user->getDeactivatedAt(time());
-            $user->save();
-            return true;
-        }
-        return false;
+        return $this->backOfficeRepository->findAgentById($agentId);
     }
+    
+    public function removeAgentAccount(int $agentId): ?UserAccount
+    {
+        $userAccount = $this->backOfficeRepository->findAgentById($agentId);
+        if (!$userAccount) {
+            throw new Exception("Agent not found.");
+        }
+    
+        $deactivatedAccount = $this->backOfficeRepository->deandReactivateAccount($userAccount);
 
+        return $deactivatedAccount;
+    }    
+
+    public function getAllAgents(): array|false
+    {
+        $agents = [
+            'activatedAgents' => $this->backOfficeRepository->getActivatedAgents(),
+            'deactivatedAgents' => $this->backOfficeRepository->getDeactivatedAgents()
+        ]; 
+
+        if (empty($agents['activated_agents']) && empty($agents['deactivated_agents'])) {
+            return false;
+        }
+    
+        return $agents;
+    }
+     
     public static function createOrUpdateFaq(string $question, string $answer, int $faqId = null) : Faq
     {
         if($faqId && $faqId !== null){
@@ -78,61 +92,12 @@ class BackOfficeService {
         return $faq;
     }
 
-    public static function findBookingByReference(string $bookingReference): ?FlightBooking
-    {
-        $bookedFlightSegments = FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();
-        $bookedFlightPassenger = PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->get();
-        
-        if (!$bookedFlightSegments->isEmpty() && !$bookedFlightPassenger->isEmpty()) {
-            return FlightBooking::ByBookingReference($bookingReference)->first();
-        }
-        
-        return null;
-    }
-
-    public static function cancelBooking(FlightBooking $booking): ?FlightBooking
-    {
-        $booking->setAttribute(FlightBooking::COL_ISCANCELLED, 1);
-        $isflightSegmentsCancelled = $booking->save();
-        
-        if (!$isflightSegmentsCancelled) {
-            return null;
-        }
-        
-        return FlightBooking::ByBookingReference($booking->getAttribute(FlightBooking::COL_BOOKINGREFERENCE))->ByIsCancelled(1)->get();
-    }
-
-    public static function cancelBookingPassengers(FlightBooking $booking): ?PassengerInfo
-    {
-        $isPassengersCancelled = PassengerInfo::where(PassengerInfo::COL_PNR, $booking->getAttribute(FlightBooking::COL_BOOKINGREFERENCE))
-            ->update([PassengerInfo::COL_ISCANCELLED => 1]);
-        
-        if (!$isPassengersCancelled) {
-            return null;
-        }
-        
-        return PassengerInfo::ByBookingReference($booking->getAttribute(FlightBooking::COL_BOOKINGREFERENCE))->ByIsCancelled(1)->get();
-    }
-
-    public static function findUserEnquiryById(int $id): ?UserEnquiry
+  static function findUserEnquiryById(int $id): ?UserEnquiry
     {
         $userEnquiry = UserEnquiry::ById($id);
         if($userEnquiry){
             return $userEnquiry;
         }
         return false;
-    }
-
-    public static function deactivateEmployee(int $userId){
-        
-        $user = UserAccount::ById($userId)->first();
-        if(!$user){
-            return false;
-        }
-
-        $user->setStatus(0);
-        $user->getDeactivatedAt(time());
-        $user->save();
-        return $user;
     }
 }
