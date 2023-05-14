@@ -4,10 +4,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Resources\AgentResource;
 use App\Models\Faq;
 use App\Models\UserAccount;
 use App\Models\UserRole;
 use App\Services\BackOfficeService;
+use Exception;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -17,109 +19,123 @@ class AdminController extends Controller
 {
     //
 
-    public function createAgent(Request $request){
-   
-        $validator = Validator::make($request->all(), [
-            'firstName'               => 'required|string',
-            'lastName'                => 'required|string',
-            'email'                   => 'required|string',
-            'status'                  => 'required|int',
-            'isAdmin'                 => 'nullable|int',
-            'isAgent'                 => 'nullable|int'
+    protected $backOfficeService;
 
+    public function __construct(BackOfficeService $backOfficeService)
+    {
+        $this->backOfficeService = $backOfficeService;
+    }
+
+    public function createAgent(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'firstName'     => 'required|string',
+            'lastName'      => 'required|string',
+            'email'         => 'required|email',
+            'status'        => 'required|string',
+            'isAdmin'       => 'required|boolean',
+            'isAgent'       => 'required|boolean',
         ]);
 
 
         if ($validator->fails()) {
             return ResponseHelper::validationErrorResponse($validator->errors());
         }
+
+        try {
+            $userAccount = $this->backOfficeService->createAgent(
+                $request->input('firstName'),
+                $request->input('lastName'),
+                $request->input('email'),
+                $request->input('status'),
+                intval($request->input('isAdmin')),
+                intval($request->input('isAgent'))
+            );
+
+            $agentResource = new AgentResource($userAccount);
+            return $agentResource;
+        } catch (Exception $e) {
+            return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_IM_USED);        
+        }
+    }
+
+    public function editAgent(int $agentId, Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'firstName'     => 'required|string',
+            'lastName'      => 'required|string',
+            'password'      => 'required|string',
+            'email'         => 'required|email',
+            'status'        => 'required|string',
+            'isAdmin'       => 'required|boolean',
+            'isAgent'       => 'required|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return ResponseHelper::validationErrorResponse($validator->errors());
+        }
+
+        try {
+            $userAccount = $this->backOfficeService->editAgent(
+                $agentId,
+                $request->input('firstName'),
+                $request->input('password'),
+                $request->input('lastName'),
+                $request->input('email'),
+                $request->input('status'),
+                intval($request->input('isAdmin')),
+                intval($request->input('isAgent')),
+            );
+
+            $agentResource = new AgentResource($userAccount);
+            return $agentResource;
+        } catch (Exception $e) {
+            return ResponseHelper::jsonResponseMessage($e->getMessage(),Response::HTTP_IM_USED);        
+        }
+    }
+
+    public function getSpecificAgentDetails(int $agentId)
+    {
+        try {
+            $userAccount = $this->backOfficeService->getAgentById($agentId);
+
+            if (!$userAccount) {
+                return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
+            }  
+            
+            $agentResource = new AgentResource($userAccount);
+            return $agentResource;
+        } catch (Exception $e) {
+            return ResponseHelper::jsonResponseMessage($e->getMessage(),Response::HTTP_IM_USED);        
+        }
+    }
+
+    public function setAgentAccountToDeactive(int $agentId){
+        try {
+            $userAccount = $this->backOfficeService->getAgentById($agentId);
+
+            if (!$userAccount) {
+                return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
+            }  
+            
+            $deactivatedAgent = $this->backOfficeService->removeAgentAccount($agentId);
+
+            $agentResource = new AgentResource($deactivatedAgent);
+            return $agentResource;
+        } catch (Exception $e) {
+            return ResponseHelper::jsonResponseMessage($e->getMessage(),Response::HTTP_IM_USED);        
+        }
+    }
+
+    public function showListOfTravlAgent()
+    {
+        $agents = $this->backOfficeService->getAllAgents();
     
-        $firstName = $request->input('firstName');
-        $lastName = $request->input('lastName');
-        $email = $request->input('email');
-        $status = $request->input('status');
-        $isAdmin = $request->input('isAdmin');
-        $isAgent = $request->input('isAgent');
-
-        $newAgent = BackOfficeService::createOrEditAgent(
-            $firstName,
-            $lastName,
-            $email,
-            $status,
-            intval($isAdmin),
-            intval($isAgent)
-        );
-
-        if($newAgent){
-            return ResponseHelper::jsonResponseMessage($newAgent, Response::HTTP_OK);
-        }
-        
-        return ResponseHelper::jsonResponseMessage("User already registered", Response::HTTP_IM_USED);
-
-    }
-
-    public function getSpecificAgentDetails(Request $request){
-
-        $validator = Validator::make($request->all(), [
-            'userId'                  => 'required|int',
-        ]);
-
-        
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
-
-        $userId = intval($request->input('userId'));
-
-        $agent = BackOfficeService::getSpecificAgentDetails($userId);
-
-        if($agent){
-            return ResponseHelper::jsonResponseMessage($agent, Response::HTTP_OK);
-        }
-
-        return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
-    }
-
-    public function setAgentAccountToDeactive(Request $request){
-        
-        $validator = Validator::make($request->all(), [
-            'userId'                  => 'required|int',
-        ]);
-
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
-
-        $userId = $request->input('userId');
-        
-        $deactivatedEmployee = BackOfficeService::deactivateEmployee($userId);
-        if(!$deactivatedEmployee){
+        if ($agents === false) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
 
-        return ResponseHelper::jsonResponseMessage($deactivatedEmployee, Response::HTTP_OK);
-    }
-
-    public function showListOfAgent(){
-
-        $agents = Useraccount::all();
-        return [
-            "agents" => $agents
-        ];
-    }
-
-    public function setUserEnquiryStatus(Request $request){
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
-        ]);
-    
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
-    
-        $id = $request->input('id');
-    
-        return ResponseHelper::jsonResponseMessage(['message' => 'User enquiry could not be marked'], Response::HTTP_BAD_REQUEST);    
+        return $agents;
     }
 
     public function createNewFaq(Request $request)

@@ -13,11 +13,19 @@ use App\Models\HotelBooking;
 use App\Models\PassengerInfo;
 use App\Models\Payment;
 use App\Models\UserEnquiry;
+use App\Repositories\TravelAgentRepository;
 use DateTime;
 use Exception;
 use InvalidArgumentException;
 
 class BookingService {
+
+    protected $bookingRepository;
+
+    public function __construct(TravelAgentRepository $bookingRepository)
+    {
+        $this->bookingRepository = $bookingRepository;
+    }
 
     public static function createFlightBookingRecord(array $flightData, string $bookingReference)
     {
@@ -178,7 +186,7 @@ class BookingService {
             $passengerInfo->setDateOfBirth($passenger->dateOfBirth);
             $passengerInfo->setEmail($passenger->email);
             $passengerInfo->setPassengerType($passenger->passengerType);
-            $passengerInfo->setTicketNumber(BookingService::generateTicketNumber($validatingAirlineCodes));
+            $passengerInfo->setTicketNumber('Ticket not issued yet');
             $passengerInfo->save();
         }       
         $bookedPassengers = PassengerInfo::ByBookingReference($bookingReference)->get();
@@ -255,23 +263,31 @@ class BookingService {
         return false;
     }
     
-    public static function cancelHotelBooking(string $bookingReference) : ?HotelBooking{
-        $bookedHotel = HotelBooking::byHotelBookingReference($bookingReference)->first();
 
-        if($bookedHotel){
-            $bookedHotel->setIsCancelled(1);
-            $bookedHotel->save();
-            return $bookedHotel;
-        }
-
-        return false;
+    public function getHotelBookingByBookingReference(string $bookingReference)
+    {
+        return $this->bookingRepository->findHotelBookingByReference($bookingReference);
     }
-    
-    public static function gethotelBookingByBookingReference(string $bookingReference){
-        $bookedHotel = HotelBooking::byHotelBookingReference($bookingReference)->first();
-        if($bookedHotel){
-            return true;
-        }
-        return false;
-    } 
+
+    public function cancelHotelBooking(string $bookingReference)
+    {
+        return $this->bookingRepository->cancelHotelBooking($bookingReference);
+    }
+
+    public function getFlightSegmentsByBookingReference(string $bookingReference)
+    {
+        return $this->bookingRepository->findFlightSegmentsByBookingReference($bookingReference);
+    }
+
+    public function getFlightPassengersByPNR(string $bookingReference)
+    {
+        return $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
+    }
+
+    public function cancelFlightBooking(string $bookingReference)
+    {
+        $this->bookingRepository->cancelFlightSegments($bookingReference);
+        $this->bookingRepository->cancelFlightPassengers($bookingReference);
+    }
+
 }

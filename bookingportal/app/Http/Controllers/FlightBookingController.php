@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidationHelper;
+use App\Models\FlightBooking;
+use App\Models\PassengerInfo;
 use App\Services\AmadeusService;
 use App\Services\BookingService;
 use Exception;
@@ -134,6 +136,18 @@ class FlightBookingController extends Controller
         $expireYear = $request->input('expireYear');
         $cvcDigits = $request->input('cvcDigits');
         $grandTotal = intval($request->input('grandTotal'));
+
+        $ticketRecord = FlightBooking::ByBookingReference($bookingReference)->first();
+        $airlineTicketNumberIssuer = $ticketRecord->getAirline();
+
+        $unTicketedPassengers = PassengerInfo::ByBookingReference($bookingReference)->get();
+
+        foreach ($unTicketedPassengers as $passenger) {
+            $ticketNumber = BookingService::generateTicketNumber($airlineTicketNumberIssuer);
+        
+            $passenger->setTicketNumber($ticketNumber);
+            $passenger->save();
+        }
 
         if ($request->input('supportPackage')) {
             $grandTotal += 750;

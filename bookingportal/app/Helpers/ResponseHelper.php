@@ -23,6 +23,7 @@ class ResponseHelper
     const FAQ_CREATION_FAILED = 'Failed to create new FAQ';
     const FAQ_NOT_FOUND = 'Faq not found';
     const BOOKING_REFERENCE_NOT_PROVIDED = 'Booking reference not provided';
+    const AGENT_REMOVED_SUCCESFULLY = 'Agent removed succesfully.';
     /**
     * Generate a validation error response.
     *

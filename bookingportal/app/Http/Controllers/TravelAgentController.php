@@ -3,10 +3,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
-use App\Mail\SendEmail;
-use App\Models\FlightBooking;
+use App\Mail\SendEmail;;
 use App\Models\HotelBooking;
-use App\Models\PassengerInfo;
 use App\Models\UserAccount;
 use App\Models\UserEnquiry;
 use App\Services\BackOfficeService;
@@ -18,8 +16,16 @@ use Symfony\Component\HttpFoundation\Response;
 class TravelAgentController extends Controller
 {
     //
+    protected $bookingService;
+
+    public function __construct(BookingService $bookingService)
+    {
+        $this->bookingService = $bookingService;
+    }
+
     
-    public function cancelHotelBooking(Request $request){
+    public function cancelHotelBooking(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'bookingReference' => 'required|string',
         ]);
@@ -30,14 +36,13 @@ class TravelAgentController extends Controller
 
         $bookingReference = $request->input('bookingReference');
 
-        $isBookingExist = BookingService::gethotelBookingByBookingReference($bookingReference);
-        if(!$isBookingExist){
+        $isBookingExist = $this->bookingService->getHotelBookingByBookingReference($bookingReference);
+        if (!$isBookingExist) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
-      
         }
 
-        $hotelBooking = BookingService::cancelHotelBooking($bookingReference);
-        if(!$hotelBooking){
+        $hotelBooking = $this->bookingService->cancelHotelBooking($bookingReference);
+        if (!$hotelBooking) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::NOT_CANCELLABLE, Response::HTTP_NOT_FOUND);
         }
 
@@ -47,10 +52,10 @@ class TravelAgentController extends Controller
         ];
 
         return ResponseHelper::jsonResponseMessage($response, Response::HTTP_OK);
-
     }
- 
-    public function cancelFlightBooking(Request $request){
+
+    public function cancelFlightBooking(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'bookingReference' => 'required|string',
         ]);
@@ -61,30 +66,25 @@ class TravelAgentController extends Controller
 
         $bookingReference = $request->input('bookingReference');
 
-        $bookedFlightSegments = FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();
-        $bookedFlightPassenger = PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->get();
-        
-        
-        if (!$bookedFlightSegments->isEmpty() && !$bookedFlightPassenger->isEmpty()) {
-            $isflightSegmentsCancelled = FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISCANCELLED => 1]);
-            $isPassengersCancelled = PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->update([PassengerInfo::COL_ISCANCELLED => 1]);
+        $bookedFlightSegments = $this->bookingService->getFlightSegmentsByBookingReference($bookingReference);
+        $bookedFlightPassenger = $this->bookingService->getFlightPassengersByPNR($bookingReference);
 
-            if($isflightSegmentsCancelled && $isPassengersCancelled){
-                $cancelledBooking = FlightBooking::ByBookingReference($bookingReference)->ByIsCancelled(1)->get();
-                $cancelledBookingPassengers = PassengerInfo::ByBookingReference($bookingReference)->ByIsCancelled(1)->get();
-            }   
+        if (!$bookedFlightSegments->isEmpty() && !$bookedFlightPassenger->isEmpty()) {
+            $this->bookingService->cancelFlightBooking($bookingReference);
+
+            $cancelledBooking = $this->bookingService->getFlightSegmentsByBookingReference($bookingReference);
+            $cancelledBookingPassengers = $this->bookingService->getFlightPassengersByPNR($bookingReference);
 
             return ResponseHelper::jsonResponseMessage([
                 'cancellation' => true,
                 'PAX' => $cancelledBooking,
                 'flight' => $cancelledBookingPassengers
             ], Response::HTTP_OK);
-
         }
-        
-        return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
-    }   
 
+        return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
+    }
+     
     public function resendBookingConfirmationPDF(Request $request)
     {
         $validator = Validator::make($request->all(), [

@@ -56,11 +56,7 @@ Route::prefix('booking')->group(function () {
 
 Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
     // Admin-only routes here
-    Route::post('/admin/createAgent', [AdminController::class, 'createAgent']);
-    Route::post('/admin/getSpecificAgentDetails', [AdminController::class, 'getSpecificAgentDetails']);
-    Route::post('/admin/removeAgentAccount', [AdminController::class, 'removeAgentAccount']);
-    Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgentDetails']);
-    Route::post('/admin/showListOfAgent', [AdminController::class, 'showListOfAgent']);
+
     Route::post('/admin/createNewFaq', [AdminController::class, 'createNewFaq']);
     Route::post('/admin/editFaq', [AdminController::class, 'createNewFaq']);
     Route::post('/admin/removeFaq', [AdminController::class, 'removeFaq']);
@@ -87,9 +83,13 @@ Route::middleware(['auth:sanctum', 'isAgent'])->group(function () {
 });
 
 
-
-
-
+// Tested
+Route::post('/admin/createAgent', [AdminController::class, 'createAgent']);
+Route::put('/admin/editAgentDetails/{agentId}', [AdminController::class, 'editAgent']);
+Route::get('/admin/getSpecificAgentDetails/{agentId}', [AdminController::class, 'getSpecificAgentDetails']);
+Route::post('/admin/setAgentAccountToDeactive/{agentId}', [AdminController::class, 'setAgentAccountToDeactive']);
+Route::get('/admin/showListOfAgent', [AdminController::class, 'showListOfTravlAgent']);
+  
 
 
 
