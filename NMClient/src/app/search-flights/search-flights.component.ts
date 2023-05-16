@@ -30,9 +30,9 @@ export class SearchFlightsComponent {
       return alert("Form is not valid. Try again.");
     } else {
       if (this.model.travelType == 1) this.model.returnDate = "";
-      this._flightService.getFlights(this.model).subscribe(responses => {
+      this._flightService.getFlights(this.model).subscribe(response => {
         this.flightsResponses = [];
-        responses.data.forEach(flightOffer => {
+        response.forEach(flightOffer => {
           this.flightsResponses.push(flightOffer);
           this.formSubmitted = true;
         });

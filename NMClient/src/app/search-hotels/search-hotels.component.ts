@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { HotelService } from '../_services/hotel.service';
 import { NgForm } from '@angular/forms';
 import { SearchHotelsRequest } from '../_models/Hotels/SearchHotelsRequest';
-import { SearchHotelsResponses } from '../_models/Hotels/SearchHotelsResponses';
 import { HotelResponse } from '../_models/Hotels/HotelResponse';
 
 @Component({
@@ -26,7 +25,7 @@ export class SearchHotelsComponent {
     } else {
       this._hotelService.getHotels(this.model).subscribe(responses => {
         this.hotelResponses = [];
-        responses.data.forEach(hotelOffer => {
+        responses.forEach(hotelOffer => {
           this.hotelResponses.push(hotelOffer);
           this.formSubmitted = true;
         });
