@@ -1,5 +1,5 @@
-<div *ngIf="offers != null && !flightChosen" id="component">
-    <div class="border my-2" *ngFor="let offer of offers">
+<div *ngIf="offers != null && !flightChosen" class="component">
+    <div class="border my-2" *ngFor="let offer of offers.data">
         <div *ngFor="let iti of offer.itineraries">
             <div *ngFor="let seg of iti.segments">
                 <h1>Carrier: {{seg.carrierCode}}</h1>
