@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FlightService } from './_services/flight.service';
 import { AccessTokenResponse } from './_models/AccessTokenResponse';
-import { environment } from 'src/environments/environment.development';
-import { HotelService } from './_services/hotel.service';
-import { EnvironmentService } from './_services/environment.service';
+import { HttpService } from './_services/http.service';
 
 
 @Component({
@@ -15,11 +12,11 @@ export class AppComponent implements OnInit {
   title = 'NM Flights';
   accessToken: AccessTokenResponse = { access_token: "" };
 
-  constructor(private _envService: EnvironmentService) { }
+  constructor(private _httpService: HttpService) { }
 
   ngOnInit() {
-    this._envService.getAccessToken().subscribe(accessTokenResponse => {
-      this._envService.setHttpOptions(accessTokenResponse.access_token);
+    this._httpService.getAccessToken().subscribe(accessTokenResponse => {
+      this._httpService.setHttpOptions(accessTokenResponse.access_token);
     });
   }
 }

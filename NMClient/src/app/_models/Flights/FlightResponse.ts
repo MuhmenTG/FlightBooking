@@ -1,3 +1,7 @@
+export interface FlightResponses{
+    data: FlightResponse[];
+}
+
 export interface FlightResponse {
     type: string;
     id: string;
