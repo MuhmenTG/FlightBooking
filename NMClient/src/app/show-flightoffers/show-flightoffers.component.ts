@@ -1,7 +1,7 @@
 import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { CustomerInfo } from '../_models/CustomerInfo';
 import { FlightInfoResponse } from '../_models/Flights/FlightInfoResponse';
-import { FlightResponse } from '../_models/Flights/FlightResponse';
+import { FlightResponse, FlightResponses } from '../_models/Flights/FlightResponse';
 import { FlightService } from '../_services/flight.service';
 import { Carrier } from '../_models/Flights/Carrier';
 
@@ -11,7 +11,7 @@ import { Carrier } from '../_models/Flights/Carrier';
   styleUrls: ['./show-flightoffers.component.css']
 })
 export class ShowFlightoffersComponent {
-  @Input() offers!: FlightResponse[];
+  @Input() offers!: FlightResponses;
   @Input() formSubmitted!: boolean;
   flightInfo = {} as FlightInfoResponse
   flightChosen: boolean = false;
@@ -20,7 +20,7 @@ export class ShowFlightoffersComponent {
   constructor(private _flightService: FlightService) { }
 
   chooseFlight(id: string) {
-    this._flightService.getFlightInfo(this.offers[parseInt(id) - 1]).subscribe(info => {
+    this._flightService.getFlightInfo(this.offers.data[parseInt(id) - 1]).subscribe(info => {
       this.flightChosen = true;
       this.flightInfo = info;
 

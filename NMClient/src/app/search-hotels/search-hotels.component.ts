@@ -29,9 +29,7 @@ export class SearchHotelsComponent {
           this.hotelResponses.push(hotelOffer);
           this.formSubmitted = true;
         });
-        return true;
       })
-      return true;
     }
   }
 }

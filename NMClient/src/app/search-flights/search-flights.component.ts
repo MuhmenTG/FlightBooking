@@ -1,7 +1,7 @@
-import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, ViewChildren } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ShowFlightoffersComponent } from '../show-flightoffers/show-flightoffers.component';
-import { FlightResponse } from '../_models/Flights/FlightResponse';
+import { FlightResponse, FlightResponses } from '../_models/Flights/FlightResponse';
 import { SearchFlightsRequest } from '../_models/Flights/SearchFlightsRequest';
 import { FlightService } from '../_services/flight.service';
 
@@ -15,14 +15,14 @@ export class SearchFlightsComponent {
   classes = ['First class', 'Business class', 'Economy class']
   adults = [1, 2, 3, 4, 5]
   model: SearchFlightsRequest = { travelType: 0, originLocationCode: '', destinationLocationCode: '', departureDate: '', returnDate: '', adults: this.adults[0], class: this.classes[0] }
-  flightsResponses: FlightResponse[] = [];
+  flightsResponses: FlightResponses = {data: []};
   formSubmitted = false;
   todayDate = Date.now();
 
   constructor(private _flightService: FlightService) { }
 
   resetAll() {
-    this.child.reset() // or whatever you want to do to it here
+    this.child.reset()
   }
 
   submitForm(form: NgForm) {
@@ -31,14 +31,9 @@ export class SearchFlightsComponent {
     } else {
       if (this.model.travelType == 1) this.model.returnDate = "";
       this._flightService.getFlights(this.model).subscribe(response => {
-        this.flightsResponses = [];
-        response.forEach(flightOffer => {
-          this.flightsResponses.push(flightOffer);
-          this.formSubmitted = true;
-        });
-        return true;
+        this.flightsResponses = response;
+        this.formSubmitted = true;
       })
-      return true;
     }
   }
 }
