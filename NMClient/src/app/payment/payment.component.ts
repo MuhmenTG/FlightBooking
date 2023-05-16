@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { BookingResponse } from '../_models/Flights/BookingResponse';
+import { FlightBookingResponse } from '../_models/Flights/FlightBookingResponse';
 import { FlightInfoResponse } from '../_models/Flights/FlightInfoResponse';
 import { PaymentInfo } from '../_models/PaymentInfo';
 import { FlightService } from '../_services/flight.service';
@@ -12,7 +12,7 @@ import { FlightService } from '../_services/flight.service';
 })
 export class PaymentComponent {
   @Input() flightInfo!: FlightInfoResponse;
-  @Input() bookingResponse!: BookingResponse;
+  @Input() bookingResponse!: FlightBookingResponse;
   model: PaymentInfo = { bookingReference: "", cardNumber: "", expireMonth: "", expireYear: "", cvcDigits: "", grandTotal: "" }
 
   constructor(private _flightService: FlightService) { }
