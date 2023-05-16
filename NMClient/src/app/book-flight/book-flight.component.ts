@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { CustomerInfo } from '../_models/CustomerInfo';
-import { BookingResponse } from '../_models/Flights/BookingResponse';
+import { FlightBookingResponse } from '../_models/Flights/FlightBookingResponse';
 import { FlightInfoResponse } from '../_models/Flights/FlightInfoResponse';
 import { FlightService } from '../_services/flight.service';
 
@@ -14,7 +14,7 @@ export class BookFlightComponent {
   @Input() flightInfo!: FlightInfoResponse;
   formSubmitted: boolean = false;
   model: CustomerInfo = { title: "Mr.", firstName: "", lastName: "", email: "", dateOfBirth: Date(), passengerType: "Adult" }
-  bookingResponse: BookingResponse = { bookingReference: "", success: false };
+  bookingResponse: FlightBookingResponse = { bookingReference: "", success: false };
   constructor(private _flightService: FlightService) { }
 
   submitForm(form: NgForm) {
