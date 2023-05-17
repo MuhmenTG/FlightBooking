@@ -1,8 +1,9 @@
-export interface Carrier {
-    commonName: string;
+export interface CarrierCodesResponse {
+    data: Data[]
 }
 
 interface Data {
+    commonName: string;
     type: string;
     iataCode: string;
     icaoCode: string;
