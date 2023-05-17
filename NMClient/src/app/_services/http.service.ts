@@ -9,7 +9,9 @@ import { environment } from 'src/environments/environment.development';
 })
 export class HttpService {
   protected amadeusUrl = environment.amadeusApiUrl;
-  static instance: HttpService;
+  protected static httpOptionsBearer = {};
+  protected http: HttpClient;
+  private static accessTokenStatus: boolean = false;
 
   private accessTokenParameters = new HttpParams()
     .set('grant_type', 'client_credentials')
@@ -22,10 +24,6 @@ export class HttpService {
     })
   }
 
-  protected static httpOptionsBearer = {}
-
-  protected http: HttpClient;
-
   constructor(http: HttpClient) {
     this.http = http;
   }
@@ -37,9 +35,15 @@ export class HttpService {
         'Authorization': "Bearer " + access_token
       })
     }
+
+    HttpService.accessTokenStatus = true;
   }
 
   getAccessToken(): Observable<AccessTokenResponse> {
     return this.http.post<AccessTokenResponse>(this.amadeusUrl + "/security/oauth2/token", this.accessTokenParameters);
+  }
+
+  isAccessToken(): boolean {
+    return HttpService.accessTokenStatus;
   }
 }

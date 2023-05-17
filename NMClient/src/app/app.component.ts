@@ -11,12 +11,14 @@ import { HttpService } from './_services/http.service';
 export class AppComponent implements OnInit {
   title = 'NM Flights';
   accessToken: AccessTokenResponse = { access_token: "" };
+  accessTokenSet: boolean = false;
 
   constructor(private _httpService: HttpService) { }
 
   ngOnInit() {
     this._httpService.getAccessToken().subscribe(accessTokenResponse => {
       this._httpService.setHttpOptions(accessTokenResponse.access_token);
+      this.accessTokenSet = this._httpService.isAccessToken();
     });
   }
 }
