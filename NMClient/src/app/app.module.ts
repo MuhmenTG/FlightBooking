@@ -9,6 +9,9 @@ import { ShowFlightoffersComponent } from './show-flightoffers/show-flightoffers
 import { BookFlightComponent } from './book-flight/book-flight.component';
 import { PaymentComponent } from './payment/payment.component';
 import { SearchHotelsComponent } from './search-hotels/search-hotels.component';
+import { AdminComponent } from './admin/admin.component';
+import { AgentComponent } from './agent/agent.component';
+import { FaqComponent } from './faq/faq.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +20,10 @@ import { SearchHotelsComponent } from './search-hotels/search-hotels.component';
     ShowFlightoffersComponent,
     BookFlightComponent,
     PaymentComponent,
-    SearchHotelsComponent
+    SearchHotelsComponent,
+    AdminComponent,
+    AgentComponent,
+    FaqComponent
   ],
   imports: [
     BrowserModule,
