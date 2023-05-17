@@ -1,18 +1,19 @@
 <div *ngIf="offers != null && !flightChosen" class="component">
-    <div class="border my-2" *ngFor="let offer of offers.data">
-        <div *ngFor="let iti of offer.itineraries">
-            <div *ngFor="let seg of iti.segments">
-                <h1>Carrier: {{seg.carrierCode}}</h1>
-                <h2>Departure: {{seg.departure.at}} at terminal {{seg.departure.terminal}} from
-                    {{seg.departure.iataCode}}</h2>
-                <h2>Arrival: {{seg.arrival.at}} at terminal {{seg.arrival.terminal}} to {{seg.arrival.iataCode}}</h2>
+    <div class="border my-2" *ngFor="let offer of offers.data; let i = index;">
+        <div *ngIf="shownOffers > i"> /* TODO */
+            <div *ngFor="let iti of offer.itineraries">
+                    <div *ngFor="let seg of iti.segments">
+                        <h1>{{seg.carrierCode}}</h1>
+                        <h2>Departure: {{seg.departure.at}} at terminal {{seg.departure.terminal}} from
+                            {{seg.departure.iataCode}}</h2>
+                        <h2>Arrival: {{seg.arrival.at}} at terminal {{seg.arrival.terminal}} to {{seg.arrival.iataCode}}</h2>
+                    </div>
+                    <h3>Duration: {{iti.duration}}</h3>
             </div>
-            <h3>Duration: {{iti.duration}}</h3>
-        </div>
-        <div class="d-flex justify-content-end">
-            <h1>{{offer.price.currency}} {{offer.price.grandTotal}}</h1>
-            <button (click)="chooseFlight(offer.id)" type="button" class="btn btn-primary m-2 px-2">Book
-                flight</button>
+            <div class="d-flex justify-content-end">
+                <h1>{{offer.price.currency}} {{offer.price.grandTotal}}</h1>
+                <button (click)="chooseFlight(offer.id)" type="button" class="btn btn-primary m-2 px-2">Book flight</button>
+            </div>
         </div>
     </div>
 </div>
