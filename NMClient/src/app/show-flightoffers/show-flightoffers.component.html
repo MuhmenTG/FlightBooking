@@ -1,6 +1,6 @@
 <div *ngIf="offers != null && !flightChosen" class="component">
-    <div class="border my-2" *ngFor="let offer of offers.data; let i = index;">
-        <div *ngIf="shownOffers > i"> /* TODO */
+    <div *ngFor="let offer of offers.data; let i = index;">
+        <div *ngIf="shownOffers > i"  class="border my-2 flight-offer">
             <div *ngFor="let iti of offer.itineraries">
                     <div *ngFor="let seg of iti.segments">
                         <h1>{{seg.carrierCode}}</h1>
@@ -16,6 +16,7 @@
             </div>
         </div>
     </div>
+    <button *ngIf="moreOffers" (click)="showMoreOffers()">Show more</button>
 </div>
 
 <app-book-flight *ngIf="flightChosen" [flightInfo]="flightInfo"></app-book-flight>
