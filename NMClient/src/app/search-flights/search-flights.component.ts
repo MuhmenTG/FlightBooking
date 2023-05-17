@@ -54,7 +54,7 @@ export class SearchFlightsComponent {
             data.itineraries.forEach(iti => {
               iti.segments.forEach(seg => {
                 this.carrierCodeResponse.data.forEach(data => {
-                  if(seg.carrierCode == data.iataCode) seg.carrierCode = data.businessName;
+                  if(seg.carrierCode == data.iataCode) seg.carrierName = data.businessName;
                 })
               })
             })

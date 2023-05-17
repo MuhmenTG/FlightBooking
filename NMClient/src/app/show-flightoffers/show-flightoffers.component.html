@@ -3,7 +3,7 @@
         <div *ngIf="shownOffers > i"  class="border my-2 flight-offer">
             <div *ngFor="let iti of offer.itineraries">
                     <div *ngFor="let seg of iti.segments">
-                        <h1>{{seg.carrierCode}}</h1>
+                        <h1>{{seg.carrierName}}</h1>
                         <h2>Departure: {{seg.departure.at}} at terminal {{seg.departure.terminal}} from
                             {{seg.departure.iataCode}}</h2>
                         <h2>Arrival: {{seg.arrival.at}} at terminal {{seg.arrival.terminal}} to {{seg.arrival.iataCode}}</h2>

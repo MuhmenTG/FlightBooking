@@ -28,6 +28,7 @@ interface Segment {
     departure: Arrival;
     arrival: Arrival;
     carrierCode: string;
+    carrierName?: string;
     number: string;
     aircraft: Aircraft;
     operating: Operating;
