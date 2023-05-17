@@ -12,6 +12,7 @@ import { SearchHotelsComponent } from './search-hotels/search-hotels.component';
 import { AdminComponent } from './admin/admin.component';
 import { AgentComponent } from './agent/agent.component';
 import { FaqComponent } from './faq/faq.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { FaqComponent } from './faq/faq.component';
     SearchHotelsComponent,
     AdminComponent,
     AgentComponent,
-    FaqComponent
+    FaqComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
