@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment.development';
   providedIn: 'root'
 })
 export class HttpService {
-  private amadeusUrl = environment.amadeusApiUrl;
+  protected amadeusUrl = environment.amadeusApiUrl;
   static instance: HttpService;
 
   private accessTokenParameters = new HttpParams()
@@ -40,6 +40,6 @@ export class HttpService {
   }
 
   getAccessToken(): Observable<AccessTokenResponse> {
-    return this.http.post<AccessTokenResponse>(this.amadeusUrl + "security/oauth2/token", this.accessTokenParameters);
+    return this.http.post<AccessTokenResponse>(this.amadeusUrl + "/security/oauth2/token", this.accessTokenParameters);
   }
 }

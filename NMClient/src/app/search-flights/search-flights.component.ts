@@ -4,6 +4,7 @@ import { ShowFlightoffersComponent } from '../show-flightoffers/show-flightoffer
 import { FlightResponse, FlightResponses } from '../_models/Flights/FlightResponse';
 import { SearchFlightsRequest } from '../_models/Flights/SearchFlightsRequest';
 import { FlightService } from '../_services/flight.service';
+import { CarrierCodesResponse } from '../_models/Flights/CarrierCodesResponse';
 
 @Component({
   selector: 'app-search-flights',
@@ -14,6 +15,8 @@ export class SearchFlightsComponent {
   @ViewChildren('ShowFlightoffersComponent') child!: ShowFlightoffersComponent;
   classes = ['First class', 'Business class', 'Economy class']
   adults = [1, 2, 3, 4, 5]
+  carrierCodes: String[] = [];
+  carrierCodeResponse: CarrierCodesResponse = {data: []};
   model: SearchFlightsRequest = { travelType: 0, originLocationCode: '', destinationLocationCode: '', departureDate: '', returnDate: '', adults: this.adults[0], class: this.classes[0] }
   flightsResponses: FlightResponses = {data: []};
   formSubmitted = false;
@@ -32,7 +35,28 @@ export class SearchFlightsComponent {
       if (this.model.travelType == 1) this.model.returnDate = "";
       this._flightService.getFlights(this.model).subscribe(response => {
         this.flightsResponses = response;
-        this.formSubmitted = true;
+        this.flightsResponses.data.forEach(flightResponse => {
+          flightResponse.itineraries.forEach(iti => {
+            iti.segments.forEach(seg => {
+              if(!this.carrierCodes.includes(seg.carrierCode)) this.carrierCodes.push(seg.carrierCode);
+            })
+          })
+        });
+        this._flightService.getCarriers(this.carrierCodes.join(",")).subscribe(response => {
+          this.carrierCodeResponse = response;
+
+          this.flightsResponses.data.forEach(data => {
+            data.itineraries.forEach(iti => {
+              iti.segments.forEach(seg => {
+                this.carrierCodeResponse.data.forEach(data => {
+                  if(seg.carrierCode == data.iataCode) seg.carrierCode = data.businessName;
+                })
+              })
+            })
+          })
+
+          this.formSubmitted = true;
+        });
       })
     }
   }
