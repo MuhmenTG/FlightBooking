@@ -144,7 +144,6 @@ class FlightBookingController extends Controller
 
         foreach ($unTicketedPassengers as $passenger) {
             $ticketNumber = BookingService::generateTicketNumber($airlineTicketNumberIssuer);
-        
             $passenger->setTicketNumber($ticketNumber);
             $passenger->save();
         }

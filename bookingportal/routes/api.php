@@ -57,39 +57,50 @@ Route::prefix('booking')->group(function () {
 Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
     // Admin-only routes here
 
+    Route::post('/admin/createAgent', [AdminController::class, 'createAgent']);
+    Route::put('/admin/editAgentDetails/{agentId}', [AdminController::class, 'editAgent']);
+    Route::get('/admin/getSpecificAgentDetails/{agentId}', [AdminController::class, 'getSpecificAgentDetails']);
+    Route::post('/admin/setAgentAccountToDeactive/{agentId}', [AdminController::class, 'setAgentAccountToDeactive']);
+    Route::get('/admin/showListOfAgent', [AdminController::class, 'showListOfTravlAgent']);
+    
     Route::post('/admin/createNewFaq', [AdminController::class, 'createNewFaq']);
-    Route::post('/admin/editFaq', [AdminController::class, 'createNewFaq']);
-    Route::post('/admin/removeFaq', [AdminController::class, 'removeFaq']);
-    Route::post('/admin/getSpecificFaq', [AdminController::class, 'getSpecificFaq']);
+    Route::put('/admin/editFaq/{faqId}', [AdminController::class, 'editFaq']);
+    Route::delete('/admin/removeFaq/{faqId}', [AdminController::class, 'removeFaq']);
+    Route::get('/admin/getSpecificFaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
+    Route::get('/admin/getAllfaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
+
     Route::post('/admin/createNewUserRole', [AdminController::class, 'createOrEditUserRole']);
-    Route::post('/admin/editUserRole', [AdminController::class, 'createOrEditUserRole']);
-    Route::post('/admin/removeUserRole', [AdminController::class, 'removeUserRole']);
-    Route::post('/admin/getUserRole', [AdminController::class, 'showSpecificOrAllUserRoles']);
-    Route::post('/admin/showUserRoles', [AdminController::class, 'showSpecificOrAllUserRoles']);
+    Route::put('/admin/editUserRole/{roleId}', [AdminController::class, 'createOrEditUserRole']);
+    Route::delete('/admin/removeUserRole/{roleId}', [AdminController::class, 'removeUserRole']);
+    Route::get('/admin/getUserRole/{roleId}', [AdminController::class, 'showSpecificOrAllUserRoles']);
+    Route::get('/admin/showUserRoles', [AdminController::class, 'showSpecificOrAllUserRoles']);
+
     Route::post('/admin/resetAgentPassword', [AdminController::class, 'resetAgentPassword']);
 });
 
 Route::middleware(['auth:sanctum', 'isAgent'])->group(function () {
     // Agent-only routes here
-    Route::post('/travelAgent/cancelHotel', [TravelAgentController::class, 'cancelHotelBooking']);
-    Route::post('/travelAgent/cancelFlight', [TravelAgentController::class, 'cancelFlightBooking']);
+
+    Route::get('/travelAgent/getAllFlightBookings', [TravelAgentController::class, 'getAllFlightBookings']);
+    Route::get('/travelAgent/getAllHotelBookings', [TravelAgentController::class, 'getAllHotelBookings']);
+    Route::get('/travelAgent/getBooking/{bookingReference}', [PublicSiteController::class, 'retrieveBookingInformation']);
+
+    Route::put('/travelAgent/cancelHotel/{hotelBookingReference}', [TravelAgentController::class, 'cancelHotelBooking']);
+    Route::put('/travelAgent/cancelFlight/{flightBookingReference}', [TravelAgentController::class, 'cancelFlightBooking']);    
     Route::post('/travelAgent/sendBooking', [TravelAgentController::class, 'resendBookingConfirmationPDF']);
-    Route::post('/travelAgent/getAllUserEnquries', [TravelAgentController::class, 'getAllUserEnquiries']);
-    Route::post('/travelAgent/getSpecificUserEnquiry', [TravelAgentController::class, 'getSpecificUserEnquiry']);
-    Route::post('/travelAgent/setUserEnquiryStatus', [TravelAgentController::class, 'setUserEnquiryStatus']);
+
     Route::post('/travelAgent/answerUserEnquiry', [TravelAgentController::class, 'answerUserEnquiry']);
-    Route::post('/travelAgent/removeUserEnquiry', [TravelAgentController::class, 'removeUserEnquiry']);
+    Route::put('/travelAgent/setUserEnquiryStatus/{enquiryId}', [TravelAgentController::class, 'setUserEnquiryStatus']);
+    Route::delete('/travelAgent/removeUserEnquiry/{enquiryId}', [TravelAgentController::class, 'removeUserEnquiry']);
+    Route::get('/travelAgent/getAllUserEnquries', [TravelAgentController::class, 'getAllUserEnquiries']);
+    Route::get('/travelAgent/getSpecificUserEnquiry/{enquiryId}', [TravelAgentController::class, 'getSpecificUserEnquiry']);
+
     Route::post('/travelAgent/editAgentDetails', [AdminController::class, 'editAgentDetails']);
 });
 
 
 // Tested
-Route::post('/admin/createAgent', [AdminController::class, 'createAgent']);
-Route::put('/admin/editAgentDetails/{agentId}', [AdminController::class, 'editAgent']);
-Route::get('/admin/getSpecificAgentDetails/{agentId}', [AdminController::class, 'getSpecificAgentDetails']);
-Route::post('/admin/setAgentAccountToDeactive/{agentId}', [AdminController::class, 'setAgentAccountToDeactive']);
-Route::get('/admin/showListOfAgent', [AdminController::class, 'showListOfTravlAgent']);
-  
+
 
 
 

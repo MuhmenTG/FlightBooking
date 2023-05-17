@@ -24,17 +24,8 @@ class TravelAgentController extends Controller
     }
 
     
-    public function cancelHotelBooking(Request $request)
+    public function cancelHotelBooking(string $bookingReference)
     {
-        $validator = Validator::make($request->all(), [
-            'bookingReference' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
-        }
-
-        $bookingReference = $request->input('bookingReference');
 
         $isBookingExist = $this->bookingService->getHotelBookingByBookingReference($bookingReference);
         if (!$isBookingExist) {
@@ -54,18 +45,8 @@ class TravelAgentController extends Controller
         return ResponseHelper::jsonResponseMessage($response, Response::HTTP_OK);
     }
 
-    public function cancelFlightBooking(Request $request)
+    public function cancelFlightBooking(string $bookingReference)
     {
-        $validator = Validator::make($request->all(), [
-            'bookingReference' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
-        }
-
-        $bookingReference = $request->input('bookingReference');
-
         $bookedFlightSegments = $this->bookingService->getFlightSegmentsByBookingReference($bookingReference);
         $bookedFlightPassenger = $this->bookingService->getFlightPassengersByPNR($bookingReference);
 
@@ -130,19 +111,9 @@ class TravelAgentController extends Controller
         return ResponseHelper::jsonResponseMessage($userEnquiries, Response::HTTP_OK);
     }
     
-    public function getSpecificUserEnquiry(Request $request)
+    public function getSpecificUserEnquiry(int $enquiryId)
     {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
-        ]);
-
-        if ($validator->fails()) {
-            return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
-        }
-
-        $id = $request->input('id');
-
-        $specificUserEnquiry = BackOfficeService::findUserEnquiryById($id);
+        $specificUserEnquiry = BackOfficeService::findUserEnquiryById($enquiryId);
 
         if (!$specificUserEnquiry) {
             return ResponseHelper::jsonResponseMessage(['message' => 'User enquiry not found'], Response::HTTP_NOT_FOUND);
@@ -182,19 +153,9 @@ class TravelAgentController extends Controller
     }
     
     
-    public function removeUserEnquiry(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
-        ]);
-    
-        if ($validator->fails()) {
-            return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
-        }
-    
-        $id = intval($request->input('id'));
-    
-        $specificUserEnquiry = UserEnquiry::byId($id)->first();
+    public function removeUserEnquiry(int $enquiryId)
+    {    
+        $specificUserEnquiry = UserEnquiry::byId($enquiryId)->first();
         if (!$specificUserEnquiry) {
             return ResponseHelper::jsonResponseMessage('User enquiry not found', Response::HTTP_NOT_FOUND);    
         }

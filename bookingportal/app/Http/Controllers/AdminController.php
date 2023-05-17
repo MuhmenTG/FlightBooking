@@ -161,19 +161,33 @@ class AdminController extends Controller
         return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_CREATION_FAILED, Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
-
-    public function getSpecificFaq(Request $request){
+    public function editFaq(int $faqId, Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
+            'question'  => 'required|string',
+            'answer'    => 'required|string',
         ]);
 
         if ($validator->fails()) {
             return ResponseHelper::validationErrorResponse($validator->errors());
         }
-        
-        $id = intval($request->input('id'));
 
-        $specificFaq = Faq::byId($id)->first();
+        $question = $request->input('question');
+        $answer = $request->input('answer');
+
+        $result = BackOfficeService::createOrUpdateFaq($question, $answer);
+        
+        if ($result) {
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_CREATED_SUCCESS, Response::HTTP_OK);
+        }
+        
+        return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_CREATION_FAILED, Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+
+    public function getSpecificFaq(int $faqId){
+
+        $specificFaq = Faq::byId($faqId)->first();
 
         if(!$specificFaq){
             return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);
@@ -182,18 +196,8 @@ class AdminController extends Controller
         return ResponseHelper::jsonResponseMessage($specificFaq, Response::HTTP_OK);
     }
 
-    public function removeFaq(Request $request){
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
-        ]);
-
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
-
-        $id = intval($request->input('id'));
-
-        $specificFaq = Faq::byId($id)->first();
+    public function removeFaq(int $faqId){
+        $specificFaq = Faq::byId($faqId)->first();
         if(!$specificFaq){
             return ResponseHelper::jsonResponseMessage('Faq to delete not found', Response::HTTP_NOT_FOUND);    
         }
