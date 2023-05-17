@@ -40,29 +40,37 @@ export class SearchFlightsComponent {
       if (this.model.travelType == 1) this.model.returnDate = "";
       this._flightService.getFlights(this.model).subscribe(response => {
         this.flightsResponses = response;
-        this.flightsResponses.data.forEach(flightResponse => {
-          flightResponse.itineraries.forEach(iti => {
-            iti.segments.forEach(seg => {
-              if(!this.carrierCodes.includes(seg.carrierCode)) this.carrierCodes.push(seg.carrierCode);
-            })
-          })
-        });
-        this._flightService.getCarriers(this.carrierCodes.join(",")).subscribe(response => {
-          this.carrierCodeResponse = response;
-
-          this.flightsResponses.data.forEach(data => {
-            data.itineraries.forEach(iti => {
-              iti.segments.forEach(seg => {
-                this.carrierCodeResponse.data.forEach(data => {
-                  if(seg.carrierCode == data.iataCode) seg.carrierName = data.businessName;
-                })
-              })
-            })
-          })
-
-          this.formSubmitted = true;
-        });
+        this.findAllUniqueCarrierCodes();
+        this.swapCarrierCodeForCompanyName();
       })
     }
+  }
+
+  findAllUniqueCarrierCodes(){
+    this.flightsResponses.data.forEach(flightResponse => {
+      flightResponse.itineraries.forEach(iti => {
+        iti.segments.forEach(seg => {
+          if(!this.carrierCodes.includes(seg.carrierCode)) this.carrierCodes.push(seg.carrierCode);
+        })
+      })
+    });
+  }
+
+  swapCarrierCodeForCompanyName(){
+    this._flightService.getCarriers(this.carrierCodes.join(",")).subscribe(response => {
+      this.carrierCodeResponse = response;
+
+      this.flightsResponses.data.forEach(data => {
+        data.itineraries.forEach(iti => {
+          iti.segments.forEach(seg => {
+            this.carrierCodeResponse.data.forEach(data => {
+              if(seg.carrierCode == data.iataCode) seg.carrierName = data.businessName;
+            })
+          })
+        })
+      })
+
+      this.formSubmitted = true;
+    });
   }
 }
