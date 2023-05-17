@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
 import { SearchFlightsRequest } from '../_models/Flights/SearchFlightsRequest';
-import { FlightResponse, FlightResponses } from '../_models/Flights/FlightResponse';
+import { FlightResponse, FlightResponses } from '../_models/Flights/FlightResponses';
 import { FlightInfoResponse } from '../_models/Flights/FlightInfoResponse';
 import { FlightBookingResponse } from '../_models/Flights/FlightBookingResponse';
 import { PaymentInfo } from '../_models/PaymentInfo';
