@@ -95,7 +95,7 @@ class FlightBookingController extends Controller
 
         try {
             $selectedFormatedFlightOption = AmadeusService::prepareFlightOfferDataForAmadeusValidating($jsonFlightData);
-            return $this->httpRequest(getenv('CHOOSE_FLIGHT_API_URL'), $accessToken, self::HTTP_METHOD_POST, $selectedFormatedFlightOption);
+            return $this->sendhttpRequest(getenv('CHOOSE_FLIGHT_API_URL'), $accessToken, self::HTTP_METHOD_POST, $selectedFormatedFlightOption);
 
         } catch (Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);

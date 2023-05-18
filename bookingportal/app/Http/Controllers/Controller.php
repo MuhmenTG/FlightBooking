@@ -63,44 +63,4 @@ class Controller extends BaseController
         }
     }
 
-    public function httpRequest(string $url, string $accessToken, string $method = self::HTTP_METHOD_GET, array $data = null)
-    {  
-        $client = new \GuzzleHttp\Client();
-        try {
-            $headers = [
-                self::HEADER_ACCEPT => self::CONTENT_TYPE_JSON,
-                self::HEADER_AUTHORIZATION => self::AUTHORIZATION_BEARER . $accessToken,
-            ];
-
-            if ($method === self::HTTP_METHOD_GET) {
-                $response = $client->get($url, [
-                    'headers' => $headers,
-                ]);
-            } else {
-                $headers[self::HEADER_CONTENT_TYPE] = self::CONTENT_TYPE_JSON;
-                $headers[self::HEADER_HTTP_METHOD_OVERRIDE] = self::HTTP_METHOD_GET;
-
-                $response = $client->post($url, [
-                    'headers' => $headers,
-                    'json' => $data,
-                ]);
-            }
-
-            switch ($response->getStatusCode()) {
-                case self::HTTP_STATUS_OK:
-                    return $response->getBody();
-                case self::HTTP_STATUS_BAD_REQUEST:
-                    return response()->json(['error' => 'Choose another flight']);
-                case self::HTTP_STATUS_UNAUTHORIZED:
-                    return response()->json(['error' => 'Unauthorized']);
-                case self::HTTP_STATUS_NOT_FOUND:
-                    return response()->json(['error' => 'Not Found']);
-                default:
-                    return response()->json(['error' => 'Something went wrong']);
-            }
-        } catch (GuzzleException $exception) {
-            return response()->json(['error' => $exception->getMessage()], $exception->getCode());
-        }
-    }
-
 }
