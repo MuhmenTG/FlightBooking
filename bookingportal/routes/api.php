@@ -46,7 +46,7 @@ Route::prefix('hotel')->group(function () {
     Route::post('bookHotel', [HotelBookingController::class, 'bookHotel']);
 });
 
-Route::prefix('booking')->group(function () {
+Route::prefix('public')->group(function () {
     Route::get('retriveBooking/{bookingReference}', [PublicSiteController::class, 'retrieveBookingInformation']);
     Route::put('updateHotelGuestInfo/{hotelBookingReference}', [TravelAgentController::class, 'changeGuestDetails']);
     Route::post('sendEnquirySupport', [PublicSiteController::class, 'sendEnquirySupport']);

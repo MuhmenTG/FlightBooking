@@ -1,112 +1,90 @@
 <?php
 namespace App\Services;
-
+ 
+use App\DTO\AmadeusFlightOfferData as DTOAmadeusFlightOfferData;
+use App\Helpers\Constants;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
-use PhpParser\Node\Expr\Exit_;
-ini_set('max_execution_time', 300);
+use PHPUnit\TextUI\Configuration\Constant;
+
+//ini_set('max_execution_time', 300);
 class AmadeusService {
 
-    const CONTENT_TYPE_JSON = 'application/json';
-    const AUTHORIZATION_BEARER = 'Bearer ';
-    const HEADER_ACCEPT = 'Accept';
-    const HEADER_AUTHORIZATION = 'Authorization';
-    const HEADER_CONTENT_TYPE = 'Content-Type';
-    const HEADER_HTTP_METHOD_OVERRIDE = 'X-HTTP-Method-Override';
-    const HTTP_METHOD_GET = 'GET';
-    const HTTP_STATUS_OK = 200;
-    const HTTP_STATUS_BAD_REQUEST = 400;
-    const HTTP_STATUS_UNAUTHORIZED = 401;
-    const HTTP_STATUS_NOT_FOUND = 404;
-    const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
-    const FLIGHT_DATA = 'data';
-    const FLIGHT_OFFERS_PRICING = 'flight-offers-pricing';
 
-    public static function AmadeusSearch(
-        string $accessToken,
+    public static function AmadeusSearchUrl(
         string $originLocationCode,
         string $destinationLocationCode,
         string $departureDate,
         string $numberOfAdults,
         ?string $returnDate = null,
-        ?int $children = null,
-        ?int $infant = null,
+        ?int $children = 0,
+        ?int $infant = 0,
         ?string $travelClass = null,
         ?string $includedAirlineCodes = null,
         ?string $excludedAirlineCodes = null,
-        bool $nonStop = null
-      ) {
+        ?bool $nonStop = null
+      ) : string {
         
-        $url = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
+        $url = getenv(Constants::SEARCH_FLIGHT_API_URL);
+        
         $queryParams = [
-          'originLocationCode' => $originLocationCode,
-          'destinationLocationCode' => $destinationLocationCode,   
-          'departureDate' => $departureDate,
-          'adults' => $numberOfAdults,
-          'currencyCode' => 'DKK'
+          Constants::ORIGIN_LOCATION_CODE => $originLocationCode,
+          Constants::DESTINATION_LOCATION_CODE => $destinationLocationCode,   
+          Constants::DEPARTURE_DATE => $departureDate,
+          Constants::ADULTS => $numberOfAdults,
+          Constants::CURRENCY => Constants::CURRENCY_CODE
         ];
       
         if ($returnDate !== null) {
-          $queryParams['returnDate'] = $returnDate;
+            $queryParams[Constants::RETURN_DATE] = $returnDate;
         }
-        
+
         if ($children !== null) {
-          $queryParams['children'] = $children;
+            $queryParams[Constants::CHILDREN] = $children;
         }
-      
+
         if ($infant !== null) {
-          $queryParams['infants'] = $infant;
+            $queryParams[Constants::INFANTS] = $infant;
         }
-      
+
         if ($travelClass !== null) {
-          $queryParams['travelClass'] = $travelClass;
+            $queryParams[Constants::TRAVEL_CLASS] = $travelClass;
         }
-      
+
         if ($includedAirlineCodes !== null) {
-          $queryParams['includedAirlineCodes'] = $includedAirlineCodes;
+            $queryParams[Constants::INCLUDED_AIRLINE_CODES] = $includedAirlineCodes;
         }
-      
+
         if ($excludedAirlineCodes !== null) {
-          $queryParams['excludedAirlineCodes'] = $excludedAirlineCodes;
+            $queryParams[Constants::EXCLUDED_AIRLINE_CODES] = $excludedAirlineCodes;
         }
-   
+
         if ($nonStop !== null) {
             if ($nonStop) {
-                $queryParams['nonStop'] = 'true';
+                $queryParams[Constants::NON_STOP] = Constants::TRUE;
             } else {
-                $queryParams['nonStop'] = 'false';
+                $queryParams[Constants::NON_STOP] = Constants::FALSE;
             }
         }
 
-        $searchData = Arr::query($queryParams);
-        $url .= '?' . $searchData;
-      
-        $response = AmadeusService::httpRequest($url, $accessToken, "GET");
-      
-        if($response == null){
-          return false;
-        }
-      
-        return $response;
-      }      
+        $params = Arr::query($queryParams);
+        $url .= '?' . $params;
 
-    public static function AmadeusChooseFlightOffer(array $jsonFlightData, string $accessToken)
+        return $url;
+    }      
+
+    public static function prepareFlightOfferDataForAmadeusValidating(array $jsonFlightData) : array
     {
-        $url = 'https://test.api.amadeus.com/v1/shopping/flight-offers/pricing';
-     
-        $data = array(
-            self::FLIGHT_DATA => array(
-                "type" => self::FLIGHT_OFFERS_PRICING,
-                "flightOffers" => array($jsonFlightData)
-            )
-        );
+        $data = [
+            Constants::FLIGHT_DATA => [
+                "type" => Constants::FLIGHT_OFFERS_PRICING,
+                "flightOffers" => [$jsonFlightData]
+            ]
+        ];
 
-        $response = AmadeusService::httpRequest($url, $accessToken, "POST", $data);
-        if ($response) {
-            return $response;
-        }
+        return $data;
     }
 
     public static function AmadeusGetHotelList(string $cityCode, string $accessToken){
@@ -280,22 +258,22 @@ class AmadeusService {
         }
     }
 
-    public static function httpRequest(string $url, string $accessToken, string $method = self::HTTP_METHOD_GET, array $data = null)
+    public static function httpRequest(string $url, string $accessToken, string $method = Constants::HTTP_METHOD_GET, array $data = null)
     {  
         $client = new \GuzzleHttp\Client();
         try {
             $headers = [
-                self::HEADER_ACCEPT => self::CONTENT_TYPE_JSON,
-                self::HEADER_AUTHORIZATION => self::AUTHORIZATION_BEARER . $accessToken,
+                Constants::HEADER_ACCEPT => Constants::CONTENT_TYPE_JSON,
+                Constants::HEADER_AUTHORIZATION => Constants::AUTHORIZATION_BEARER . $accessToken,
             ];
 
-            if ($method === self::HTTP_METHOD_GET) {
+            if ($method === Constants::HTTP_METHOD_GET) {
                 $response = $client->get($url, [
                     'headers' => $headers,
                 ]);
             } else {
-                $headers[self::HEADER_CONTENT_TYPE] = self::CONTENT_TYPE_JSON;
-                $headers[self::HEADER_HTTP_METHOD_OVERRIDE] = self::HTTP_METHOD_GET;
+                $headers[Constants::HEADER_CONTENT_TYPE] = Constants::CONTENT_TYPE_JSON;
+                $headers[Constants::HEADER_HTTP_METHOD_OVERRIDE] = Constants::HTTP_METHOD_GET;
 
                 $response = $client->post($url, [
                     'headers' => $headers,
@@ -304,13 +282,13 @@ class AmadeusService {
             }
 
             switch ($response->getStatusCode()) {
-                case self::HTTP_STATUS_OK:
+                case Constants::HTTP_STATUS_OK:
                     return $response->getBody();
-                case self::HTTP_STATUS_BAD_REQUEST:
+                case Constants::HTTP_STATUS_BAD_REQUEST:
                     return response()->json(['error' => 'Choose another flight']);
-                case self::HTTP_STATUS_UNAUTHORIZED:
+                case Constants::HTTP_STATUS_UNAUTHORIZED:
                     return response()->json(['error' => 'Unauthorized']);
-                case self::HTTP_STATUS_NOT_FOUND:
+                case Constants::HTTP_STATUS_NOT_FOUND:
                     return response()->json(['error' => 'Not Found']);
                 default:
                     return response()->json(['error' => 'Something went wrong']);

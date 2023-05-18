@@ -1,4 +1,5 @@
 <?php
+//declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
@@ -56,16 +57,15 @@ class FlightBookingController extends Controller
         $departureDate = $request->input('departureDate');
         $returnDate = $request->input('returnDate');
         $adults = $request->input('adults');
-        $children = intval($request->input('children'));
-        $infants = intval($request->input('infants'));
+        $children = $request->input('children') !== null ? (int)$request->input('children') : 0;
+        $infants = $request->input('infants') !== null ? (int)$request->input('infants') : 0;
         $travelClass = $request->input('travelClass');
         $includedAirlineCodes = $request->input('includedAirlineCodes');
         $excludedAirlineCodes = $request->input('excludedAirlineCodes');
         $nonStop = boolval($request->input('nonStop'));
         $accessToken = $request->bearerToken();
 
-        $amadeusResponse = AmadeusService::AmadeusSearch(
-            $accessToken,
+        $constructedSearchUrl = AmadeusService::AmadeusSearchUrl(
             $originLocationCode,
             $destinationLocationCode,
             $departureDate,
@@ -76,29 +76,27 @@ class FlightBookingController extends Controller
             $travelClass,
             $includedAirlineCodes,
             $excludedAirlineCodes,
-            $nonStop  
+            $nonStop
         );
-
-        if(!$amadeusResponse){
-            return ResponseHelper::jsonResponseMessage(ResponseHelper::FLIGHTS_NOT_FOUND, Response::HTTP_NOT_FOUND);
-        }
-    
-        return $amadeusResponse;
+        
+        return $this->sendhttpRequest($constructedSearchUrl, $accessToken);
+        
     }
 
     public function chooseFlightOffer(Request $request)
     {
         $jsonFlightData = $request->json()->all();
-              
+        
         $accessToken = $request->bearerToken();
-
+        
         if (empty($jsonFlightData)) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::EMPTY_FLIGHT_ARRAY, Response::HTTP_BAD_REQUEST);
         }
 
         try {
-            $amadeusResponse = AmadeusService::AmadeusChooseFlightOffer($jsonFlightData, $accessToken);
-            return $amadeusResponse;
+            $selectedFormatedFlightOption = AmadeusService::prepareFlightOfferDataForAmadeusValidating($jsonFlightData);
+            return $this->httpRequest(getenv('CHOOSE_FLIGHT_API_URL'), $accessToken, self::HTTP_METHOD_POST, $selectedFormatedFlightOption);
+
         } catch (Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }     

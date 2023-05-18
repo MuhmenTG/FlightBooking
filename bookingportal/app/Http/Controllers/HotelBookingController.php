@@ -62,7 +62,7 @@ class HotelBookingController extends Controller
         $priceRange = $request->input('priceRange');
         $paymentPolicy = $request->input('paymentPolicy');
         $boardType = $request->input('boardType');
-        $accessToken = 'YVSkll8EitJZPpwECSI9uNCfchop';
+        $accessToken = 'MoOiNzI3vPHQ8ngoz7OIcGHv78DS';
 
         $hotelIds = AmadeusService::AmadeusGetHotelList($cityCode, $accessToken);
 
@@ -73,6 +73,7 @@ class HotelBookingController extends Controller
 
         foreach ($batches as $batch) {
             try {
+                
                 $hotelList = AmadeusService::AmadeusGetSpecificHotelsRoomAvailability(
                     implode(',', $batch),
                     $adults,
@@ -84,9 +85,8 @@ class HotelBookingController extends Controller
                     $boardType,
                     $accessToken
                 );
-        
-                $jsonString = $hotelList->getContents();
-
+                echo $hotelList;exit;
+                $jsonString = $hotelList;
         
                 // Decode the JSON string into an associative array
                 $hotelIds = json_decode($jsonString, true);
