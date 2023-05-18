@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Repositories\BackOfficeRepository;
-use App\Repositories\BookingRepository;
 use App\Repositories\TravelAgentRepository;
+use App\Services\Amadeus\AmadeusService;
+use App\Services\Amadeus\IAmadeusService;
 use App\Services\BackOfficeService;
-use App\Services\BookingService;
+use App\Services\Booking\BookingService;
+use App\Services\Booking\IBookingService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,10 +30,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(TravelAgentRepository::class, function ($app) {
             return new TravelAgentRepository();
         });
-    
-        $this->app->bind(BookingService::class, function ($app) {
-            return new BookingService($app->make(BookingService::class));
-        });
+
+        $this->app->bind(IAmadeusService::class, AmadeusService::class);
+
+        $this->app->bind(IBookingService::class, BookingService::class);
+
     }
 
     /**

@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidationHelper;
-use App\Models\FlightBooking;
-use App\Models\PassengerInfo;
-use App\Services\AmadeusService;
-use App\Services\BookingService;
+use App\Services\Amadeus\IAmadeusService;
+use App\Services\Booking\IBookingService;
 use Exception;
 use Illuminate\Http\Request;
 use GuzzleHttp\Exception\GuzzleException;
@@ -16,6 +14,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class FlightBookingController extends Controller
 {
+
+    protected $IBookingService;
+    protected $IAmadeusService;
+
+    public function __construct(IBookingService $IbookingService,  IAmadeusService $IAmadeusService)
+    {
+        $this->IBookingService = $IbookingService;
+        $this->IAmadeusService = $IAmadeusService;
+    }
 
     //We have made this only because there is not any frontend yet, where acess token comes from
     public function getAccessToken()
@@ -65,7 +72,7 @@ class FlightBookingController extends Controller
         $nonStop = boolval($request->input('nonStop'));
         $accessToken = $request->bearerToken();
 
-        $constructedSearchUrl = AmadeusService::AmadeusSearchUrl(
+        $constructedSearchUrl = $this->IAmadeusService->AmadeusSearchUrl(
             $originLocationCode,
             $destinationLocationCode,
             $departureDate,
@@ -94,7 +101,7 @@ class FlightBookingController extends Controller
         }
 
         try {
-            $selectedFormatedFlightOption = AmadeusService::prepareFlightOfferDataForAmadeusValidating($jsonFlightData);
+            $selectedFormatedFlightOption = $this->IAmadeusService->prepareFlightOfferDataForAmadeusValidating($jsonFlightData);
             return $this->sendhttpRequest(getenv('CHOOSE_FLIGHT_API_URL'), $accessToken, self::HTTP_METHOD_POST, $selectedFormatedFlightOption);
 
         } catch (Exception $e) {
@@ -111,7 +118,7 @@ class FlightBookingController extends Controller
         }
 
         try {
-            $bookedFlight = BookingService::bookFlight($request->json()->all());
+            $bookedFlight = $this->IBookingService->bookFlight($request->json()->all());
 
             return ResponseHelper::jsonResponseMessage($bookedFlight, Response::HTTP_OK);
 
@@ -135,17 +142,6 @@ class FlightBookingController extends Controller
         $cvcDigits = $request->input('cvcDigits');
         $grandTotal = intval($request->input('grandTotal'));
 
-        $ticketRecord = FlightBooking::ByBookingReference($bookingReference)->first();
-        $airlineTicketNumberIssuer = $ticketRecord->getAirline();
-
-        $unTicketedPassengers = PassengerInfo::ByBookingReference($bookingReference)->get();
-
-        foreach ($unTicketedPassengers as $passenger) {
-            $ticketNumber = BookingService::generateTicketNumber($airlineTicketNumberIssuer);
-            $passenger->setTicketNumber($ticketNumber);
-            $passenger->save();
-        }
-
         if ($request->input('supportPackage')) {
             $grandTotal += 750;
         }
@@ -159,7 +155,7 @@ class FlightBookingController extends Controller
         }
         
         try {
-            $booking = BookingService::payFlightConfirmation($bookingReference, $cardNumber, $expireMonth, $expireYear, $cvcDigits, $grandTotal);
+            $booking = $this->IBookingService->payFlightConfirmation($bookingReference, $cardNumber, $expireMonth, $expireYear, $cvcDigits, $grandTotal);
         } catch (Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }

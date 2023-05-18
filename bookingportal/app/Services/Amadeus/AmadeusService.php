@@ -1,5 +1,5 @@
 <?php
-namespace App\Services;
+namespace App\Services\Amadeus;
  
 use App\DTO\AmadeusFlightOfferData as DTOAmadeusFlightOfferData;
 use App\Helpers\Constants;
@@ -7,13 +7,12 @@ use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
-use PHPUnit\TextUI\Configuration\Constant;
 
 //ini_set('max_execution_time', 300);
-class AmadeusService {
+class AmadeusService implements IAmadeusService {
 
 
-    public static function AmadeusSearchUrl(
+    public  function AmadeusSearchUrl(
         string $originLocationCode,
         string $destinationLocationCode,
         string $departureDate,
@@ -75,7 +74,7 @@ class AmadeusService {
         return $url;
     }      
 
-    public static function prepareFlightOfferDataForAmadeusValidating(array $jsonFlightData) : array
+    public function prepareFlightOfferDataForAmadeusValidating(array $jsonFlightData) : array
     {
         $data = [
             Constants::FLIGHT_DATA => [
@@ -87,7 +86,7 @@ class AmadeusService {
         return $data;
     }
 
-    public static function AmadeusGetHotelList(string $cityCode, string $accessToken){
+    public function AmadeusGetHotelList(string $cityCode, string $accessToken){
         
         $listOfHotelByCityUrl = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city";
         $data = ['cityCode' => $cityCode];
@@ -114,7 +113,7 @@ class AmadeusService {
 
     }
 
-    public static function AmadeusGetSpecificHotelsRoomAvailability(string $hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $roomQuantity, string $priceRange = null,
+    public  function AmadeusGetSpecificHotelsRoomAvailability(string $hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $roomQuantity, string $priceRange = null,
     string $paymentPolicy = null, string $boardType = null,  string $accessToken)
     {
        
@@ -169,7 +168,7 @@ class AmadeusService {
         }
     }
 
-    public static function AmadeusGetSpecificHotelsRoomAvailability1(string $hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $roomQuantity, string $priceRange = null,
+    public  function AmadeusGetSpecificHotelsRoomAvailability1(string $hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $roomQuantity, string $priceRange = null,
     string $paymentPolicy = null, string $boardType = null, string $accessToken)
 {
 
@@ -241,7 +240,7 @@ class AmadeusService {
 }
 
 
-    public static function reviewSelectedHotelOfferInfo(string $hotelOfferId, string $accessToken)
+    public function reviewSelectedHotelOfferInfo(string $hotelOfferId, string $accessToken)
     {
 
         $url = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
@@ -258,7 +257,7 @@ class AmadeusService {
         }
     }
 
-    public static function httpRequest(string $url, string $accessToken, string $method = Constants::HTTP_METHOD_GET, array $data = null)
+    public function httpRequest(string $url, string $accessToken, string $method = Constants::HTTP_METHOD_GET, array $data = null)
     {  
         $client = new \GuzzleHttp\Client();
         try {
