@@ -59,6 +59,12 @@ class ValidationHelper
         
         return Validator::make($request->all(), [
             'cityCode'      => 'required|string',
+        ]);
+    }
+
+    public static function validateAvailiabilityOfASpecificHotel(Request $request){
+        return Validator::make($request->all(), [
+            'hotelIds'      => 'required|string',
             'adults'        => 'required|integer|min:1',
             'checkInDate'   => 'required|date|date_format:Y-m-d',
             'checkOutDate'  => 'required|date|date_format:Y-m-d',
@@ -66,8 +72,7 @@ class ValidationHelper
             'priceRange'    => 'nullable|string',
             'paymentPolicy' => 'nullable|string',
             'boardType'     => 'nullable|string',
-
-        ]);
+        ]);   
     }
 
     public static function validateBookHotelRequest(Request $request)

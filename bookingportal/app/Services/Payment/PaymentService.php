@@ -1,16 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Payment;
 use App\Models\Payment;
 use Stripe\BalanceTransaction;
 
 
-class PaymentService {
+class PaymentService implements IPaymentService {
     
-    public static function createCharge(int $amount, string $currency, string $cardNumber, string $expYear, string $expMonth, string $cvc, string $description) 
+    public function createCharge(int $amount, string $currency, string $cardNumber, string $expYear, string $expMonth, string $cvc, string $description) 
     {
-        $stripe = PaymentService::createCardRecord($cardNumber, $expYear, $expMonth, $cvc);
+        $stripe = $this->createCardRecord($cardNumber, $expYear, $expMonth, $cvc);
         
         if ($amount < 0) {
             throw new \InvalidArgumentException('Invalid amount.');
@@ -42,19 +43,19 @@ class PaymentService {
         return $payment;
     }
 
-    public static function retrieveSpecificBalanceTransaction(string $transactionId): BalanceTransaction
+    public function retrieveSpecificBalanceTransaction(string $transactionId): BalanceTransaction
     {
         \Stripe\Stripe::setApiKey('your_api_key');
         return BalanceTransaction::retrieve($transactionId);
     }
 
-    public static function retrieveAllTransactions()
+    public function retrieveAllTransactions()
     {
         \Stripe\Stripe::setApiKey('your_api_key');
         return BalanceTransaction::all();
     }
 
-    private static function createCardRecord(string $cardNumber, string $expYear, string $expMonth, string $cvc){
+    private function createCardRecord(string $cardNumber, string $expYear, string $expMonth, string $cvc){
 
         if (!ctype_digit($cardNumber) || strlen($cardNumber) < 12 || strlen($cardNumber) > 19) {
             throw new \InvalidArgumentException('Invalid card.');
