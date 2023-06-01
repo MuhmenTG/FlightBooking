@@ -43,6 +43,10 @@ class UserAccount extends Authenticatable
         public function scopeByStatus($query, $val) {
                 $query->where('status', $val);
         }
+    
+        public function scopeByEmail($query, $val) {
+                $query->where('email', $val);
+        }
 
         /*
          * GET / SET

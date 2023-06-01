@@ -18,10 +18,8 @@ export class LoginComponent {
     if (!form.valid) {
       return alert("Form is not valid. Try again.");
     } else {
-      this._flightService.getFlights(this.model).subscribe(response => {
-        this.flightsResponses = response;
-        this.findAllUniqueCarrierCodes();
-        this.swapCarrierCodeForCompanyName();
+      this._loginService.authenticateLogin(this.model).subscribe(response => {
+        
       })
     }
   }
