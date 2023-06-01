@@ -122,7 +122,7 @@ class BookingService implements IBookingService {
         $unPaidFlightBooking = $this->bookingRepository->getUnpaidFlightBookings($bookingReference);
 
         if ($unPaidFlightBooking->count() == 0) {
-            throw new Exception('Invalid booking');
+            throw new Exception('Booking already paid');
         }
 
         $this->bookingRepository->markBookingAsPaid($bookingReference);
@@ -184,7 +184,7 @@ class BookingService implements IBookingService {
         return null;
     }
 
-    public function generateTicketNumber(string $validatingAirline) : string {
+    public static function generateTicketNumber(string $validatingAirline) : string {
         $validatingCarrier = Airline::ByIataDesignator($validatingAirline)->first();
         $validatingAirlineDigits = $validatingCarrier->ByThreeDigitAirlineCode();
         

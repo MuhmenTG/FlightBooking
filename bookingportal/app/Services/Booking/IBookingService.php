@@ -12,7 +12,7 @@ interface IBookingService
 
     public function retrieveBookingInformation(string $bookingReference): ?array;
 
-    public function generateTicketNumber(string $validatingAirline): string;
+    public static function generateTicketNumber(string $validatingAirline): string;
 
     public function generateBookingReference(): string;
 

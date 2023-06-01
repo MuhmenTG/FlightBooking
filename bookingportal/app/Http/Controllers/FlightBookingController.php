@@ -169,6 +169,11 @@ class FlightBookingController extends Controller
         $expireYear = $request->input('expireYear');
         $cvcDigits = $request->input('cvcDigits');
         $grandTotal = intval($request->input('grandTotal'));
+        
+        $booking = $this->IBookingService->getFlightSegmentsByBookingReference($bookingReference);
+        if(count($booking) == 0){
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_ALREADY_REPORTED);
+        }
 
         if ($request->input('supportPackage')) {
             $grandTotal += 750;
@@ -185,11 +190,17 @@ class FlightBookingController extends Controller
         try {
             $booking = $this->IBookingService->finalizeFlightReservation($bookingReference);
             $payment = $this->IPaymentService->createCharge($grandTotal, Constants::CURRENCY_CODE, $cardNumber, $expireYear, $expireMonth, $cvcDigits, $grandTotal);
+            echo $payment;exit;
+            $bookingCompleteInfo = [
+                $booking,
+                $payment,
+            ];
         } catch (Exception $e) {
-            return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_BAD_REQUEST);
+            $alreadyPaidBooking = $this->IBookingService->retrieveBookingInformation($bookingReference);
+            return ResponseHelper::jsonResponseMessage($alreadyPaidBooking, Response::HTTP_ALREADY_REPORTED);
         }
 
-        return ResponseHelper::jsonResponseMessage($booking, Response::HTTP_OK);
+        return ResponseHelper::jsonResponseMessage($bookingCompleteInfo, Response::HTTP_OK);
     }
 
 }

@@ -45,10 +45,10 @@ class ValidationHelper
         return Validator::make($request->all(), [
             'bookingReference'     => 'required|string',
             'grandTotal'           => 'required|string',
-            'cardNumber'           => 'required|string',
-            'expireMonth'          => 'required|string',
-            'expireYear'           => 'required|string',
-            'cvcDigits'            => 'required|string',
+            'cardNumber'           => 'required|numeric|digits:16',
+            'expireMonth'          => 'required|numeric|between:1,12',
+            'expireYear'           => 'required|string|digits:4|numeric|min:2023|max:2040',   
+            'cvcDigits'            => 'required|string|digits:3',            
             'supportPackage'       => 'nullable|boolean',
             'changableTicket'      => 'nullable|boolean',
             'cancellationableTicket' => 'nullable|boolean'

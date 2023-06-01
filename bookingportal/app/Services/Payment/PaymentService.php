@@ -58,12 +58,12 @@ class PaymentService implements IPaymentService {
     private function createCardRecord(string $cardNumber, string $expYear, string $expMonth, string $cvc){
 
         if (!ctype_digit($cardNumber) || strlen($cardNumber) < 12 || strlen($cardNumber) > 19) {
-            throw new \InvalidArgumentException('Invalid card.');
+            throw new \InvalidArgumentException('Invalid card numer given Should be 12 digits long.');
         }
 
         if (!ctype_digit($expMonth) || $expMonth < 1 || $expMonth > 12) {
 
-            throw new \InvalidArgumentException('Invalid expiry Date.');
+            throw new \InvalidArgumentException('Invalid expiry Date of card.');
         }
         
         if (!ctype_digit($expYear) || strlen($expYear) != 4 || $expYear < date('Y')) {
