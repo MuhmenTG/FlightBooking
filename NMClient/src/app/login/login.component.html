@@ -1,35 +1,13 @@
 <div class="component">
     <form #loginReq="ngForm" (submit)="submitForm(loginReq)">
-
         <div class="d-flex flex-row my-2 justify-content-start">
             <input required class="form-control mx-2 px-2 w-25" placeholder="E-mail"
-                [(ngModel)]="model.email" name="email">
+            type="text" [(ngModel)]="model.email" name="email">
         </div>
-        <div class="d-flex flex-row my-2 justify-content-start align-items-end flex-wrap">
-            <div class="form-group m-2 w-auto">
-                <label for="checkInDate">Check-in date date</label><br>
-                <input required id="checkInDate" class="form-control" min="{{todayDate | date: 'yyyy-MM-dd'}}"
-                    type="date" [(ngModel)]="model.checkInDate" name="checkInDate" />
-            </div>
-            <div class="form-group m-2 w-auto">
-                <label for="checkOutDate">Check-out date</label><br>
-                <input required id="checkOutDate" class="form-control" min="{{model.checkInDate| date: 'yyyy-MM-dd'}}"
-                    type="date" [(ngModel)]="model.checkOutDate" name="checkOutDate" />
-            </div>
-            <div class="form-group m-2">
-                <label for="selectPassengers">Number of adults</label>
-                <select class="form-select" id="selectPassengers" name="adults" [(ngModel)]="model.adults" required>
-                    <option *ngFor="let amount of peopleAmount" [value]="amount">{{amount}}</option>
-                </select>
-
-            </div>
-            <div class="form-group m-2">
-                <label for="selectAdults">Number of rooms</label>
-                <select class="form-select" id="selectAdults" name="class" [(ngModel)]="model.roomQuantity" required>
-                    <option *ngFor="let amount of roomAmount" [value]="amount">{{amount}}</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary m-2 px-2">Search hotels</button>
+        <div class="d-flex flex-row my-2 justify-content-start">
+            <input required class="form-control mx-2 px-2 w-25" placeholder="Password"
+            type="password" [(ngModel)]="model.password" name="password">
         </div>
+        <button type="submit" class="btn btn-primary m-2 px-2">Employee login</button>
     </form>
 </div>
