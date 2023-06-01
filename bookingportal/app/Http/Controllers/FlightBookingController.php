@@ -172,7 +172,7 @@ class FlightBookingController extends Controller
         
         $booking = $this->IBookingService->getFlightSegmentsByBookingReference($bookingReference);
         if(count($booking) == 0){
-            return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_ALREADY_REPORTED);
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_BAD_REQUEST);
         }
 
         if ($request->input('supportPackage')) {
@@ -189,18 +189,17 @@ class FlightBookingController extends Controller
         
         try {
             $booking = $this->IBookingService->finalizeFlightReservation($bookingReference);
-            $payment = $this->IPaymentService->createCharge($grandTotal, Constants::CURRENCY_CODE, $cardNumber, $expireYear, $expireMonth, $cvcDigits, $grandTotal);
-            echo $payment;exit;
-            $bookingCompleteInfo = [
+            $payment = $this->IPaymentService->createCharge($grandTotal, Constants::CURRENCY_CODE, $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReference);
+            $bookingComplete = [
                 $booking,
-                $payment,
+                $payment
             ];
         } catch (Exception $e) {
             $alreadyPaidBooking = $this->IBookingService->retrieveBookingInformation($bookingReference);
             return ResponseHelper::jsonResponseMessage($alreadyPaidBooking, Response::HTTP_ALREADY_REPORTED);
         }
 
-        return ResponseHelper::jsonResponseMessage($bookingCompleteInfo, Response::HTTP_OK);
+        return ResponseHelper::jsonResponseMessage($bookingComplete, Response::HTTP_OK);
     }
 
 }

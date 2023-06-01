@@ -11,25 +11,22 @@ class PaymentService implements IPaymentService {
     
     public function createCharge(int $amount, string $currency, string $cardNumber, string $expYear, string $expMonth, string $cvc, string $description) 
     {
+        
         $stripe = $this->createCardRecord($cardNumber, $expYear, $expMonth, $cvc);
         
-        if ($amount < 0) {
-            throw new \InvalidArgumentException('Invalid amount.');
-        }
+        $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
 
-        if (!in_array($currency, ['usd', 'eur', 'dkk'])) {
-            throw new \InvalidArgumentException('Invalid currency.');
-        }
-        
-        $charge =  $stripe->charges->create([
-            'amount' => $amount,
-            'currency' => $currency,
+        $charge = $stripe->charges->create([
+            'amount' => $amount * 100,
+            'currency' => 'dkk',
             'source' => 'tok_mastercard',
+            'description' => $description,
         ]);
-
+        
+        
         if($charge){    
             $payment = New Payment();
-            $payment->setPaymentAmount($charge->amount);       
+            $payment->setPaymentAmount($amount);       
             $payment->setPaymentCurrency($currency);
             $payment->setPaymentType(Payment::PAYMENT_TYPE);
             $payment->setPaymentStatus(Payment::PAYMENT_STATUS_COMPLETED);
@@ -39,7 +36,8 @@ class PaymentService implements IPaymentService {
             $payment->setNoteComments($description);
             $payment->save();
         }
-
+        
+        $payment = Payment::ByPaymentInfoId($charge->id)->get();;
         return $payment;
     }
 
@@ -78,12 +76,12 @@ class PaymentService implements IPaymentService {
         $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
       
         $stripe->tokens->create([
-          'card' => [
-            'number' => $cardNumber,
-            'exp_month' => $expMonth,
-            'exp_year' => $expYear,
-            'cvc' => $cvc,
-          ],
+            'card' => [
+              'number' => $cardNumber,
+              'exp_month' => $expMonth,
+              'exp_year' => $expYear,
+              'cvc' => $cvc,
+            ],
         ]);
 
         return $stripe;
