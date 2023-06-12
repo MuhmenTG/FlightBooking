@@ -1,11 +1,11 @@
-<div class="component">
+<div class="component d-flex">
     <form #loginReq="ngForm" (submit)="submitForm(loginReq)">
         <div class="d-flex flex-row my-2 justify-content-start">
-            <input required class="form-control mx-2 px-2 w-25" placeholder="E-mail"
+            <input required class="form-control mx-2 px-2" placeholder="E-mail"
             type="text" [(ngModel)]="model.email" name="email">
         </div>
         <div class="d-flex flex-row my-2 justify-content-start">
-            <input required class="form-control mx-2 px-2 w-25" placeholder="Password"
+            <input required class="form-control mx-2 px-2" placeholder="Password"
             type="password" [(ngModel)]="model.password" name="password">
         </div>
         <button type="submit" class="btn btn-primary m-2 px-2">Employee login</button>

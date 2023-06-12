@@ -11,6 +11,7 @@ export class HttpService {
   protected amadeusUrl = environment.amadeusApiUrl;
   protected static httpOptionsBearer = {};
   protected http: HttpClient;
+  private static accessTokenAge: number = 0;
   private static accessTokenStatus: boolean = false;
 
   private accessTokenParameters = new HttpParams()
@@ -37,6 +38,9 @@ export class HttpService {
     }
 
     HttpService.accessTokenStatus = true;
+    HttpService.accessTokenAge = Date.now();
+
+    console.log(HttpService.accessTokenAge);
   }
 
   getAccessToken(): Observable<AccessTokenResponse> {

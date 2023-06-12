@@ -1,5 +1,7 @@
 export interface FAQ {
-    title: number
-    question: string
-    answer: string
+    id: number;
+    question: string;
+    answer: string;
+    created_at: string;
+    updated_at: string;
 }
