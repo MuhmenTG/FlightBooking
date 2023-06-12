@@ -1,1 +1,43 @@
-<p>admin works!</p>
+<div class="component">
+    <form #loginReq="ngForm" (submit)="submitForm(loginReq)">
+
+        <div class="d-flex flex-row my-2 justify-content-start">
+            <input required class="form-control mx-2 px-2 w-25" placeholder="E-mail"
+            type="text" [(ngModel)]="model.email" name="email">
+        </div>
+
+        <div class="d-flex flex-row my-2 justify-content-start">
+            <input required class="form-control mx-2 px-2 w-25" placeholder="First name"
+            type="text" [(ngModel)]="model.firstName" name="firstName">
+        </div>
+
+        <div class="d-flex flex-row my-2 justify-content-start">
+            <input required class="form-control mx-2 px-2 w-25" placeholder="Last name"
+            type="text" [(ngModel)]="model.lastName" name="lastName">
+        </div>
+
+        <div class="d-flex flex-row my-2 justify-content-start">
+            <input required class="form-control mx-2 px-2 w-25" placeholder="Status"
+            type="text" [(ngModel)]="model.status" name="status">
+        </div>
+
+        <div class="m-2">
+            <div class="form-check-inline my-1">
+                <input class="form-check-input me-1" type="radio" [value]="0" ngModel
+                    name="isAdmin" [(ngModel)]="model.isAdmin">
+                <label class="form-check-label" for="exampleRadios1">
+                    Agent
+                </label>
+            </div>
+            <div class="form-check-inline my-1">
+                <input class="form-check-input me-1" type="radio" [value]="1" name="isAdmin"
+                    [(ngModel)]="model.isAdmin">
+                <label class="form-check-label" for="exampleRadios1">
+                    Admin
+                </label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary m-2 px-2">Create account</button>
+    </form>
+</div>
