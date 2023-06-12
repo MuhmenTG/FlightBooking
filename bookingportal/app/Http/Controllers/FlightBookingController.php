@@ -3,10 +3,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Constants;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidationHelper;
 use App\Services\Amadeus\IAmadeusService;
 use App\Services\Booking\IBookingService;
+use App\Services\Payment\IPaymentService;
 use Exception;
 use Illuminate\Http\Request;
 use GuzzleHttp\Exception\GuzzleException;
@@ -17,11 +19,13 @@ class FlightBookingController extends Controller
 
     protected $IBookingService;
     protected $IAmadeusService;
+    protected $IPaymentService;
 
-    public function __construct(IBookingService $IbookingService,  IAmadeusService $IAmadeusService)
+    public function __construct(IBookingService $IbookingService,  IAmadeusService $IAmadeusService, IPaymentService $IPaymentService)
     {
         $this->IBookingService = $IbookingService;
         $this->IAmadeusService = $IAmadeusService;
+        $this->IPaymentService = $IPaymentService;
     }
 
     //We have made this only because there is not any frontend yet, where acess token comes from
@@ -51,6 +55,12 @@ class FlightBookingController extends Controller
         
     }
 
+    /**
+    * Search flights based on the request parameters.
+    *
+    * @param Request $request The HTTP request object.
+    * @return mixed The search results.
+    */
     public function searchFlights(Request $request) 
     {
         $validator = ValidationHelper::validateFlightSearchRequest($request);
@@ -72,7 +82,7 @@ class FlightBookingController extends Controller
         $nonStop = boolval($request->input('nonStop'));
         $accessToken = $request->bearerToken();
 
-        $constructedSearchUrl = $this->IAmadeusService->AmadeusSearchUrl(
+        $constructedSearchUrl = $this->IAmadeusService->AmadeusFlightSearchUrl(
             $originLocationCode,
             $destinationLocationCode,
             $departureDate,
@@ -90,6 +100,12 @@ class FlightBookingController extends Controller
         
     }
 
+    /**
+    * Choose a flight offer based on the request data.
+    *
+    * @param Request $request The HTTP request object.
+    * @return mixed The chosen flight offer.
+    */
     public function chooseFlightOffer(Request $request)
     {
         $jsonFlightData = $request->json()->all();
@@ -109,6 +125,12 @@ class FlightBookingController extends Controller
         }     
     }
     
+    /**
+    * Confirm a flight booking (Not paid yet).
+    *
+    * @param Request $request The HTTP request object.
+    * @return mixed The flight booking confirmation.
+    */
     public function FlightConfirmation(Request $request)
     {
         $validator = ValidationHelper::validateFlightConfirmationRequest($request);
@@ -127,6 +149,12 @@ class FlightBookingController extends Controller
         }
     }
 
+    /**
+    * Pay for a flight confirmation.
+    *
+    * @param Request $request The HTTP request object.
+    * @return mixed The payment result.
+    */
     public function payFlightConfirmation(Request $request)
     {
         $validator = ValidationHelper::validateFlightPayRequest($request);
@@ -141,6 +169,11 @@ class FlightBookingController extends Controller
         $expireYear = $request->input('expireYear');
         $cvcDigits = $request->input('cvcDigits');
         $grandTotal = intval($request->input('grandTotal'));
+        
+        $booking = $this->IBookingService->getFlightSegmentsByBookingReference($bookingReference);
+        if(count($booking) == 0){
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_BAD_REQUEST);
+        }
 
         if ($request->input('supportPackage')) {
             $grandTotal += 750;
@@ -155,12 +188,18 @@ class FlightBookingController extends Controller
         }
         
         try {
-            $booking = $this->IBookingService->payFlightConfirmation($bookingReference, $cardNumber, $expireMonth, $expireYear, $cvcDigits, $grandTotal);
+            $booking = $this->IBookingService->finalizeFlightReservation($bookingReference);
+            $payment = $this->IPaymentService->createCharge($grandTotal, Constants::CURRENCY_CODE, $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReference);
+            $bookingComplete = [
+                $booking,
+                $payment
+            ];
         } catch (Exception $e) {
-            return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_BAD_REQUEST);
+            $alreadyPaidBooking = $this->IBookingService->retrieveBookingInformation($bookingReference);
+            return ResponseHelper::jsonResponseMessage($alreadyPaidBooking, Response::HTTP_ALREADY_REPORTED);
         }
 
-        return ResponseHelper::jsonResponseMessage($booking, Response::HTTP_OK);
+        return ResponseHelper::jsonResponseMessage($bookingComplete, Response::HTTP_OK);
     }
 
 }

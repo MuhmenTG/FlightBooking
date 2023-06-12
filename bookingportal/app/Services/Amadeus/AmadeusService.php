@@ -12,7 +12,7 @@ use InvalidArgumentException;
 class AmadeusService implements IAmadeusService {
 
 
-    public  function AmadeusSearchUrl(
+    public  function AmadeusFlightSearchUrl(
         string $originLocationCode,
         string $destinationLocationCode,
         string $departureDate,
@@ -86,42 +86,22 @@ class AmadeusService implements IAmadeusService {
         return $data;
     }
 
-    public function AmadeusGetHotelList(string $cityCode, string $accessToken){
+    public function AmadeusHotelListUrl(string $cityCode) : string {
         
-        $listOfHotelByCityUrl = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city";
+        $listOfHotelByCityUrl = getenv(Constants::HOTEL_LIST_API_URL);
+
         $data = ['cityCode' => $cityCode];
+        
         $searchData = Arr::query($data);
+        
         $listOfHotelByCityUrl .= '?' . $searchData;
 
-        $hotelResponse = AmadeusService::httpRequest($listOfHotelByCityUrl, $accessToken);
-
-        if (empty($hotelResponse)) {
-            return response()->json(['message' => 'Error retrieving hotel data'], 500);
-        }
-
-        $hotelResponse = json_decode($hotelResponse, true);
-
-        if (!isset($hotelResponse['data'])) {
-            return response()->json(['message' => 'No hotels found in the specified city'], 404);
-        }
-
-        $hotelIds = implode(',', array_map(function ($item) {
-            return $item['hotelId'];
-        }, $hotelResponse['data']));
-
-        return $hotelIds;
-
+        return $listOfHotelByCityUrl;
     }
 
-    public  function AmadeusGetSpecificHotelsRoomAvailability(string $hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $roomQuantity, string $priceRange = null,
-    string $paymentPolicy = null, string $boardType = null,  string $accessToken)
+    public  function AmadeusSpecificHotelsRoomAvailabilityUrl(string $hotelId, string $adults, string $checkInDate, string $checkOutDate, string $roomQuantity, string $priceRange = null,
+    string $paymentPolicy = null, string $boardType = null) : string 
     {
-       
-        $isCommaSeparatedString = implode(",", explode(",", $hotelIds)) === $hotelIds;
-
-        if (!$isCommaSeparatedString || empty($hotelIds)) {
-            throw new InvalidArgumentException("Invalid hotelIds parameter. Expecting a non-empty array.");
-        }
 
         if (!is_numeric($adults) || $adults < 1) {
             throw new InvalidArgumentException("Invalid adults parameter. Expecting a positive integer.");
@@ -138,12 +118,11 @@ class AmadeusService implements IAmadeusService {
         $specificHotelOfferUrl = "https://test.api.amadeus.com/v3/shopping/hotel-offers";
 
         $data = [
-            'hotelIds'      => $hotelIds,
+            'hotelIds'      => $hotelId,
             'adults'        => $adults,
             'checkInDate'   => $checkInDate,
             'checkOutDate'  => $checkOutDate,
             'roomQuantity'  => $roomQuantity,
-            'currencyCode'  => 'DKK'
         ];
 
         if ($priceRange !== null) {
@@ -159,13 +138,10 @@ class AmadeusService implements IAmadeusService {
         }
 
         $searchData = Arr::query($data);
+
         $specificHotelOfferUrl .= '?' . $searchData;
 
-        $response = AmadeusService::httpRequest($specificHotelOfferUrl, $accessToken);
-        if($response !== 400){
-            
-            return $response;
-        }
+        return $specificHotelOfferUrl;
     }
 
     public  function AmadeusGetSpecificHotelsRoomAvailability1(string $hotelIds, string $adults, string $checkInDate, string $checkOutDate, string $roomQuantity, string $priceRange = null,

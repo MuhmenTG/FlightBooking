@@ -21,6 +21,7 @@ class Constants
     public const RETURN_DATE = 'returnDate';
     public const CHILDREN = 'children';
     public const SEARCH_FLIGHT_API_URL = 'SEARCH_FLIGHT_API_URL';
+    public const HOTEL_LIST_API_URL = 'HOTEL_LIST_API_URL';
     public const ORIGIN_LOCATION_CODE = 'originLocationCode';
     public const CURRENCY_CODE = 'DKK';
     public const FLIGHT_OFFERS_PRICING = 'flight-offers-pricing';

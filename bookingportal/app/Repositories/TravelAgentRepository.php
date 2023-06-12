@@ -75,12 +75,6 @@ class TravelAgentRepository
         return FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 0)->get();
     }
 
-    public function createPaymentTransaction(int $grandTotal, string $cardNumber, string $expireMonth, string $expireYear, string $cvcDigits, string $bookingReference)
-    {
-        $grandTotal = $grandTotal * 100;
-        return PaymentService::createCharge($grandTotal, "dkk", $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReference);
-    }
-
     public function markBookingAsPaid(string $bookingReference): void
     {
         FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISPAID => 1]);

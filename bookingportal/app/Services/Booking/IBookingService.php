@@ -10,13 +10,13 @@ interface IBookingService
 
     public function createPassengerRecord(array $passengerData, string $bookingReference);
 
-    public static function retrieveBookingInformation(string $bookingReference): ?array;
+    public function retrieveBookingInformation(string $bookingReference): ?array;
 
     public static function generateTicketNumber(string $validatingAirline): string;
 
     public function generateBookingReference(): string;
 
-    public static function sendRquestContactForm(string $name, string $email, string $subject, string $message, string $bookingReference = null);
+    public function sendRquestContactForm(string $name, string $email, string $subject, string $message, string $bookingReference = null);
 
     public function getHotelBookingByBookingReference(string $bookingReference);
 
@@ -28,5 +28,5 @@ interface IBookingService
 
     public function cancelFlightBooking(string $bookingReference);
 
-    public function payFlightConfirmation(string $bookingReference, string $cardNumber, string $expireMonth, string $expireYear, string $cvcDigits, int $grandTotal) : ?array;
+    public function finalizeFlightReservation(string $bookingReference): ?array;
 }

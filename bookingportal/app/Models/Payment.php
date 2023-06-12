@@ -43,6 +43,10 @@ class Payment extends Model
                 $query->where('id', $val);
         }
 
+        public function scopeByPaymentInfoId($query, $val)
+        {
+                $query->where('paymentInfoId', $val);
+        }
         
         public function scopeByNote($query, $val)
         {

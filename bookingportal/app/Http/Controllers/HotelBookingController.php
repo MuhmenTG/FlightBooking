@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 use App\DTO\HotelSelectionDTO;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidationHelper;
+use App\Services\Amadeus\IAmadeusService;
 use App\Services\AmadeusService;
+use App\Services\Booking\IBookingService;
 use App\Services\BookingService;
 use App\Services\PaymentService;
 use Exception;
@@ -14,8 +16,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 class HotelBookingController extends Controller
 {
+    protected $IBookingService;
+    protected $IAmadeusService;
 
-    public function searchHote1l(Request $request)
+    public function __construct(IBookingService $IbookingService,  IAmadeusService $IAmadeusService)
+    {
+        $this->IBookingService = $IbookingService;
+        $this->IAmadeusService = $IAmadeusService;
+    }
+
+
+    public function searchHotel(Request $request)
     {
         $validator = ValidationHelper::validateHotelSearchRequest($request);
 
@@ -24,6 +35,28 @@ class HotelBookingController extends Controller
         }
 
         $cityCode = $request->input('cityCode');
+        $accessToken = '8jHaEGHwWBvVA2kcFzM63J0THDLU';
+        try {
+            $url = $this->IAmadeusService->AmadeusHotelListUrl($cityCode, $accessToken);
+            return $this->sendhttpRequest($url, $accessToken);
+        } 
+        catch (InvalidArgumentException $e) 
+        {
+            ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        } 
+
+    }
+
+    public function availiabilityOfASpecificHotel(Request $request)
+    {
+        $validator = ValidationHelper::validateAvailiabilityOfASpecificHotel($request);
+
+        if ($validator->fails()) {
+            return ResponseHelper::validationErrorResponse($validator->errors());
+        }
+
+        $hotelId = $request->input('hotelIds');
+        
         $adults = $request->input('adults');
         $checkInDate = $request->input('checkInDate');
         $checkOutDate = $request->input('checkOutDate');
@@ -31,22 +64,23 @@ class HotelBookingController extends Controller
         $priceRange = $request->input('priceRange');
         $paymentPolicy = $request->input('paymentPolicy');
         $boardType = $request->input('boardType');
-        $accessToken = 'E3Xt5A7nKnOgayc2u5CcskXpNEKK';
 
-        $hotelIds = AmadeusService::AmadeusGetHotelList($cityCode, $accessToken);
-        echo $hotelIds;exit;
+        $accessToken = '8jHaEGHwWBvVA2kcFzM63J0THDLU';
         try {
-            $finalHotelList = AmadeusService::AmadeusGetSpecificHotelsRoomAvailability($hotelIds, $adults, $checkInDate, $checkOutDate, $roomQuantity, $priceRange, $paymentPolicy, $boardType, $accessToken);
+            $url = $this->IAmadeusService->AmadeusSpecificHotelsRoomAvailabilityUrl($hotelId, $adults, $checkInDate, $checkOutDate, $roomQuantity, $priceRange, $paymentPolicy, $boardType);
+            $response = $this->sendhttpRequest($url, $accessToken);
+            return json_decode($response);
         } 
         catch (InvalidArgumentException $e) 
         {
             ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_BAD_REQUEST);
         } 
 
-        return $finalHotelList;
     }
 
-    public function searchHotel(Request $request)
+    
+
+  /*  public function searchHotel(Request $request)
     {
         $validator = ValidationHelper::validateHotelSearchRequest($request);
 
@@ -149,7 +183,7 @@ class HotelBookingController extends Controller
         } catch(Exception $e){
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-    }
+    }*/
     
 
 }

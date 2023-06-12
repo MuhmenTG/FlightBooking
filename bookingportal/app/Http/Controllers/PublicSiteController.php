@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Models\Faq;
+use App\Services\Booking\IBookingService;
 use App\Services\BookingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -11,13 +12,21 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PublicSiteController extends Controller
 {
+    protected $IBookingService;
+    protected $IAmadeusService;
+
+    public function __construct(IBookingService $IbookingService)
+    {
+        $this->IBookingService = $IbookingService;
+    }
+
     public function retrieveBookingInformation(string $bookingReference)
     {
         if ($bookingReference === null) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_REFERENCE_NOT_PROVIDED, Response::HTTP_BAD_REQUEST);
         }
 
-        $bookingInfo = BookingService::retrieveBookingInformation($bookingReference);
+        $bookingInfo = $this->IBookingService->retrieveBookingInformation($bookingReference);
 
         if ($bookingInfo) {
             return ResponseHelper::jsonResponseMessage($bookingInfo, Response::HTTP_OK);
@@ -45,7 +54,7 @@ class PublicSiteController extends Controller
         $message = $request->input('message');
         $bookingReference = $request->input('bookingReference');
 
-        $response = BookingService::sendRquestContactForm(
+        $response = $this->IBookingService->sendRquestContactForm(
             $name, $email, $subject, $message, $bookingReference
         );
 

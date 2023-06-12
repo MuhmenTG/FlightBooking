@@ -9,6 +9,8 @@ use App\Services\Amadeus\IAmadeusService;
 use App\Services\BackOfficeService;
 use App\Services\Booking\BookingService;
 use App\Services\Booking\IBookingService;
+use App\Services\Payment\IPaymentService;
+use App\Services\Payment\PaymentService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -34,6 +36,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IAmadeusService::class, AmadeusService::class);
 
         $this->app->bind(IBookingService::class, BookingService::class);
+
+        $this->app->bind(IPaymentService::class, PaymentService::class);
+
 
     }
 

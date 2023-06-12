@@ -115,20 +115,14 @@ class BookingService implements IBookingService {
         ];
     }
 
-    public function payFlightConfirmation(string $bookingReference, string $cardNumber, string $expireMonth, string $expireYear, string $cvcDigits, int $grandTotal): ?array
+    public function finalizeFlightReservation(string $bookingReference): ?array
     {
         $this->bookingRepository->generateTicketNumbers($bookingReference);
 
         $unPaidFlightBooking = $this->bookingRepository->getUnpaidFlightBookings($bookingReference);
 
         if ($unPaidFlightBooking->count() == 0) {
-            throw new Exception('Invalid booking');
-        }
-
-        $transaction = $this->bookingRepository->createPaymentTransaction($grandTotal, $cardNumber, $expireMonth, $expireYear, $cvcDigits, $bookingReference);
-
-        if (!$transaction) {
-            throw new Exception('Could not create transaction');
+            throw new Exception('Booking already paid');
         }
 
         $this->bookingRepository->markBookingAsPaid($bookingReference);
@@ -140,7 +134,6 @@ class BookingService implements IBookingService {
             'success' => true,
             'itinerary' => $paidFlightBooking,
             'passengers' => $bookedPassengers,
-            'transaction' => $transaction
         ];
 
         $email = $this->bookingRepository->getPassengerEmail($bookedPassengers);
@@ -162,12 +155,12 @@ class BookingService implements IBookingService {
         return $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
     }
 
-    public static function retrieveBookingInformation(string $bookingReference) : ?array
+    public function retrieveBookingInformation(string $bookingReference) : ?array
     {
-        $bookedFlightSegments = FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();
-        $bookedFlightPassenger = PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->get();
-
-        $bookedHotel = HotelBooking::byHotelBookingReference($bookingReference)->first();
+        $bookedFlightSegments = $this->bookingRepository->findFlightSegmentsByBookingReference($bookingReference);
+        $bookedFlightPassenger = $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
+        
+        $bookedHotel = $this->bookingRepository->findHotelBookingByReference($bookingReference);
 
         $paymentDetails = Payment::ByNote($bookingReference)->first();
 
@@ -214,7 +207,7 @@ class BookingService implements IBookingService {
         return $bookingNumber;
     }
 
-    public static function sendRquestContactForm(string $name, string $email, string $subject, string $message, string $bookingReference = null){
+    public function sendRquestContactForm(string $name, string $email, string $subject, string $message, string $bookingReference = null){
         
         $enquiry = new UserEnquiry();
         $enquiry->setName($name);
