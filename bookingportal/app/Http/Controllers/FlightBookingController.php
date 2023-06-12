@@ -80,7 +80,9 @@ class FlightBookingController extends Controller
         $includedAirlineCodes = $request->input('includedAirlineCodes');
         $excludedAirlineCodes = $request->input('excludedAirlineCodes');
         $nonStop = boolval($request->input('nonStop'));
-        $accessToken = $request->bearerToken();
+     //   $accessToken = $request->bearerToken();
+
+        $accessToken = $this->getAccessToken();
 
         $constructedSearchUrl = $this->IAmadeusService->AmadeusFlightSearchUrl(
             $originLocationCode,
@@ -109,8 +111,10 @@ class FlightBookingController extends Controller
     public function chooseFlightOffer(Request $request)
     {
         $jsonFlightData = $request->json()->all();
-        
-        $accessToken = $request->bearerToken();
+      //  $accessToken = $request->bearerToken();
+        $accessToken = $this->getAccessToken();
+
+
         
         if (empty($jsonFlightData)) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::EMPTY_FLIGHT_ARRAY, Response::HTTP_BAD_REQUEST);

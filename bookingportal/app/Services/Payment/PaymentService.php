@@ -9,10 +9,10 @@ use Stripe\BalanceTransaction;
 
 class PaymentService implements IPaymentService {
     
-    public function createCharge(int $amount, string $currency, string $cardNumber, string $expYear, string $expMonth, string $cvc, string $description) 
+    public function createCharge(int $amount, string $currency, string $cardNumber, string $expireYear, string $expireMonth, string $cvc, string $description) 
     {
         
-        $stripe = $this->createCardRecord($cardNumber, $expYear, $expMonth, $cvc);
+        $stripe = $this->createCardRecord($cardNumber, $expireYear, $expireMonth, $cvc);
         
         $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
 

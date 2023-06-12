@@ -1,7 +1,6 @@
 <?php
 namespace App\Services\Amadeus;
  
-use App\DTO\AmadeusFlightOfferData as DTOAmadeusFlightOfferData;
 use App\Helpers\Constants;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;

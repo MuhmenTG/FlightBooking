@@ -1,7 +1,7 @@
 <?php
 
 declare(strict_types=1);
-namespace App\Services;
+namespace App\Services\BackOffice;
 
 use App\Models\Faq;
 use App\Models\UserAccount;
@@ -10,7 +10,7 @@ use App\Repositories\BackOfficeRepository;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 
-class BackOfficeService {
+class BackOfficeService implements IBackOfficeService {
     protected $backOfficeRepository;
 
     public function __construct(BackOfficeRepository $backOfficeRepository)
@@ -92,7 +92,7 @@ class BackOfficeService {
         return $faq;
     }
 
-  static function findUserEnquiryById(int $id): ?UserEnquiry
+    public static function findUserEnquiryById(int $id): ?UserEnquiry
     {
         $userEnquiry = UserEnquiry::ById($id);
         if($userEnquiry){

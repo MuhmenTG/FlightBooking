@@ -8,7 +8,7 @@ use App\Http\Resources\AgentResource;
 use App\Models\Faq;
 use App\Models\UserAccount;
 use App\Models\UserRole;
-use App\Services\BackOfficeService;
+use App\Services\BackOffice\IBackOfficeService;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -19,11 +19,11 @@ class AdminController extends Controller
 {
     //
 
-    protected $backOfficeService;
+    protected $IbackOfficeService;
 
-    public function __construct(BackOfficeService $backOfficeService)
+    public function __construct(IBackOfficeService $IbackOfficeService)
     {
-        $this->backOfficeService = $backOfficeService;
+        $this->IbackOfficeService = $IbackOfficeService;
     }
 
     public function createAgent(Request $request)
@@ -43,7 +43,7 @@ class AdminController extends Controller
         }
 
         try {
-            $userAccount = $this->backOfficeService->createAgent(
+            $userAccount = $this->IbackOfficeService->createAgent(
                 $request->input('firstName'),
                 $request->input('lastName'),
                 $request->input('email'),
@@ -62,21 +62,23 @@ class AdminController extends Controller
     public function editAgent(int $agentId, Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'firstName'     => 'required|string',
-            'lastName'      => 'required|string',
-            'password'      => 'required|string',
-            'email'         => 'required|email',
-            'status'        => 'required|string',
-            'isAdmin'       => 'required|boolean',
-            'isAgent'       => 'required|boolean',
+            'firstName'     => 'nullable|string',
+            'lastName'      => 'nullable|string',
+            'password'      => 'nullable|string',
+            'email'         => 'nullable|email',
+            'status'        => 'nullable|string',
+            'isAdmin'       => 'nullable|boolean',
+            'isAgent'       => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
             return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
+        echo     $request->input('firstName');exit;
+
         try {
-            $userAccount = $this->backOfficeService->editAgent(
+            $userAccount = $this->IbackOfficeService->editAgent(
                 $agentId,
                 $request->input('firstName'),
                 $request->input('password'),
@@ -94,7 +96,7 @@ class AdminController extends Controller
         }
     }
 
-    public function getSpecificAgentDetails(int $agentId)
+    public function getpecificAgentDetails(int $agentId)
     {
         try {
             $userAccount = $this->backOfficeService->getAgentById($agentId);
