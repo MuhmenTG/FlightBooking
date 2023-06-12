@@ -3,6 +3,6 @@ export interface AccountRequest {
     lastName: string;
     email: string;
     status: string;
-    isAdmin: boolean;
-    isAgent: boolean;
+    isAdmin: number;
+    isAgent: number;
 }
