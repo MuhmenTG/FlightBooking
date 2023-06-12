@@ -27,5 +27,8 @@ class CreateSuperUser extends Command
         $userAccount->setIsAdmin(1);
         $userAccount->setStatus(0);
         $userAccount->save();
+
+        $this->info('Superuser created successfully!');
+
     }
 }

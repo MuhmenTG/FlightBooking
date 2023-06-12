@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Repositories\TravelAgentRepository;
 use App\Services\Amadeus\AmadeusService;
 use App\Services\Amadeus\IAmadeusService;
+use App\Services\Authentication\AuthenticationService;
+use App\Services\Authentication\IAuthenticationService;
 use App\Services\BackOffice\BackOfficeService;
 use App\Services\BackOffice\IBackOfficeService;
 use App\Services\Booking\BookingService;
@@ -33,6 +35,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IPaymentService::class, PaymentService::class);
 
         $this->app->bind(IBackOfficeService::class, BackOfficeService::class);
+
+        $this->app->bind(IAuthenticationService::class, AuthenticationService::class);
+
 
 
     }

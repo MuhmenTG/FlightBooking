@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Services\Authentication\IAuthenticationService;
 use App\Services\AuthenticationService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -10,6 +11,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticationController extends Controller
 {
+    protected $IAuthenticationService;
+
+    public function __construct(IAuthenticationService $IAuthenticationService)
+    {
+        $this->IAuthenticationService = $IAuthenticationService;
+    }
+
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -24,7 +32,7 @@ class AuthenticationController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
 
-        $response = AuthenticationService::authenticate($email, $password);
+        $response = $this->IAuthenticationService->authenticate($email, $password);
 
         if (!$response) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::CREDENTIALS_WRONG, Response::HTTP_FORBIDDEN);

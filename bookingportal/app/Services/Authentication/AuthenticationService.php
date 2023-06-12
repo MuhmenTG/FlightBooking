@@ -1,13 +1,15 @@
 <?php
 
 declare(strict_types=1);
-namespace App\Services;
+
+namespace App\Services\Authentication;
+
 use App\Models\UserAccount;
 use Illuminate\Support\Facades\Hash;
 
-class AuthenticationService {
+class AuthenticationService implements IAuthenticationService {
 
-    public static function authenticate(string $email, string $password) : array
+    public function authenticate(string $email, string $password) : ?array
     {
         $user = UserAccount::ByEmail($email)->first();
 
