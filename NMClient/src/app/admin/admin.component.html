@@ -1,5 +1,5 @@
 <div class="component d-flex justify-content-center">
-    <form class="w-25" #loginReq="ngForm" (submit)="submitForm(loginReq)">
+    <form #loginReq="ngForm" (submit)="submitForm(loginReq)">
 
         <div class="d-flex flex-row my-2 justify-content-start">
             <input required class="form-control mx-2 px-2" placeholder="E-mail"
