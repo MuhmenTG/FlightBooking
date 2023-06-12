@@ -2,3 +2,15 @@
 .component {
     margin: 10vh 10vw;
 }
+
+form {
+    background-color: skyblue;
+    border-radius: 10px;
+    border-style: solid;
+    border-color: white;
+}
+
+body {
+    background-image: url("/assets/images/Lofoten.jpeg");
+    background-repeat: no-repeat;
+}
