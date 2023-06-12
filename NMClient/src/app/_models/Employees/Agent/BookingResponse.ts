@@ -1,3 +1,4 @@
-export interface BookingResponse {
-    
+export interface agentBookingResponse {
+    cancellation: boolean;
+    hotel: 
 }
