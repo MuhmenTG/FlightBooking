@@ -20,9 +20,7 @@ export class AppComponent implements OnInit {
   constructor(private _httpService: HttpService, private router: Router) { }
 
   ngOnInit() {
-    this.sessionUsername = sessionStorage?.getItem('user');
-    this.sessionRole = sessionStorage?.getItem('role');
-    this.sessionToken = sessionStorage?.getItem('token');
+    this.modifySessionInfo();
 
     this._httpService.getAccessToken().subscribe(accessTokenResponse => {
       this._httpService.setHttpOptions(accessTokenResponse.access_token);
@@ -31,9 +29,9 @@ export class AppComponent implements OnInit {
   }
 
   modifySessionInfo(): void {
-    this.sessionUsername = sessionStorage.getItem('user');
-    this.sessionRole = sessionStorage.getItem('role');
-    this.sessionToken = sessionStorage.getItem('token');
+    this.sessionUsername = sessionStorage?.getItem('user');
+    this.sessionRole = sessionStorage?.getItem('role');
+    this.sessionToken = sessionStorage?.getItem('token');
   }
 
   logout(): void {
