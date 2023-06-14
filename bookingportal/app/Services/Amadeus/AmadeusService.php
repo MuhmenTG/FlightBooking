@@ -70,7 +70,6 @@ class AmadeusService implements IAmadeusService {
         $params = Arr::query($queryParams);
         $url .= '?' . $params;
 
-        echo $url;exit;
         return $url;
     }      
 

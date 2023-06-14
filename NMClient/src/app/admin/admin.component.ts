@@ -17,7 +17,13 @@ export class AdminComponent implements OnInit{
   constructor(private _adminService: AdminService){};
 
   ngOnInit(): void {
-    // this._adminService.getListOfAccounts().subscribe(response => this.accounts = response);
+    var token = sessionStorage.getItem('token');
+    if (token != null){
+      this._adminService.setHttpOptionsTest(token);
+    }
+
+    this._adminService.getListOfAccounts().subscribe(response => this.accounts = response);
+    console.log(this.accounts);
   }
 
   submitForm(form: NgForm) {
@@ -26,9 +32,9 @@ export class AdminComponent implements OnInit{
     } else {
       
       console.log(this.model);
-      // this._adminService.createAccount(this.model).subscribe(response => {
-      //   console.log(response);
-      // })
+      this._adminService.createAccount(this.model).subscribe(response => {
+        console.log(response);
+      });
     }
   }
 }

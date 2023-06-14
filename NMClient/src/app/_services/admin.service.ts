@@ -14,7 +14,7 @@ export class AdminService extends HttpService{
 
   // Accounts
   createAccount(body: AccountRequest): Observable<AccountResponse> {
-    return this.http.post<AccountResponse>(this.apiUrl + "/createAgent", JSON.stringify(body), this.httpOptions);
+    return this.http.post<AccountResponse>(this.apiUrl + "/createAgent", JSON.stringify(body), this.httpOptionsAccount);
   }
 
   editAgent(id: number, body: AccountRequest): Observable<AccountResponse> {
@@ -26,7 +26,7 @@ export class AdminService extends HttpService{
   }
 
   getListOfAccounts(): Observable<AccountResponse[]> {
-    return this.http.get<AccountResponse[]>(this.apiUrl + "/showListOfAgent");
+    return this.http.get<AccountResponse[]>(this.apiUrl + "/showListOfAgent", this.httpOptionsAccount);
   }
 
   deactivateAccount(id: number): Observable<AccountResponse> {

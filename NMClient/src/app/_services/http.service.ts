@@ -10,8 +10,9 @@ import { environment } from 'src/environments/environment.development';
 export class HttpService {
   protected amadeusUrl = environment.amadeusApiUrl;
   protected static httpOptionsBearer = {};
+  protected httpOptionsAccount = {};
   protected http: HttpClient;
-  private static accessTokenAge: number = 0;
+  private static accessTokenAge: number = Date.now();
   private static accessTokenStatus: boolean = false;
 
   private accessTokenParameters = new HttpParams()
@@ -43,11 +44,28 @@ export class HttpService {
     console.log(HttpService.accessTokenAge);
   }
 
+  setHttpOptionsTest(access_token: string): void {
+    this.httpOptionsAccount = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer " + access_token
+      })
+    }
+
+    console.log(this.httpOptionsAccount);
+  }
+
   getAccessToken(): Observable<AccessTokenResponse> {
     return this.http.post<AccessTokenResponse>(this.amadeusUrl + "/security/oauth2/token", this.accessTokenParameters);
   }
 
   isAccessToken(): boolean {
     return HttpService.accessTokenStatus;
+  }
+
+  getMinutesPassed(startTimeInMS: number) {
+    const diff = Date.now() - startTimeInMS;
+
+    return (diff / 60000);
   }
 }

@@ -1,5 +1,5 @@
 export interface AccountResponse {
-    agentId: number;
+    id: number;
     firstName: string;
     lastName: string;
     email: string;
