@@ -1,4 +1,12 @@
 export interface LoginResponse {
-    user: string;
+    user: User;
     token: string;
+}
+
+interface User {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    isAdmin: boolean;
 }
