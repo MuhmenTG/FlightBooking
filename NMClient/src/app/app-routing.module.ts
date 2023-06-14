@@ -9,7 +9,8 @@ const routes: Routes = [
   { path: '', component: SearchFlightsComponent },
   { path: 'hotels', component: SearchHotelsComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'admin', component: AdminComponent}
+  { path: 'admin', component: AdminComponent},
+  { path: 'showbooking', component: AdminComponent}
 ];
 
 @NgModule({
