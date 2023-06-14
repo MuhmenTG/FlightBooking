@@ -8,6 +8,7 @@ use App\Models\HotelBooking;
 use App\Models\UserAccount;
 use App\Models\UserEnquiry;
 use App\Services\BackOfficeService;
+use App\Services\Booking\IBookingService;
 use App\Services\BookingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -16,23 +17,24 @@ use Symfony\Component\HttpFoundation\Response;
 class TravelAgentController extends Controller
 {
     //
-    protected $bookingService;
+    protected $IBookingService;
+    protected 
 
-    public function __construct(BookingService $bookingService)
+    public function __construct(IBookingService $IBookingService)
     {
-        $this->bookingService = $bookingService;
+        $this->IBookingService = $IBookingService;
     }
 
     
     public function cancelHotelBooking(string $bookingReference)
     {
 
-        $isBookingExist = $this->bookingService->getHotelBookingByBookingReference($bookingReference);
+        $isBookingExist = $this->IBookingService->getHotelBookingByBookingReference($bookingReference);
         if (!$isBookingExist) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
 
-        $hotelBooking = $this->bookingService->cancelHotelBooking($bookingReference);
+        $hotelBooking = $this->IBookingService->cancelHotelBooking($bookingReference);
         if (!$hotelBooking) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::NOT_CANCELLABLE, Response::HTTP_NOT_FOUND);
         }
@@ -47,14 +49,14 @@ class TravelAgentController extends Controller
 
     public function cancelFlightBooking(string $bookingReference)
     {
-        $bookedFlightSegments = $this->bookingService->getFlightSegmentsByBookingReference($bookingReference);
-        $bookedFlightPassenger = $this->bookingService->getFlightPassengersByPNR($bookingReference);
+        $bookedFlightSegments = $this->IBookingService->getFlightSegmentsByBookingReference($bookingReference);
+        $bookedFlightPassenger = $this->IBookingService->getFlightPassengersByPNR($bookingReference);
 
         if (!$bookedFlightSegments->isEmpty() && !$bookedFlightPassenger->isEmpty()) {
-            $this->bookingService->cancelFlightBooking($bookingReference);
+            $this->IBookingService->cancelFlightBooking($bookingReference);
 
-            $cancelledBooking = $this->bookingService->getFlightSegmentsByBookingReference($bookingReference);
-            $cancelledBookingPassengers = $this->bookingService->getFlightPassengersByPNR($bookingReference);
+            $cancelledBooking = $this->IBookingService->getFlightSegmentsByBookingReference($bookingReference);
+            $cancelledBookingPassengers = $this->IBookingService->getFlightPassengersByPNR($bookingReference);
 
             return ResponseHelper::jsonResponseMessage([
                 'cancellation' => true,
@@ -217,34 +219,5 @@ class TravelAgentController extends Controller
         return ResponseHelper::jsonResponseMessage($userAccount, 400);
     }
 
-    public function changeGuestDetails(string $bookingReference, Request $request){
-        
-        $validator = Validator::make($request->all(), [
-            'firstName'            => 'required|string',
-            'lastName'             => 'required|string',
-            'email'                => 'required|email',
-        ]);
-
-        $isBookingExist = BookingService::gethotelBookingByBookingReference($bookingReference);
-        if(!$isBookingExist){
-            return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
-        }
-
-        if ($validator->fails()) {
-            return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
-        }
-
-        $bookingReference = $request->input('bookingReference');
-        $firstName = $request->input('firstName');
-        $lastName = $request->input('lastName');
-        $email = $request->input('email');
-        
-        $bookedHotel = HotelBooking::ByHotelBookingReference($bookingReference)->first();
-        $bookedHotel->setMainGuestFirstName($firstName);
-        $bookedHotel->setMainGuestLasName($lastName);
-        $bookedHotel->setMainGuestEmail($email);
-      
-        return ResponseHelper::jsonResponseMessage($bookedHotel, 200);
-    }
 
 }

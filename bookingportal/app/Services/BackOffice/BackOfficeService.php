@@ -92,7 +92,7 @@ class BackOfficeService implements IBackOfficeService {
         return $faq;
     }
 
-    public static function findUserEnquiryById(int $id): ?UserEnquiry
+    public  function findUserEnquiryById(int $id): ?UserEnquiry
     {
         $userEnquiry = UserEnquiry::ById($id);
         if($userEnquiry){

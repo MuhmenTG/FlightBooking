@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 class PublicSiteController extends Controller
 {
     protected $IBookingService;
-    protected $IAmadeusService;
 
     public function __construct(IBookingService $IbookingService)
     {

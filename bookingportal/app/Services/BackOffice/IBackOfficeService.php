@@ -40,5 +40,5 @@ interface IBackOfficeService
         ?int $faqId = null
     ): Faq;
 
-    public static function findUserEnquiryById(int $id): ?UserEnquiry;
+    public function findUserEnquiryById(int $id): ?UserEnquiry;
 }

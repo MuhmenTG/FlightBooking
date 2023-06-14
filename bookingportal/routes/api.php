@@ -71,13 +71,7 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
     Route::delete('/admin/removeFaq/{faqId}', [AdminController::class, 'removeFaq']);
     Route::get('/admin/getSpecificFaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
     Route::get('/admin/getAllfaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
-
-    Route::post('/admin/createNewUserRole', [AdminController::class, 'createOrEditUserRole']);
-    Route::put('/admin/editUserRole/{roleId}', [AdminController::class, 'createOrEditUserRole']);
-    Route::delete('/admin/removeUserRole/{roleId}', [AdminController::class, 'removeUserRole']);
-    Route::get('/admin/getUserRole/{roleId}', [AdminController::class, 'showSpecificOrAllUserRoles']);
-    Route::get('/admin/showUserRoles', [AdminController::class, 'showSpecificOrAllUserRoles']);
-
+    
     Route::post('/admin/resetAgentPassword', [AdminController::class, 'resetAgentPassword']);
 });
 
