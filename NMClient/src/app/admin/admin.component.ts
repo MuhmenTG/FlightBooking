@@ -21,7 +21,9 @@ export class AdminComponent implements OnInit{
     if (token != null){
       this._adminService.setHttpOptionsTest(token);
     }
-    // this._adminService.getListOfAccounts().subscribe(response => this.accounts = response);
+
+    this._adminService.getListOfAccounts().subscribe(response => this.accounts = response);
+    console.log(this.accounts);
   }
 
   submitForm(form: NgForm) {

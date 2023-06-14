@@ -39,6 +39,19 @@
             
             <button type="submit" class="btn btn-primary px-2 ms-auto">Create account</button>
         </div>
-
     </form>
+
+    <div *ngIf="accounts != null">
+        <div *ngFor="let account of accounts; let i = index;">
+            <div class="border my-2">
+                            <h1>{{account.id}}</h1>
+                            <h2>Name: {{account.firstName + " " + account.lastName}}</h2>
+                            <h2>Email: {{account.email}}</h2>
+                <div class="d-flex justify-content-end">
+                    <!-- (click)="chooseFlight(offer.id)" -->
+                    <button  type="button" class="btn btn-primary m-2 px-2">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
