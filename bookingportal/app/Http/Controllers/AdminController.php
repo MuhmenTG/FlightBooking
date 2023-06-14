@@ -99,7 +99,7 @@ class AdminController extends Controller
     public function getpecificAgentDetails(int $agentId)
     {
         try {
-            $userAccount = $this->backOfficeService->getAgentById($agentId);
+            $userAccount = $this->IbackOfficeService->getAgentById($agentId);
 
             if (!$userAccount) {
                 return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
@@ -114,13 +114,13 @@ class AdminController extends Controller
 
     public function setAgentAccountToDeactive(int $agentId){
         try {
-            $userAccount = $this->backOfficeService->getAgentById($agentId);
+            $userAccount = $this->IbackOfficeService->getAgentById($agentId);
 
             if (!$userAccount) {
                 return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
             }  
             
-            $deactivatedAgent = $this->backOfficeService->removeAgentAccount($agentId);
+            $deactivatedAgent = $this->IbackOfficeService->removeAgentAccount($agentId);
 
             $agentResource = new AgentResource($deactivatedAgent);
             return $agentResource;
@@ -208,91 +208,6 @@ class AdminController extends Controller
         if($specificFaq){
             ResponseHelper::jsonResponseMessage('Faq successfully deleted', Response::HTTP_OK);
         }
-    }
-
-    public function createOrEditUserRole(Request $request){
-        $validator = Validator::make($request->all(), [
-            'id'                => 'nullable|integer',
-            'roleName'          => 'required|string',
-            'roleCode'          => 'required|string',
-            'roleDescription'   => 'required|string',
-
-        ]);
-
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
-
-        $id = $request->input('id');
-        $roleName = $request->input('roleName');
-        $roleCode = $request->input('roleCode');
-        $roleDescription = $request->input('roleDescription');
-
-        $userRole = $id ? UserRole::byId($id) : new UserRole();
-        $userRole->setRoleName($roleName);
-        $userRole->setRoleCode($roleCode);
-        $userRole->setRoleDescription($roleDescription);
-       
-        if ($userRole->save()) {
-            return ResponseHelper::jsonResponseMessage('New user role successfully created', Response::HTTP_OK);
-        }
-
-        return ResponseHelper::jsonResponseMessage('Failed to create new user role', Response::HTTP_INTERNAL_SERVER_ERROR);
-
-    }
-
-    public function removeUserRole(Request $request){
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
-        ]);
-    
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
-    
-        $id = intval($request->input('id'));
-    
-        $userRole = UserRole::byId($id)->first();
-        if (!$userRole) {
-            return ResponseHelper::jsonResponseMessage('User enquiry not found', Response::HTTP_NOT_FOUND);    
-        }
-        
-        if ($userRole->delete()) {
-            return ResponseHelper::jsonResponseMessage('User enquiry deleted successfully', Response::HTTP_OK);
-        }
-    
-        return ResponseHelper::jsonResponseMessage('UserEnquiry could not be deleted', Response::HTTP_INTERNAL_SERVER_ERROR);
-    }
-
-    public function showSpecificOrAllUserRoles(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'id' => 'nullable|integer|min:1',
-        ]);
-
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
-
-        $id = intval($request->input('id'));
-
-        if ($id) {
-            $userRole = UserRole::byId($id);
-
-            if (!$userRole) {
-                return ResponseHelper::jsonResponseMessage(['error' => 'User role not found'], Response::HTTP_NOT_FOUND);
-            }
-
-            return ResponseHelper::jsonResponseMessage($userRole, 200);
-        }
-
-        $userRoles = UserRole::all();
-
-        if ($userRoles->isEmpty()) {
-            return ResponseHelper::jsonResponseMessage(['error' => 'No user roles found'], Response::HTTP_NOT_FOUND);
-        }
-
-        return ResponseHelper::jsonResponseMessage($userRoles, 200);
     }
 
     public function resetAgentPassword(Request $request){
