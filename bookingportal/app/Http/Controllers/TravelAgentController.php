@@ -18,7 +18,7 @@ class TravelAgentController extends Controller
 {
     //
     protected $IBookingService;
-    protected 
+    
 
     public function __construct(IBookingService $IBookingService)
     {
@@ -115,7 +115,7 @@ class TravelAgentController extends Controller
     
     public function getSpecificUserEnquiry(int $enquiryId)
     {
-        $specificUserEnquiry = BackOfficeService::findUserEnquiryById($enquiryId);
+        $specificUserEnquiry = $this->IBookingService->findUserEnquiryById($enquiryId);
 
         if (!$specificUserEnquiry) {
             return ResponseHelper::jsonResponseMessage(['message' => 'User enquiry not found'], Response::HTTP_NOT_FOUND);
