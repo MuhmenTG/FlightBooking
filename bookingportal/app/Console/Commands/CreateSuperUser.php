@@ -25,7 +25,7 @@ class CreateSuperUser extends Command
         $userAccount->setEmail("admin@admin-nmflights.dk");
         $userAccount->setIsAgent(0);
         $userAccount->setIsAdmin(1);
-        $userAccount->setStatus(0);
+        $userAccount->setStatus(1);
         $userAccount->save();
 
         $this->info('Superuser created successfully!');

@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('departureFrom');
             $table->string('departureTerminal');
             $table->string('departureDateTime');
-            $table->string('arrivelTo');
-            $table->string('arrivelTerminal')->nullable();
-            $table->string('arrivelDate');
+            $table->string('arrivalTo');
+            $table->string('arrivalTerminal')->nullable();
+            $table->string('arrivalDate');
             $table->string('flightDuration');
             $table->string('cabin')->nullable();
             $table->string('fareBasis')->nullable();

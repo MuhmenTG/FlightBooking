@@ -154,18 +154,19 @@ class AdminController extends Controller
         $question = $request->input('question');
         $answer = $request->input('answer');
 
-        $result = BackOfficeService::createOrUpdateFaq($question, $answer);
+        $result = $this->IbackOfficeService->createOrUpdateFaq($question, $answer);
         
         if ($result) {
-            return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_CREATED_SUCCESS, Response::HTTP_OK);
+            return $result;
         }
         
         return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_CREATION_FAILED, Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
-    public function editFaq(int $faqId, Request $request)
+    public function editFaq(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'id'  => 'required|integer',
             'question'  => 'required|string',
             'answer'    => 'required|string',
         ]);
@@ -174,13 +175,14 @@ class AdminController extends Controller
             return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
+        $faqId = intval($request->input('id'));
         $question = $request->input('question');
         $answer = $request->input('answer');
 
-        $result = BackOfficeService::createOrUpdateFaq($question, $answer);
+        $result = $this->IbackOfficeService->createOrUpdateFaq($question, $answer, $faqId);
         
         if ($result) {
-            return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_CREATED_SUCCESS, Response::HTTP_OK);
+            return $result;
         }
         
         return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_CREATION_FAILED, Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -200,9 +202,11 @@ class AdminController extends Controller
 
     public function removeFaq(int $faqId){
         $specificFaq = Faq::byId($faqId)->first();
+
         if(!$specificFaq){
             return ResponseHelper::jsonResponseMessage('Faq to delete not found', Response::HTTP_NOT_FOUND);    
         }
+        
         $specificFaq->delete();
 
         if($specificFaq){

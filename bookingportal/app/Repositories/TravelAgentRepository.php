@@ -107,11 +107,11 @@ class TravelAgentRepository
             $flightBooking->setDepartureTerminal($flightSegment->departureTerminal);
         }
 
-        $flightBooking->setArrivelTo($flightSegment->arrivelTo);
-        $flightBooking->setArrivelDate($flightSegment->arrivelDateTime);
+        $flightBooking->setArrivalTo($flightSegment->arrivelTo);
+        $flightBooking->setArrivalDate($flightSegment->arrivelDateTime);
 
         if (isset($flightSegment->arrivelTerminal)) {
-            $flightBooking->setArrivelTerminal($flightSegment->arrivelTerminal);
+            $flightBooking->setArrivalTerminal($flightSegment->arrivelTerminal);
         }
 
         $flightBooking->setFlightDuration($flightSegment->flightDuration);

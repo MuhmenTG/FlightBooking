@@ -34,7 +34,7 @@ interface IBackOfficeService
 
     public function getAllAgents(): array|false;
 
-    public static function createOrUpdateFaq(
+    public function createOrUpdateFaq(
         string $question,
         string $answer,
         ?int $faqId = null

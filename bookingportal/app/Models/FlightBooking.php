@@ -20,9 +20,9 @@ class FlightBooking extends Model
         const COL_DEPARTUREFROM = 'departureFrom';
         const COL_DEPARTURETERMINAL = 'departureTerminal';     
         const COL_DEPARTUREDATETIME = 'departureDateTime';     
-        const COL_ARRIVELTO = 'arrivelTo';
-        const COL_ARRIVELTERMINAL = 'arrivelTerminal';
-        const COL_ARRIVELDATE = 'arrivelDate';
+        const COL_ARRIVALTO = 'arrivalTo';
+        const COL_ARRIVALTERMINAL = 'arrivalTerminal';
+        const COL_ARRIVALDATE = 'arrivalDate';
         const COL_FLIGHTDURATION = 'flightDuration';
         const COL_CABIN = 'cabin';
         const COL_FAREBASIS = 'fareBasis';
@@ -106,28 +106,28 @@ class FlightBooking extends Model
                 $this->departureDateTime = $value;
         }
 
-        public function getArrivelTo() {
-                return $this->arrivelTo;
+        public function getArrivalTo() {
+                return $this->arrivalTo;
         }
 
-        public function setArrivelTo($value) {
-                $this->arrivelTo = $value;
+        public function setArrivalTo($value) {
+                $this->arrivalTo = $value;
         }
 
-        public function getArrivelTerminal() {
-                return $this->arrivelTerminal;
+        public function getArrivalTerminal() {
+                return $this->arrivalTerminal;
         }
 
-        public function setArrivelTerminal($value) {
-                $this->arrivelTerminal = $value;
+        public function setArrivalTerminal($value) {
+                $this->arrivalTerminal = $value;
         }
 
-        public function getArrivelDate() {
-                return $this->arrivelDate;
+        public function getArrivalDate() {
+                return $this->arrivalDate;
         }
 
-        public function setArrivelDate($value) {
-                $this->arrivelDate = $value;
+        public function setArrivalDate($value) {
+                $this->arrivalDate = $value;
         }
 
         public function getFlightDuration() {

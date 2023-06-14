@@ -76,7 +76,7 @@ class BackOfficeService implements IBackOfficeService {
         return $agents;
     }
      
-    public static function createOrUpdateFaq(string $question, string $answer, int $faqId = null) : Faq
+    public function createOrUpdateFaq(string $question, string $answer, int $faqId = null) : Faq
     {
         if($faqId && $faqId !== null){
             $faq = Faq::byId($faqId)->first();
@@ -84,8 +84,9 @@ class BackOfficeService implements IBackOfficeService {
                 return false;
             }
         }
-        $faq = new Faq();
-
+        else{
+            $faq = new Faq();
+        }
         $faq->setQuestion($question);
         $faq->setAnswer($answer);
         $faq->save();
