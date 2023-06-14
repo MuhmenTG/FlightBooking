@@ -26,7 +26,7 @@ export class AdminService extends HttpService{
   }
 
   getListOfAccounts(): Observable<AccountResponse[]> {
-    return this.http.get<AccountResponse[]>(this.apiUrl + "/showListOfAgent");
+    return this.http.get<AccountResponse[]>(this.apiUrl + "/showListOfAgent", this.httpOptionsAccount);
   }
 
   deactivateAccount(id: number): Observable<AccountResponse> {
