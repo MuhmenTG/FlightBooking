@@ -11,7 +11,7 @@ class SendEmail
 {
     public static function sendEmailWithAttachments(string $recipientName, string $recipientEmail, string $subject, string $text, array $attachments = null) : bool{
         $email = new Mail();
-        $email->setFrom('muhmenpk@gmail.com', 'N&M flights booking');
+        $email->setFrom('nmflights-costumerservice@hotmail.com', 'N&M flights booking');
         $email->setSubject($subject);
         $email->addTo($recipientEmail, $recipientName);
         $email->addContent("text/plain", $text);
