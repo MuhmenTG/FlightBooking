@@ -57,7 +57,6 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
     Route::post('/admin/setAgentAccountToDeactive/{agentId}', [AdminController::class, 'setAgentAccountToDeactive']);
     Route::get('/admin/showListOfAgent', [AdminController::class, 'showListOfTravlAgent']);
     
-        
     Route::post('/admin/createNewFaq', [AdminController::class, 'createNewFaq']);
     Route::post('/admin/editFaq', [AdminController::class, 'editFaq']);
     Route::get('/admin/getSpecificFaq/{faqId}', [AdminController::class, 'getSpecificFaq']);

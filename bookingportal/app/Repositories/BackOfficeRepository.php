@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\UserAccount;
+use App\Models\UserEnquiry;
 
 class BackOfficeRepository {
 
