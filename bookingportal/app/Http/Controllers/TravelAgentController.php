@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Mail\ISendEmailService;
 use App\Mail\SendEmail;;
 use App\Models\HotelBooking;
 use App\Models\UserAccount;
@@ -18,33 +19,14 @@ class TravelAgentController extends Controller
 {
     //
     protected $IBookingService;
+    protected $IEmailSendService;
+
     
 
-    public function __construct(IBookingService $IBookingService)
+    public function __construct(IBookingService $IBookingService, ISendEmailService $IEmailSendService)
     {
         $this->IBookingService = $IBookingService;
-    }
-
-    
-    public function cancelHotelBooking(string $bookingReference)
-    {
-
-        $isBookingExist = $this->IBookingService->getHotelBookingByBookingReference($bookingReference);
-        if (!$isBookingExist) {
-            return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
-        }
-
-        $hotelBooking = $this->IBookingService->cancelHotelBooking($bookingReference);
-        if (!$hotelBooking) {
-            return ResponseHelper::jsonResponseMessage(ResponseHelper::NOT_CANCELLABLE, Response::HTTP_NOT_FOUND);
-        }
-
-        $response = [
-            'cancellation' => true,
-            'hotel' => $hotelBooking,
-        ];
-
-        return ResponseHelper::jsonResponseMessage($response, Response::HTTP_OK);
+        $this->IEmailSendService = $IEmailSendService;
     }
 
     public function cancelFlightBooking(string $bookingReference)
@@ -89,7 +71,7 @@ class TravelAgentController extends Controller
         $text = $request->input('text');
         $subject = $request->input('subject');
     
-        $isSend = SendEmail::sendEmailWithAttachments($name, $email, $subject, $text, $attachments);
+        $isSend = $this->IEmailSendService->sendEmailWithAttachments($name, $email, $subject, $text, $attachments);
         
         if($isSend){
             $response = [
@@ -115,7 +97,7 @@ class TravelAgentController extends Controller
     
     public function getSpecificUserEnquiry(int $enquiryId)
     {
-        $specificUserEnquiry = $this->IBookingService->findUserEnquiryById($enquiryId);
+        $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
 
         if (!$specificUserEnquiry) {
             return ResponseHelper::jsonResponseMessage(['message' => 'User enquiry not found'], Response::HTTP_NOT_FOUND);
@@ -125,6 +107,7 @@ class TravelAgentController extends Controller
     }
 
     public function answerUserEnquiry(Request $request){
+
         $validator = Validator::make($request->all(), [
             'id'                    => 'required|integer',
             'responseMessageToUser' => 'required|string',
@@ -134,16 +117,16 @@ class TravelAgentController extends Controller
             return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
         }
     
-        $id = $request->input('id');
+        $enquiryId = $request->input('id');
         $responseMessageToUser = $request->input('responseMessageToUser');
-    
-        $specificUserEnquiry = BackOfficeService::findUserEnquiryById($id);
+
+        $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
         
         if(!$specificUserEnquiry){
             return ResponseHelper::jsonResponseMessage('User enquiry not found', Response::HTTP_NOT_FOUND);    
         }
         
-        $emailSent = SendEmail::sendEmailWithAttachments($specificUserEnquiry->getName(), $specificUserEnquiry->getEmail(),
+        $emailSent = $this->IEmailSendService->sendEmailWithAttachments($specificUserEnquiry->getName(), $specificUserEnquiry->getEmail(),
             $specificUserEnquiry->getSubject(), $responseMessageToUser
         );
     
