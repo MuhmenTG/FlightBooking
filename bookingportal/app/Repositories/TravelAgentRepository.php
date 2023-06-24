@@ -5,24 +5,13 @@ namespace App\Repositories;
 use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
 use App\Models\FlightBooking;
-use App\Models\HotelBooking;
 use App\Models\PassengerInfo;
+use App\Models\UserEnquiry;
 use App\Services\Booking\BookingService;
-use App\Services\PaymentService;
 use Illuminate\Database\Eloquent\Collection;
 
 class TravelAgentRepository
 {
-    public function findHotelBookingByReference(string $bookingReference): ?HotelBooking
-    {
-        return HotelBooking::ByHotelBookingReference($bookingReference)->first();
-    }
-    
-    public function cancelHotelBooking(string $bookingReference): int
-    {
-        return HotelBooking::where(HotelBooking::COL_HOTELBOOKINGREFERENCE, $bookingReference)->update(['cancelled' => true]);
-    }
-    
     public function findFlightSegmentsByBookingReference(string $bookingReference): Collection
     {
         return FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();
@@ -43,7 +32,8 @@ class TravelAgentRepository
         return PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->update(['is_cancelled' => true]);
     }
     
-    public function bookPassengers(string $bookingReference, FlightOfferPassengerDTO $passenger){
+    public function bookPassengers(string $bookingReference, FlightOfferPassengerDTO $passenger) : bool
+    {
         $passengerInfo = new PassengerInfo();
         $passengerInfo->setPNR($bookingReference);
         $passengerInfo->setPaymentInfoId(1);
@@ -57,7 +47,7 @@ class TravelAgentRepository
         return $passengerInfo->save();
     }
 
-    public function generateTicketNumbers(string $bookingReference): void
+    public function generateTicketNumbers(string $bookingReference)
     {
         $ticketRecord = FlightBooking::ByBookingReference($bookingReference)->first();
         $airlineTicketNumberIssuer = $ticketRecord->getAirline();
@@ -122,5 +112,9 @@ class TravelAgentRepository
         return $flightBooking;
     }
 
+    public function getUserEnquiryById (int $enquiryId){
+       $specificUserEnquiry = UserEnquiry::byId($enquiryId)->first();
+       return $specificUserEnquiry;
+    }
 }
 

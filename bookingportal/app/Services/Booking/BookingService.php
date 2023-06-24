@@ -5,27 +5,25 @@ namespace App\Services\Booking;
 
 use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
-use App\DTO\HotelSelectionDTO;
-use App\Mail\SendEmail;
+use App\Mail\ISendEmailService;
 use App\Models\Airline;
-use App\Models\FlightBooking;
-use App\Models\HotelBooking;
 use App\Models\PassengerInfo;
 use App\Models\Payment;
 use App\Models\UserEnquiry;
 use App\Repositories\TravelAgentRepository;
 use App\Services\Booking\IBookingService;
-use DateTime;
 use Exception;
 use InvalidArgumentException;
 
 class BookingService implements IBookingService {
 
     protected $bookingRepository;
+    protected $IEmailSendService;
 
-    public function __construct(TravelAgentRepository $bookingRepository)
+    public function __construct(TravelAgentRepository $bookingRepository, ISendEmailService $IEmailSendService)
     {
         $this->bookingRepository = $bookingRepository;
+        $this->IEmailSendService = $IEmailSendService;
     }
 
     public function createFlightBookingRecord(array $flightData, string $bookingReference)
@@ -55,34 +53,6 @@ class BookingService implements IBookingService {
         }
 
         return $bookedSegments;
-    }
-
-    public static function createHotelRecord(HotelSelectionDTO $HotelSelectionDTO, string $bookingReference, string $firstName, string $lastName, string $email, string $paymentId){
-
-        $hotelBooking = new HotelBooking();
-        $hotelBooking->setHotelBookingReference($bookingReference);
-        $date = new DateTime();
-        $hotelBooking->setIssueDate($date);
-        $hotelBooking->setHotelId($HotelSelectionDTO->hotelId ?? "0");
-        $hotelBooking->setHotelOfferId($HotelSelectionDTO->hotelOfferId);
-        $hotelBooking->setHotelName($HotelSelectionDTO->name);
-        $hotelBooking->setHotelLocation($HotelSelectionDTO->countryCode);
-        $hotelBooking->setHotelCity($HotelSelectionDTO->cityCode);
-        $hotelBooking->setHotelContact("Something place holder");
-        $hotelBooking->setCheckInDate($HotelSelectionDTO->checkInDate);
-        $hotelBooking->setCheckOutDate($HotelSelectionDTO->checkOutDate);
-        $hotelBooking->setRoomType($HotelSelectionDTO->roomType);
-        $hotelBooking->setNumberOfAdults($HotelSelectionDTO->guestsAdults);
-        $hotelBooking->setMainGuestFirstName($firstName);
-        $hotelBooking->setMainGuestLasName($lastName);
-        $hotelBooking->setMainGuestEmail($email);
-        $hotelBooking->setPoliciesCheckInOutCheckIn($HotelSelectionDTO->policiesCheckInOutCheckIn);
-        $hotelBooking->setPoliciesCheckInOutCheckOut($HotelSelectionDTO->policiesCheckInOutCheckOut);
-        $hotelBooking->setPoliciesCancellationDeadline($HotelSelectionDTO->policiesCancellationDeadline);
-        $hotelBooking->setDescription($HotelSelectionDTO->description);
-        $hotelBooking->setPaymentInfoId($paymentId);
-        $hotelBooking->save();
-        return $hotelBooking;
     }
 
     public function bookFlight(array $flightData): array
@@ -138,7 +108,7 @@ class BookingService implements IBookingService {
 
         $email = $this->bookingRepository->getPassengerEmail($bookedPassengers);
 
-        SendEmail::sendEmailWithAttachments("Muhmen", $email, $bookingReference, "Booking");
+        $this->IEmailSendService->sendEmailWithAttachments("Muhmen", $email, $bookingReference, "Booking");
 
         return $booking;
     }
@@ -160,8 +130,6 @@ class BookingService implements IBookingService {
         $bookedFlightSegments = $this->bookingRepository->findFlightSegmentsByBookingReference($bookingReference);
         $bookedFlightPassenger = $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
         
-        $bookedHotel = $this->bookingRepository->findHotelBookingByReference($bookingReference);
-
         $paymentDetails = Payment::ByNote($bookingReference)->first();
 
         if (!$bookedFlightSegments->isEmpty() && !$bookedFlightPassenger->isEmpty()) {
@@ -173,13 +141,6 @@ class BookingService implements IBookingService {
             ];
         }
 
-        if ($bookedHotel) {
-            return [
-                'success' => true,
-                'hotelVoucher' => $bookedHotel,
-                'payment' => $paymentDetails
-            ];
-        }
 
         return null;
     }
@@ -218,21 +179,11 @@ class BookingService implements IBookingService {
         $enquiry->setTime(time());
         $enquiry->save();
         
-        $userCopy = SendEmail::sendEmailWithAttachments($name, $email, $subject, $message);
+        $userCopy = $this->IEmailSendService->sendEmailWithAttachments($name, $email, $subject, $message);
         if($userCopy){
             return true;
         }            
         return false;
-    }
-
-    public function getHotelBookingByBookingReference(string $bookingReference)
-    {
-        return $this->bookingRepository->findHotelBookingByReference($bookingReference);
-    }
-
-    public function cancelHotelBooking(string $bookingReference)
-    {
-        return $this->bookingRepository->cancelHotelBooking($bookingReference);
     }
 
     public function getFlightSegmentsByBookingReference(string $bookingReference)
@@ -251,4 +202,8 @@ class BookingService implements IBookingService {
         $this->bookingRepository->cancelFlightPassengers($bookingReference);
     }
 
+    public function getUserEnquiryById(int $enquiryId)
+    {
+       return $this->bookingRepository->getUserEnquiryById($enquiryId);
+    }
 }

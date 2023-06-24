@@ -40,15 +40,6 @@ Route::prefix('flight')->group(function () {
     Route::post('payConfirmFlight', [FlightBookingController::class, 'payFlightConfirmation']);
 });
 
-Route::prefix('hotel')->group(function () {
-    
-    Route::post('searchSelectHotel', [HotelBookingController::class, 'searchHotel']);
-    Route::post('availiabilityOfASpecificHotel', [HotelBookingController::class, 'availiabilityOfASpecificHotel']);
-
-    Route::get('reviewSelectedHotelOfferInfo/{hotelOfferId}', [HotelBookingController::class, 'reviewSelectedHotelOfferInfo']);
-    Route::post('bookHotel', [HotelBookingController::class, 'bookHotel']);
-});
-
 Route::prefix('public')->group(function () {
     Route::get('retriveBooking/{bookingReference}', [PublicSiteController::class, 'retrieveBookingInformation']);
     Route::put('updateHotelGuestInfo/{hotelBookingReference}', [TravelAgentController::class, 'changeGuestDetails']);

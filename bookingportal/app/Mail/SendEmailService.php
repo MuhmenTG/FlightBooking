@@ -7,9 +7,9 @@ use Illuminate\Mail\Mailables\Attachment;
 use SendGrid;
 use SendGrid\Mail\Mail;
 
-class SendEmail
+class SendEmailService implements ISendEmailService
 {
-    public static function sendEmailWithAttachments(string $recipientName, string $recipientEmail, string $subject, string $text, array $attachments = null) : bool{
+    public function sendEmailWithAttachments(string $recipientName, string $recipientEmail, string $subject, string $text, array $attachments = null) : bool{
         $email = new Mail();
         $email->setFrom('nmflights-costumerservice@hotmail.com', 'N&M flights booking');
         $email->setSubject($subject);
@@ -27,7 +27,7 @@ class SendEmail
             }
         }
     
-        $sendgrid = new SendGrid('');
+        $sendgrid = new SendGrid(getenv('SEND_GRID_API_KEY'));
         try {
             $sendgrid->send($email);
             return true;
