@@ -24,6 +24,17 @@ class Controller extends BaseController
     const FLIGHT_DATA = 'data';
     const FLIGHT_OFFERS_PRICING = 'flight-offers-pricing';
 
+    /**
+    * Send an HTTP request.
+    *
+    * @param string $url The URL to send the request to.
+    * @param string $accessToken The access token for authorization.
+    * @param string $method (Optional) The HTTP method to use. Defaults to 'GET'.
+    * @param array|null $data (Optional) The data to send with the request. Only applicable for non-GET requests.
+    * @return mixed The response body or a JSON response in case of errors.
+    *
+    * @throws GuzzleException If an error occurs during the HTTP request.
+    */
     public function sendhttpRequest(string $url, string $accessToken, string $method = self::HTTP_METHOD_GET, array $data = null)
     {
         $client = new Client();

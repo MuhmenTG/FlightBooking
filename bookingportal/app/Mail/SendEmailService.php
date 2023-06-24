@@ -9,6 +9,9 @@ use SendGrid\Mail\Mail;
 
 class SendEmailService implements ISendEmailService
 {
+    /**
+    * {@inheritDoc}
+    */
     public function sendEmailWithAttachments(string $recipientName, string $recipientEmail, string $subject, string $text, array $attachments = null) : bool{
         $email = new Mail();
         $email->setFrom('nmflights-costumerservice@hotmail.com', 'N&M flights booking');

@@ -13,11 +13,21 @@ class PublicSiteController extends Controller
 {
     protected $IBookingService;
 
+    /**
+    * PublicSiteController constructor.
+    * @param IBookingService $IbookingService
+    */
     public function __construct(IBookingService $IbookingService)
     {
         $this->IBookingService = $IbookingService;
     }
 
+    /**
+    * Retrieve booking information by booking reference.
+    *
+    * @param string $bookingReference The booking reference.
+    * @return \Illuminate\Http\JsonResponse The JSON response.
+    */
     public function retrieveBookingInformation(string $bookingReference)
     {
         if ($bookingReference === null) {
@@ -33,6 +43,12 @@ class PublicSiteController extends Controller
         return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
     }
 
+    /**
+    * Send an enquiry or support request.
+    *
+    * @param Request $request The request object.
+    * @return \Illuminate\Http\JsonResponse The JSON response.
+    */
     public function sendEnquirySupport(Request $request){
         $validator = Validator::make($request->all(), [
             'name'            =>  'required|string',
@@ -62,7 +78,11 @@ class PublicSiteController extends Controller
         return ResponseHelper::jsonResponseMessage(ResponseHelper::ENQUIRY_NOT_SENT, Response::HTTP_BAD_REQUEST);
     }
     
-
+    /**
+    * Get all FAQs.
+    *
+    * @return \Illuminate\Http\JsonResponse The JSON response.
+    */
     public function getAllFaqs(){
         $faqs = Faq::all();
         if($faqs->isEmpty()){

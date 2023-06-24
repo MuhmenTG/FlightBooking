@@ -168,21 +168,17 @@ class BookingService implements IBookingService {
         return $bookingNumber;
     }
 
-    public function sendRquestContactForm(string $name, string $email, string $subject, string $message, string $bookingReference = null){
-        
-        $enquiry = new UserEnquiry();
-        $enquiry->setName($name);
-        $enquiry->setEmail($email);
-        $enquiry->setSubject($subject);
-        $enquiry->setBookingreference($bookingReference ?? "Ikke relevant");
-        $enquiry->setMessage($message);
-        $enquiry->setTime(time());
-        $enquiry->save();
-        
+    public function sendRquestContactForm(string $name, string $email, string $subject, string $message, string $bookingReference = null)
+    {
+       
+        $registeredEnquiry = $this->bookingRepository->registerEnquiry($name, $email, $subject, $message);
+        if($registeredEnquiry){
+            
         $userCopy = $this->IEmailSendService->sendEmailWithAttachments($name, $email, $subject, $message);
         if($userCopy){
             return true;
-        }            
+        }   
+        }         
         return false;
     }
 

@@ -9,15 +9,33 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * AuthenticationController
+ *
+ * This controller handles user authentication-related operations such as login and logout.
+ *
+ * @package App\Http\Controllers
+ */
 class AuthenticationController extends Controller
 {
     protected $IAuthenticationService;
 
+    /**
+    * Create a new AuthenticationController instance.
+    *
+    * @param IAuthenticationService $IAuthenticationService The authentication service.
+    */
     public function __construct(IAuthenticationService $IAuthenticationService)
     {
         $this->IAuthenticationService = $IAuthenticationService;
     }
 
+    /**
+    * Handle user login request.
+    *
+    * @param Request $request The HTTP request object.
+    * @return \Illuminate\Http\JsonResponse The JSON response.
+    */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -41,6 +59,12 @@ class AuthenticationController extends Controller
         return ResponseHelper::jsonResponseMessage($response, Response::HTTP_OK);
     }
 
+    /**
+    * Handle user logout request.
+    *
+    * @param Request $request The HTTP request object.
+    * @return \Illuminate\Http\JsonResponse The JSON response.
+    */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();

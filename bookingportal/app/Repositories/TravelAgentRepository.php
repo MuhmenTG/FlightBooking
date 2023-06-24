@@ -116,5 +116,17 @@ class TravelAgentRepository
        $specificUserEnquiry = UserEnquiry::byId($enquiryId)->first();
        return $specificUserEnquiry;
     }
+
+    
+    public function registerEnquiry(string $name, string $email, string $subject, string $message){
+        $enquiry = new UserEnquiry();
+        $enquiry->setName($name);
+        $enquiry->setEmail($email);
+        $enquiry->setSubject($subject);
+        $enquiry->setBookingreference($bookingReference ?? "Ikke relevant");
+        $enquiry->setMessage($message);
+        $enquiry->setTime(time());
+        return $enquiry->save();
+    } 
 }
 
