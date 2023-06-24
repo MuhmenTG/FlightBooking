@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Mail\IEmailService;
+use App\Mail\ISendEmailService;
+use App\Mail\SendEmailService;
 use App\Repositories\TravelAgentRepository;
 use App\Services\Amadeus\AmadeusService;
 use App\Services\Amadeus\IAmadeusService;
@@ -38,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(IAuthenticationService::class, AuthenticationService::class);
 
+        $this->app->bind(ISendEmailService::class, SendEmailService::class);
 
 
     }

@@ -131,7 +131,7 @@ class AdminController extends Controller
 
     public function showListOfTravlAgent()
     {
-        $agents = $this->backOfficeService->getAllAgents();
+        $agents = $this->IbackOfficeService->getAllAgents();
     
         if ($agents === false) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
@@ -166,7 +166,7 @@ class AdminController extends Controller
     public function editFaq(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id'  => 'required|integer',
+            'id'        => 'required|integer',
             'question'  => 'required|string',
             'answer'    => 'required|string',
         ]);
@@ -206,7 +206,7 @@ class AdminController extends Controller
         if(!$specificFaq){
             return ResponseHelper::jsonResponseMessage('Faq to delete not found', Response::HTTP_NOT_FOUND);    
         }
-        
+
         $specificFaq->delete();
 
         if($specificFaq){

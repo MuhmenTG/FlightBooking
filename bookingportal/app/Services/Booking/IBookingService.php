@@ -18,10 +18,6 @@ interface IBookingService
 
     public function sendRquestContactForm(string $name, string $email, string $subject, string $message, string $bookingReference = null);
 
-    public function getHotelBookingByBookingReference(string $bookingReference);
-
-    public function cancelHotelBooking(string $bookingReference);
-
     public function getFlightSegmentsByBookingReference(string $bookingReference);
 
     public function getFlightPassengersByPNR(string $bookingReference);
@@ -29,4 +25,6 @@ interface IBookingService
     public function cancelFlightBooking(string $bookingReference);
 
     public function finalizeFlightReservation(string $bookingReference): ?array;
+
+    public function getUserEnquiryById(int $enquiryId);
 }
