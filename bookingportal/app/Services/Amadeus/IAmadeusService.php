@@ -41,26 +41,4 @@ interface IAmadeusService
     * @return array The formatted flight offer data.
     */
     public function prepareFlightOfferDataForAmadeusValidating(array $jsonFlightData): array;
-
-    /**
-    * Get the list of hotels from Amadeus API for the specified city code.
-    *
-    * @param string $cityCode The city code.
-    * @param string $accessToken The access token.
-    * @return mixed The hotel list.
-    */
-    public function AmadeusHotelListUrl(string $cityCode) : string;
-
-    public function AmadeusSpecificHotelsRoomAvailabilityUrl(
-        string $hotelIds,
-        string $adults,
-        string $checkInDate,
-        string $checkOutDate,
-        string $roomQuantity,
-        ?string $priceRange = null,
-        ?string $paymentPolicy = null,
-        ?string $boardType = null
-    );
-
-    public function reviewSelectedHotelOfferInfo(string $hotelOfferId, string $accessToken);
 }
