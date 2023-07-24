@@ -41,18 +41,6 @@ class PaymentService implements IPaymentService {
         return $payment;
     }
 
-    public function retrieveSpecificBalanceTransaction(string $transactionId): BalanceTransaction
-    {
-        \Stripe\Stripe::setApiKey('your_api_key');
-        return BalanceTransaction::retrieve($transactionId);
-    }
-
-    public function retrieveAllTransactions()
-    {
-        \Stripe\Stripe::setApiKey('your_api_key');
-        return BalanceTransaction::all();
-    }
-
     private function createCardRecord(string $cardNumber, string $expYear, string $expMonth, string $cvc){
 
         if (!ctype_digit($cardNumber) || strlen($cardNumber) < 12 || strlen($cardNumber) > 19) {
@@ -86,4 +74,17 @@ class PaymentService implements IPaymentService {
 
         return $stripe;
     }
+
+    public function retrieveSpecificBalanceTransaction(string $transactionId): BalanceTransaction
+    {
+        \Stripe\Stripe::setApiKey('your_api_key');
+        return BalanceTransaction::retrieve($transactionId);
+    }
+
+    public function retrieveAllTransactions()
+    {
+        \Stripe\Stripe::setApiKey('your_api_key');
+        return BalanceTransaction::all();
+    }
+
 }
