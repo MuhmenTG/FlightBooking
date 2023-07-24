@@ -66,8 +66,14 @@ class AuthenticationController extends Controller
     * @return \Illuminate\Http\JsonResponse The JSON response.
     */
     public function logout(Request $request)
-    {
-        $request->user()->currentAccessToken()->delete();
-        return ResponseHelper::jsonResponseMessage(ResponseHelper::LOGOUT_SUCCESS, Response::HTTP_OK);
+    {    
+        if ($request->user()) {
+            if ($request->user()->currentAccessToken()) {
+                $request->user()->currentAccessToken()->delete();
+                return ResponseHelper::jsonResponseMessage(ResponseHelper::LOGOUT_SUCCESS, Response::HTTP_OK);
+            }
+        }    
+        return ResponseHelper::jsonResponseMessage(ResponseHelper::LOGOUT_SUCCESS, Response::HTTP_NOT_FOUND);
+        
     }
 }

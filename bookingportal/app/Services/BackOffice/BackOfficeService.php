@@ -64,12 +64,9 @@ class BackOfficeService implements IBackOfficeService {
 
     public function getAllAgents(): array|false
     {
-        $agents = [
-            'activatedAgents' => $this->backOfficeRepository->getActivatedAgents(),
-            'deactivatedAgents' => $this->backOfficeRepository->getDeactivatedAgents()
-        ]; 
+        $agents = $this->backOfficeRepository->getActivatedAgents();
 
-        if (empty($agents['activated_agents']) && empty($agents['deactivated_agents'])) {
+        if (empty($agent)) {
             return false;
         }
     

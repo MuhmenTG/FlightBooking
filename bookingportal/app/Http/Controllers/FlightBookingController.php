@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Helpers\Constants;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidationHelper;
+use App\Http\Resources\FlightConfirmationResource;
 use App\Services\Amadeus\IAmadeusService;
 use App\Services\Booking\IBookingService;
 use App\Services\Payment\IPaymentService;
@@ -80,7 +81,8 @@ class FlightBookingController extends Controller
         $includedAirlineCodes = $request->input('includedAirlineCodes');
         $excludedAirlineCodes = $request->input('excludedAirlineCodes');
         $nonStop = boolval($request->input('nonStop'));
-        $accessToken = $request->bearerToken();
+        //$accessToken = $request->bearerToken();
+        $accessToken = $this->getAccessToken();
 
         $constructedSearchUrl = $this->IAmadeusService->AmadeusFlightSearchUrl(
             $originLocationCode,
@@ -110,7 +112,8 @@ class FlightBookingController extends Controller
     public function chooseFlightOffer(Request $request)
     {
         $jsonFlightData = $request->json()->all();
-        $accessToken = $request->bearerToken();
+        $accessToken = $this->getAccessToken();
+        //$accessToken = $request->bearerToken();
               
         if (empty($jsonFlightData)) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::EMPTY_FLIGHT_ARRAY, Response::HTTP_BAD_REQUEST);
@@ -188,10 +191,10 @@ class FlightBookingController extends Controller
         }
         
         try {
-            $booking = $this->IBookingService->finalizeFlightReservation($bookingReference);
+            $booking = $this->IBookingService->finalizeFlightReservation($bookingReference);            
             $payment = $this->IPaymentService->createCharge($grandTotal, Constants::CURRENCY_CODE, $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReference);
             $bookingComplete = [
-                $booking,
+                $payment,
                 $payment
             ];
         } catch (Exception $e) {

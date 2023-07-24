@@ -53,9 +53,9 @@ class AdminController extends Controller
             );
 
             $agentResource = new AgentResource($userAccount);
-            return $agentResource;
+            return ResponseHelper::jsonResponseMessage($agentResource, Response::HTTP_OK, "Agent");
         } catch (Exception $e) {
-            return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_IM_USED);        
+            return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_ALREADY_REPORTED);        
         }
     }
 
@@ -74,9 +74,6 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return ResponseHelper::validationErrorResponse($validator->errors());
         }
-
-        echo     $request->input('firstName');exit;
-
         try {
             $userAccount = $this->IbackOfficeService->editAgent(
                 $agentId,
@@ -96,7 +93,7 @@ class AdminController extends Controller
         }
     }
 
-    public function getpecificAgentDetails(int $agentId)
+    public function getSpecificAgentDetails(int $agentId)
     {
         try {
             $userAccount = $this->IbackOfficeService->getAgentById($agentId);
@@ -106,7 +103,7 @@ class AdminController extends Controller
             }  
             
             $agentResource = new AgentResource($userAccount);
-            return $agentResource;
+            return ResponseHelper::jsonResponseMessage($agentResource, Response::HTTP_OK, "Agent");
         } catch (Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(),Response::HTTP_IM_USED);        
         }
@@ -132,8 +129,8 @@ class AdminController extends Controller
     public function showListOfTravlAgent()
     {
         $agents = $this->IbackOfficeService->getAllAgents();
-    
-        if ($agents === false) {
+        echo $agents;exit;
+        if (!$agents) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
 
@@ -154,10 +151,10 @@ class AdminController extends Controller
         $question = $request->input('question');
         $answer = $request->input('answer');
 
-        $result = $this->IbackOfficeService->createOrUpdateFaq($question, $answer);
+        $newFaq = $this->IbackOfficeService->createOrUpdateFaq($question, $answer);
         
-        if ($result) {
-            return $result;
+        if ($newFaq) {
+            return $newFaq;
         }
         
         return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_CREATION_FAILED, Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -179,10 +176,10 @@ class AdminController extends Controller
         $question = $request->input('question');
         $answer = $request->input('answer');
 
-        $result = $this->IbackOfficeService->createOrUpdateFaq($question, $answer, $faqId);
+        $updatedFaq = $this->IbackOfficeService->createOrUpdateFaq($question, $answer, $faqId);
         
-        if ($result) {
-            return $result;
+        if ($updatedFaq) {
+            return $updatedFaq;
         }
         
         return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_CREATION_FAILED, Response::HTTP_INTERNAL_SERVER_ERROR);

@@ -5,6 +5,7 @@ namespace App\Services\Booking;
 
 use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
+use App\Http\Resources\FlightConfirmationResource;
 use App\Mail\ISendEmailService;
 use App\Models\Airline;
 use App\Models\PassengerInfo;
@@ -98,6 +99,7 @@ class BookingService implements IBookingService {
         $this->bookingRepository->markBookingAsPaid($bookingReference);
 
         $paidFlightBooking = $this->bookingRepository->getPaidFlightBookings($bookingReference);
+        $paidFlightBooking = FlightConfirmationResource::collection($paidFlightBooking);
         $bookedPassengers = $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
 
         $booking = [

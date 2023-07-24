@@ -61,7 +61,7 @@ class BackOfficeRepository {
     
     public function getActivatedAgents(): array
     {
-        $agents = UserAccount::where(UserAccount::COL_STATUS, 1)->get()->ToArray();
+        $agents = UserAccount::all()->toArray();
         return $agents;
     }
 

@@ -42,9 +42,9 @@ class ResponseHelper
     * @param  int  $statusCode  The HTTP status code for the response.
     * @return JsonResponse  The JSON response.
     */
-    public static function jsonResponseMessage($message, int $statusCode): JsonResponse
+    public static function jsonResponseMessage($message, int $statusCode, $key = null): JsonResponse
     {
-        $responseData = is_array($message) ? $message : ['message' => $message];
+        $responseData = is_array($message) ? $message : [$key ?? 'mesage'=> $message];
         return response()->json($responseData, $statusCode);
     }
 }
