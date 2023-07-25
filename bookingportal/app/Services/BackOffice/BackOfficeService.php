@@ -8,6 +8,7 @@ use App\Models\UserAccount;
 use App\Models\UserEnquiry;
 use App\Repositories\BackOfficeRepository;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
 
 class BackOfficeService implements IBackOfficeService {
@@ -33,14 +34,14 @@ class BackOfficeService implements IBackOfficeService {
         return $userAccount;
     }
     
-    public function editAgent(int $agentId, string $firstName, string $password, string $lastName, string $email, string $status, int $isAdmin, int $isAgent): UserAccount
+    public function editAgent(int $agentId, string $firstName, string $lastName, string $email, string $status, int $isAdmin, int $isAgent): UserAccount
     {
         $existingUserAccount = $this->backOfficeRepository->findAgentById($agentId);
         if (!$existingUserAccount) {
             throw new Exception("Agent not found.");
         }
     
-        $userAccount = $this->backOfficeRepository->updateAgent($agentId, Hash::make($password), $firstName, $lastName, $email, $isAdmin, $isAgent, $status);
+        $userAccount = $this->backOfficeRepository->updateAgent($agentId, $firstName, $lastName, $email, $isAdmin, $isAgent, $status);
     
         return $userAccount;
     }
@@ -62,17 +63,26 @@ class BackOfficeService implements IBackOfficeService {
         return $deactivatedAccount;
     }    
 
-    public function getAllAgents(): array|false
+    public function getAllAgents(): Collection
     {
         $agents = $this->backOfficeRepository->getActivatedAgents();
-
-        if (empty($agent)) {
+        
+        if ($agents == null) {
             return false;
         }
     
         return $agents;
     }
+
+    public function getFaqById(int $faqId) : Faq|null {
+        $faq = $this->backOfficeRepository->getSpecificFaq($faqId);
+        if($faq == null || empty($faq)){
+            return null;
+        }
+        return $faq;
+    }
      
+
     public function createOrUpdateFaq(string $question, string $answer, int $faqId = null) : Faq
     {
         if($faqId && $faqId !== null){
