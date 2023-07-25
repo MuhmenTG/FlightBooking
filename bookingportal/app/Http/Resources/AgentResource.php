@@ -20,9 +20,10 @@ class AgentResource extends JsonResource
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'email' => $this->email,
-            'agentPermission' => $this->isAgent,
-            'adminPermission' => $this->isAdmin,
             'accountStatus' => $this->status,
+            'administratorPermission' => $this->isAdmin,
+            'travelAgentPermission' => $this->isAgent,
+            'registeredAt' => $this->registeredAt,
         ];
     }
 }
