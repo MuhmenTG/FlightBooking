@@ -5,6 +5,7 @@ namespace App\Services\BackOffice;
 use App\Models\Faq;
 use App\Models\UserAccount;
 use App\Models\UserEnquiry;
+use Illuminate\Database\Eloquent\Collection;
 
 interface IBackOfficeService
 {
@@ -20,7 +21,6 @@ interface IBackOfficeService
     public function editAgent(
         int $agentId,
         string $firstName,
-        string $password,
         string $lastName,
         string $email,
         string $status,
@@ -32,7 +32,9 @@ interface IBackOfficeService
 
     public function removeAgentAccount(int $agentId): ?UserAccount;
 
-    public function getAllAgents(): array|false;
+    public function getAllAgents(): Collection;
+
+    public function getFaqById(int $faqId) : Faq|null;
 
     public function createOrUpdateFaq(
         string $question,
