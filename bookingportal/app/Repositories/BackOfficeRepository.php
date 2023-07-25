@@ -3,8 +3,10 @@
 declare(strict_types=1);
 namespace App\Repositories;
 
+use App\Models\Faq;
 use App\Models\UserAccount;
 use App\Models\UserEnquiry;
+use Illuminate\Database\Eloquent\Collection;
 
 class BackOfficeRepository {
 
@@ -32,10 +34,9 @@ class BackOfficeRepository {
         return UserAccount::where('email', $email)->first();
     }
 
-    public function updateAgent(int $userId, string $password, string $firstName, string $lastName, string $email, int $isAdmin, int $isAgent, string $status):  UserAccount
+    public function updateAgent(int $agentId, string $firstName, string $lastName, string $email, int $isAdmin, int $isAgent, string $status):  UserAccount
     {
-        $userAccount = UserAccount::ById($userId)->first();
-        $userAccount->setPassword($password);
+        $userAccount = UserAccount::ById($agentId)->first();
         $userAccount->setFirstName($firstName);
         $userAccount->setLastName($lastName);
         $userAccount->setEmail($email);
@@ -59,10 +60,15 @@ class BackOfficeRepository {
         return $userAccount;
     }
     
-    public function getActivatedAgents(): array
+    public function getActivatedAgents(): Collection
     {
-        $agents = UserAccount::all()->toArray();
+        $agents = UserAccount::all();
         return $agents;
+    }
+
+    public function getSpecificFaq(int $faqId) : Faq {
+        $specificFaq = Faq::byId($faqId)->first();
+        return $specificFaq;
     }
 
     public function getDeactivatedAgents(): array
