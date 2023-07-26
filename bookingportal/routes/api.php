@@ -60,7 +60,6 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
     Route::post('/admin/editFaq', [AdminController::class, 'saveFaq']);
     Route::get('/admin/getSpecificFaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
     Route::get('/admin/getAllFaqs', [AdminController::class, 'getSpecificFaq']);
-
     Route::delete('/admin/removeFaq/{faqId}', [AdminController::class, 'removeFaq']);
    
     Route::post('/admin/resetAgentPassword', [AdminController::class, 'resetAgentPassword']);
@@ -74,7 +73,7 @@ Route::middleware(['auth:sanctum', 'isAgent'])->group(function () {
     Route::get('/travelAgent/getBooking/{bookingReference}', [PublicSiteController::class, 'retrieveBookingInformation']);
 
     Route::post('/travelAgent/editPassengerInformation', [TravelAgentController::class, 'editPassengerInformation']);
-    Route::put('/travelAgent/cancelFlight/{flightBookingReference}', [TravelAgentController::class, 'cancelFlightBooking']);    
+    Route::get('/travelAgent/cancelFlight/{flightBookingReference}', [TravelAgentController::class, 'cancelFlightBooking']);    
     Route::post('/travelAgent/sendBooking', [TravelAgentController::class, 'resendBookingConfirmationPDF']);
 
     Route::post('/travelAgent/answerUserEnquiry', [TravelAgentController::class, 'answerUserEnquiry']);

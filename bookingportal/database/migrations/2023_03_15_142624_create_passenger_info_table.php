@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('passenger_info', function (Blueprint $table) {
             $table->id();
-            $table->string('PNR');
+            $table->string('bookingReference');
             $table->integer('PaymentInfoId');
             $table->string('title');
             $table->string('firstName');

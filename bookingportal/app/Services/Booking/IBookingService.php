@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Booking;
 
+use App\Models\PassengerInfo;
+
 interface IBookingService
 {
     public function bookFlight(array $flightData): array;
@@ -27,4 +29,8 @@ interface IBookingService
     public function finalizeFlightReservation(string $bookingReference): ?array;
 
     public function getUserEnquiryById(int $enquiryId);
+
+    public function getSpecificPassengerInBooking(int $passengerId, string $bookingReference);
+
+    public function updatePassenger(PassengerInfo $passenger, string $firstName, string $lastName, string $dateOfBirth, string $email): PassengerInfo;
 }

@@ -99,7 +99,6 @@ class BookingService implements IBookingService {
         $this->bookingRepository->markBookingAsPaid($bookingReference);
 
         $paidFlightBooking = $this->bookingRepository->getPaidFlightBookings($bookingReference);
-        $paidFlightBooking = FlightConfirmationResource::collection($paidFlightBooking);
         $bookedPassengers = $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
 
         $booking = [
@@ -203,5 +202,14 @@ class BookingService implements IBookingService {
     public function getUserEnquiryById(int $enquiryId)
     {
        return $this->bookingRepository->getUserEnquiryById($enquiryId);
+    }
+
+    public function getSpecificPassengerInBooking(int $passengerId, string $bookingReference){
+        return $this->bookingRepository->getSpecificPassengerInBooking($passengerId, $bookingReference);
+    }
+
+    public function updatePassenger(PassengerInfo $passenger, string $firstName, string $lastName, string $dateOfBirth, string $email): PassengerInfo
+    {
+        return $this->bookingRepository->updatePassenger($passenger, $firstName, $lastName, $dateOfBirth, $email);
     }
 }
