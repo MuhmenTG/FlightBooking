@@ -18,7 +18,7 @@ class PassengerInfo extends Model
 
         const COL_ID = 'id';
         const COL_TITLE = 'title';
-        const COL_PNR = 'PNR';
+        const COL_BOOKINGREFERENCE = 'bookingReference';
         const COL_PAYMENTINFOID = 'PaymentInfoId';
         const COL_FIRSTNAME = 'firstName';
         const COL_LASTNAME = 'lastName';
@@ -41,7 +41,7 @@ class PassengerInfo extends Model
 
         public function scopeByBookingReference($query, $val)
         {
-                $query->where('PNR', $val);
+                $query->where('bookingReference', $val);
         }
 
         public function scopeByIsCancelled($query, $val)
@@ -68,14 +68,14 @@ class PassengerInfo extends Model
                 return $this->id;
         }
 
-        public function getPNR()
+        public function getBookingReference()
         {
-                return $this->PNR;
+                return $this->bookingReference;
         }
 
-        public function setPNR($value)
+        public function setBookingReference($value)
         {
-                $this->PNR = $value;
+                $this->bookingReference = $value;
         }
 
         public function getPaymentInfoId()
