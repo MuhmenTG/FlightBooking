@@ -158,9 +158,8 @@ class AdminController extends Controller
     public function getSpecificFaq(int $faqId){
         
         $specificFaq = $this->IbackOfficeService->getFaqById($faqId);
-        $variableType = gettype($specificFaq);
-        echo $variableType;exit;
-        if($specificFaq == null){
+        
+        if(!$specificFaq){
             return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
         
@@ -168,9 +167,9 @@ class AdminController extends Controller
     }
 
     public function removeFaq(int $faqId){
-        $specificFaq = $this->IbackOfficeService->getFaqById($faqId);
+        $specificFaq = Faq::ById($faqId)->first();
 
-        if($specificFaq == null){
+        if($specificFaq === null){
             return ResponseHelper::jsonResponseMessage('Faq to delete not found', Response::HTTP_NOT_FOUND);    
         }
         if($specificFaq->delete()){

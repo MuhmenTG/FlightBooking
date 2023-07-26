@@ -22,7 +22,7 @@ interface IBackOfficeRepository {
     
     public function getActivatedAgents(): Collection;
 
-    public function getSpecificFaq(int $faqId) : Faq;
+    public function getSpecificFaq(int $faqId) : ?Faq;
 
     public function getDeactivatedAgents(): array;
 }

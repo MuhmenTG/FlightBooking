@@ -65,9 +65,12 @@ class BackOfficeRepository implements IBackOfficeRepository{
         return $agents;
     }
 
-    public function getSpecificFaq(int $faqId) : Faq {
+    public function getSpecificFaq(int $faqId) : ?Faq {
         $specificFaq = Faq::byId($faqId)->first();
-        return $specificFaq;
+        if($specificFaq){
+            return $specificFaq;
+        }
+        return null;
     }
 
     public function getDeactivatedAgents(): array

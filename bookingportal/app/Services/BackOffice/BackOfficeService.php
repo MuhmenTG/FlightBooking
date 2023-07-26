@@ -74,11 +74,8 @@ class BackOfficeService implements IBackOfficeService {
         return $agents;
     }
 
-    public function getFaqById(int $faqId) : Faq|null {
+    public function getFaqById(int $faqId) : ?Faq {
         $faq = $this->backOfficeRepository->getSpecificFaq($faqId);
-        if($faq == null || empty($faq)){
-            return null;
-        }
         return $faq;
     }
      
