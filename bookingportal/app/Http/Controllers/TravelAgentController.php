@@ -41,7 +41,7 @@ class TravelAgentController extends Controller
             $cancelledBookingPassengers = $this->IBookingService->getFlightPassengersByPNR($bookingReference);
 
             return ResponseHelper::jsonResponseMessage([
-                'cancellation' => true,
+                'cancellation' => 'booking is cancelled',
                 'PAX' => $cancelledBooking,
                 'flight' => $cancelledBookingPassengers
             ], Response::HTTP_OK);
@@ -57,8 +57,7 @@ class TravelAgentController extends Controller
             'name'      => 'required|string',
             'text'      => 'required|string',
             'subject'   => 'required|string',
-            'files'     => 'required',
-            'files.*'   => 'mimes:pdf|max:2048',
+            'files.*'   => 'mimes:pdf',
         ]);
     
         if ($validator->fails()) {
@@ -117,7 +116,7 @@ class TravelAgentController extends Controller
             return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
         }
     
-        $enquiryId = $request->input('id');
+        $enquiryId = intval($request->input('id'));
         $responseMessageToUser = $request->input('responseMessageToUser');
 
         $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
@@ -140,7 +139,7 @@ class TravelAgentController extends Controller
     
     public function removeUserEnquiry(int $enquiryId)
     {    
-        $specificUserEnquiry = UserEnquiry::byId($enquiryId)->first();
+        $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
         if (!$specificUserEnquiry) {
             return ResponseHelper::jsonResponseMessage('User enquiry not found', Response::HTTP_NOT_FOUND);    
         }
@@ -150,6 +149,55 @@ class TravelAgentController extends Controller
         }
     
         return ResponseHelper::jsonResponseMessage('UserEnquiry could not be deleted', Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    public function editPassengerInformation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'passengerId'       => 'required|integer',
+            'bookingreference'  => 'required|string',
+            'firstName'         => 'required|string',
+            'lastName'          => 'required|string',
+            'dateOfBirth'       => 'required|string',
+            'email'             => 'required|string',
+        ]);
+    
+        if ($validator->fails()) {
+            return ResponseHelper::validationErrorResponse($validator->errors());
+        }
+    
+        $passengerId = intval($request->input('passengerId'));
+        $bookingReference = $request->input('bookingreference');
+        $firstName = $request->input('firstName');
+        $lastName = $request->input('lastName');
+        $dateOfBirth = $request->input('dateOfBirth');
+        $email = $request->input('email');
+
+    
+        $passenger = $this->IBookingService->getSpecificPassengerInBooking($passengerId, $bookingReference);
+    
+        if (!$passenger) {
+            return ResponseHelper::jsonResponseMessage('Passenger not found', Response::HTTP_NOT_FOUND, "UpdatedPassenger");
+        }
+
+        $passenger = $this->IBookingService->updatePassenger($passenger, $firstName, $lastName, $dateOfBirth, $email);
+        
+        return ResponseHelper::jsonResponseMessage($passenger, Response::HTTP_OK, 'updatedPassengerInfo');
+    }
+    
+    public function setUserEnquiryStatus(int $enquiryId){
+
+        $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
+        
+        if(!$specificUserEnquiry){
+            return ResponseHelper::jsonResponseMessage('User enquiry not found', Response::HTTP_NOT_FOUND);    
+        }
+
+        $specificUserEnquiry->setIsSolved(1);
+        $specificUserEnquiry->save();
+
+        return ResponseHelper::jsonResponseMessage($specificUserEnquiry, Response::HTTP_OK, 'solvedUserEnquiry');
+
     }
 
     
