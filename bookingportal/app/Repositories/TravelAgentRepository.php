@@ -10,7 +10,7 @@ use App\Models\UserEnquiry;
 use App\Services\Booking\BookingService;
 use Illuminate\Database\Eloquent\Collection;
 
-class TravelAgentRepository
+class TravelAgentRepository implements ITravelAgentRepository
 {
     public function findFlightSegmentsByBookingReference(string $bookingReference): Collection
     {

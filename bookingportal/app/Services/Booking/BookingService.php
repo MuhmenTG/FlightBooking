@@ -5,13 +5,11 @@ namespace App\Services\Booking;
 
 use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
-use App\Http\Resources\FlightConfirmationResource;
 use App\Mail\ISendEmailService;
 use App\Models\Airline;
 use App\Models\PassengerInfo;
 use App\Models\Payment;
-use App\Models\UserEnquiry;
-use App\Repositories\TravelAgentRepository;
+use App\Repositories\ITravelAgentRepository;
 use App\Services\Booking\IBookingService;
 use Exception;
 use InvalidArgumentException;
@@ -21,7 +19,7 @@ class BookingService implements IBookingService {
     protected $bookingRepository;
     protected $IEmailSendService;
 
-    public function __construct(TravelAgentRepository $bookingRepository, ISendEmailService $IEmailSendService)
+    public function __construct(ITravelAgentRepository $bookingRepository, ISendEmailService $IEmailSendService)
     {
         $this->bookingRepository = $bookingRepository;
         $this->IEmailSendService = $IEmailSendService;

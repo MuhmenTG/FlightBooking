@@ -156,10 +156,11 @@ class AdminController extends Controller
     }
 
     public function getSpecificFaq(int $faqId){
-
+        
         $specificFaq = $this->IbackOfficeService->getFaqById($faqId);
-
-        if(!$specificFaq){
+        $variableType = gettype($specificFaq);
+        echo $variableType;exit;
+        if($specificFaq == null){
             return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
         

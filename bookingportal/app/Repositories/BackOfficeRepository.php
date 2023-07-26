@@ -5,10 +5,9 @@ namespace App\Repositories;
 
 use App\Models\Faq;
 use App\Models\UserAccount;
-use App\Models\UserEnquiry;
 use Illuminate\Database\Eloquent\Collection;
 
-class BackOfficeRepository {
+class BackOfficeRepository implements IBackOfficeRepository{
 
     public function createAgent(string $password, string $firstName, string $lastName, string $email, int $isAdmin, int $isAgent, string $status): UserAccount
     {

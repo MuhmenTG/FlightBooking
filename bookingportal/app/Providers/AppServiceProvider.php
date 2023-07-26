@@ -5,6 +5,9 @@ namespace App\Providers;
 use App\Mail\IEmailService;
 use App\Mail\ISendEmailService;
 use App\Mail\SendEmailService;
+use App\Repositories\BackOfficeRepository;
+use App\Repositories\IBackOfficeRepository;
+use App\Repositories\ITravelAgentRepository;
 use App\Repositories\TravelAgentRepository;
 use App\Services\Amadeus\AmadeusService;
 use App\Services\Amadeus\IAmadeusService;
@@ -26,11 +29,6 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         //
-
-        $this->app->bind(TravelAgentRepository::class, function ($app) {
-            return new TravelAgentRepository();
-        });
-
         $this->app->bind(IAmadeusService::class, AmadeusService::class);
 
         $this->app->bind(IBookingService::class, BookingService::class);
@@ -42,6 +40,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IAuthenticationService::class, AuthenticationService::class);
 
         $this->app->bind(ISendEmailService::class, SendEmailService::class);
+
+        $this->app->bind(IBackOfficeRepository::class, BackOfficeRepository::class);
+
+        $this->app->bind(ITravelAgentRepository::class, TravelAgentRepository::class);
+
 
 
     }

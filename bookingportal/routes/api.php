@@ -59,7 +59,7 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
     Route::post('/admin/createNewFaq', [AdminController::class, 'saveFaq']);
     Route::post('/admin/editFaq', [AdminController::class, 'saveFaq']);
     Route::get('/admin/getSpecificFaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
-    Route::get('/admin/getAllFaqs', [AdminController::class, 'getSpecificFaq']);
+    Route::get('/admin/getAllFaqs', [PublicSiteController::class, 'getAllFaqs']);
     Route::delete('/admin/removeFaq/{faqId}', [AdminController::class, 'removeFaq']);
    
     Route::post('/admin/resetAgentPassword', [AdminController::class, 'resetAgentPassword']);

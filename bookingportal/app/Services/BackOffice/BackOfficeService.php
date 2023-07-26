@@ -6,7 +6,7 @@ namespace App\Services\BackOffice;
 use App\Models\Faq;
 use App\Models\UserAccount;
 use App\Models\UserEnquiry;
-use App\Repositories\BackOfficeRepository;
+use App\Repositories\IBackOfficeRepository;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Hash;
 class BackOfficeService implements IBackOfficeService {
     protected $backOfficeRepository;
 
-    public function __construct(BackOfficeRepository $backOfficeRepository)
+    public function __construct(IBackOfficeRepository $backOfficeRepository)
     {
         $this->backOfficeRepository = $backOfficeRepository;
     }
