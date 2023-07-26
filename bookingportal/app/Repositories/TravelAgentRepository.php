@@ -24,18 +24,18 @@ class TravelAgentRepository
     
     public function cancelFlightSegments(string $bookingReference): int
     {
-        return FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update(['is_cancelled' => true]);
+        return FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISCANCELLED => true]);
     }
     
     public function cancelFlightPassengers(string $bookingReference): int
     {
-        return PassengerInfo::where(PassengerInfo::COL_PNR, $bookingReference)->update(['is_cancelled' => true]);
+        return PassengerInfo::where(PassengerInfo::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISCANCELLED => true]);
     }
     
     public function bookPassengers(string $bookingReference, FlightOfferPassengerDTO $passenger) : bool
     {
         $passengerInfo = new PassengerInfo();
-        $passengerInfo->setPNR($bookingReference);
+        $passengerInfo->setBookingReference($bookingReference);
         $passengerInfo->setPaymentInfoId(1);
         $passengerInfo->setTitle($passenger->title);
         $passengerInfo->setFirstName($passenger->firstName);
@@ -129,5 +129,21 @@ class TravelAgentRepository
         $enquiry->setTime(time());
         return $enquiry->save();
     } 
+
+    public function getSpecificPassengerInBooking(int $passengerId, string $bookingReference){
+        return PassengerInfo::where(PassengerInfo::COL_ID, $passengerId)
+            ->where(PassengerInfo::COL_BOOKINGREFERENCE, $bookingReference)
+            ->first();
+    }
+
+    public function updatePassenger(PassengerInfo $passenger, string $firstName, string $lastName, string $dateOfBirth, string $email): PassengerInfo
+    {
+        $passenger->setFirstName($firstName);
+        $passenger->setLastName($lastName);
+        $passenger->setDateOfBirth($dateOfBirth);
+        $passenger->setEmail($email);
+        $passenger->save();
+        return $passenger;
+    }
 }
 
