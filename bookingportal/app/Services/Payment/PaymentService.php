@@ -9,7 +9,7 @@ use Stripe\BalanceTransaction;
 
 class PaymentService implements IPaymentService {
     
-    public function createCharge(int $amount, string $currency, string $cardNumber, string $expireYear, string $expireMonth, string $cvc, string $description) 
+    public function createCharge(int $amount, string $currency, string $cardNumber, string $expireYear, string $expireMonth, string $cvc, string $bookingreference) 
     {
         
         $stripe = $this->createCardRecord($cardNumber, $expireYear, $expireMonth, $cvc);
@@ -20,7 +20,7 @@ class PaymentService implements IPaymentService {
             'amount' => $amount * 100,
             'currency' => 'dkk',
             'source' => 'tok_mastercard',
-            'description' => $description,
+            'description' => $bookingreference,
         ]);
         
         
@@ -28,12 +28,12 @@ class PaymentService implements IPaymentService {
             $payment = New Payment();
             $payment->setPaymentAmount($amount);       
             $payment->setPaymentCurrency($currency);
-            $payment->setPaymentType(Payment::PAYMENT_TYPE);
-            $payment->setPaymentStatus(Payment::PAYMENT_STATUS_COMPLETED);
-            $payment->setPaymentInfoId($charge->id);
+            $payment->setPaymentType('Online');
+            $payment->setPaymentStatus('Completed');
+            $payment->setPaymentTransactionId($charge->id);
             $payment->setPaymentMethod("MasterCard");
             $payment->setPaymentGatewayProcessor("Stripe Api");
-            $payment->setNoteComments($description);
+            $payment->setConnectedBookingReference($bookingreference);
             $payment->save();
         }
         
