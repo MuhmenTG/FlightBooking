@@ -145,5 +145,12 @@ class TravelAgentRepository implements ITravelAgentRepository
         $passenger->save();
         return $passenger;
     }
+
+    
+    public function getAllConfirmedBookings(){
+        return FlightBooking::with('passengers')
+        ->where(FlightBooking::COL_ISPAID, 1)
+        ->get();
+    }
 }
 
