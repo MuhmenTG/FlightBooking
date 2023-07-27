@@ -37,6 +37,11 @@ class FlightBooking extends Model
          * Eloquent Scopes
          */
 
+        public function passengers()
+        {
+            return $this->hasMany(PassengerInfo::class, 'bookingReference', 'bookingReference');
+        }
+
         public function scopeById($query, $val) {
                 $query->where('id', $val);
         }
