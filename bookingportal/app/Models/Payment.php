@@ -7,159 +7,130 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
-        protected $table = 'payments';
-        protected $primaryKey = 'id';
-
-
-        const PAYMENT_STATUS_COMPLETED = 'Completed';
-
-        const PAYMENT_STATUS_FAILED = 'Failed';
-
-        const PAYMENT_TYPE = 'Card';
-        //      protected $guarded = [];
-        //      protected $fillable = [];
-
-
-
-        const COL_ID = 'id';
-        const COL_TRANSACTIONDATE = 'transactionDate';
-        const COL_PAYMENTAMOUNT = 'paymentAmount';
-        const COL_PAYMENTCURRENCY = 'paymentCurrency';
-        const COL_PAYMENTTYPE = 'paymentType';
-        const COL_PAYMENTSTATUS = 'paymentStatus';
-        const COL_PAYMENTINFOID = 'paymentInfoId';
-        const COL_PAYMENTMETHOD = 'paymentMethod';
-        const COL_PAYMENTGATEWAYPROCESSOR = 'paymentGatewayProcessor';
-        const COL_NOTECOMMENTS = 'noteComments';
-        const COL_CREATED_AT = 'created_at';
-        const COL_UPDATED_AT = 'updated_at';
-
-        /*
- * Eloquent Scopes
- */
-
-        public function scopeById($query, $val)
-        {
-                $query->where('id', $val);
-        }
-
-        public function scopeByPaymentInfoId($query, $val)
-        {
-                $query->where('paymentInfoId', $val);
-        }
         
-        public function scopeByNote($query, $val)
-        {
-                $query->where('noteComments', $val);
-        }
+	protected $table = 'payments';
+	protected $primaryKey = 'id';
+//	protected $guarded = [];
+//	protected $fillable = [];
 
-        /*
- * GET / SET
- */
+	const COL_ID = 'id';
+	const COL_TRANSACTIONDATE = 'transactionDate';
+	const COL_PAYMENTAMOUNT = 'paymentAmount';
+	const COL_PAYMENTCURRENCY = 'paymentCurrency';
+	const COL_PAYMENTTYPE = 'paymentType';
+	const COL_PAYMENTSTATUS = 'paymentStatus';
+	const COL_PAYMENTTRANSACTIONID = 'paymentTransactionId';
+	const COL_PAYMENTMETHOD = 'paymentMethod';
+	const COL_PAYMENTGATEWAYPROCESSOR = 'paymentGatewayProcessor';
+	const COL_CONNECTEDBOOKINGREFERENCE = 'connectedBookingReference';
+	const COL_CREATED_AT = 'created_at';
+	const COL_UPDATED_AT = 'updated_at';
 
-        public function getPaymentId()
-        {
-                return $this->id;
-        }
+	/*
+	 * Eloquent Scopes
+	 */
 
-        public function getTransactionDate()
-        {
-                return $this->transactionDate;
-        }
+	public function scopeById($query, $val) {
+		$query->where('id', $val);
+	}
 
-        public function setTransactionDate($value)
-        {
-                $this->transactionDate = $value;
-        }
+        
+	public function scopeByConnectedBookingReference($query, $val) {
+		$query->where('connectedBookingReference', $val);
+	}
 
-        public function getPaymentAmount()
-        {
-                return $this->paymentAmount;
-        }
+	public function scopeByPaymentTransactionId($query, $val) {
+		$query->where('paymentTransactionId', $val);
+	}
 
-        public function setPaymentAmount($value)
-        {
-                $this->paymentAmount = $value;
-        }
+	/*
+	 * GET / SET
+	 */
 
-        public function getPaymentCurrency()
-        {
-                return $this->paymentCurrency;
-        }
+	public function getPaymentId() {
+		return $this->id;
+	}
 
-        public function setPaymentCurrency($value)
-        {
-                $this->paymentCurrency = $value;
-        }
+	public function getTransactionDate() {
+		return $this->transactionDate;
+	}
 
-        public function getPaymentType()
-        {
-                return $this->paymentType;
-        }
+	public function setTransactionDate($value) {
+		$this->transactionDate = $value;
+	}
 
-        public function setPaymentType($value)
-        {
-                $this->paymentType = $value;
-        }
+	public function getPaymentAmount() {
+		return $this->paymentAmount;
+	}
 
-        public function getPaymentStatus()
-        {
-                return $this->paymentStatus;
-        }
+	public function setPaymentAmount($value) {
+		$this->paymentAmount = $value;
+	}
 
-        public function setPaymentStatus($value)
-        {
-                $this->paymentStatus = $value;
-        }
+	public function getPaymentCurrency() {
+		return $this->paymentCurrency;
+	}
 
-        public function getPaymentInfoId()
-        {
-                return $this->paymentInfoId;
-        }
+	public function setPaymentCurrency($value) {
+		$this->paymentCurrency = $value;
+	}
 
-        public function setPaymentInfoId($value)
-        {
-                $this->paymentInfoId = $value;
-        }
+	public function getPaymentType() {
+		return $this->paymentType;
+	}
 
-        public function getPaymentMethod()
-        {
-                return $this->paymentMethod;
-        }
+	public function setPaymentType($value) {
+		$this->paymentType = $value;
+	}
 
-        public function setPaymentMethod($value)
-        {
-                $this->paymentMethod = $value;
-        }
+	public function getPaymentStatus() {
+		return $this->paymentStatus;
+	}
 
-        public function getPaymentGatewayProcessor()
-        {
-                return $this->paymentGatewayProcessor;
-        }
+	public function setPaymentStatus($value) {
+		$this->paymentStatus = $value;
+	}
 
-        public function setPaymentGatewayProcessor($value)
-        {
-                $this->paymentGatewayProcessor = $value;
-        }
+	public function getPaymentTransactionId() {
+		return $this->paymentTransactionId;
+	}
 
-        public function getNoteComments()
-        {
-                return $this->noteComments;
-        }
+	public function setPaymentTransactionId($value) {
+		$this->paymentTransactionId = $value;
+	}
 
-        public function setNoteComments($value)
-        {
-                if (is_array($value)) $value = json_encode($value);
-                $this->noteComments = $value;
-        }
+	public function getPaymentMethod() {
+		return $this->paymentMethod;
+	}
 
-        public function getCreatedAt()
-        {
-                return $this->created_at;
-        }
+	public function setPaymentMethod($value) {
+		$this->paymentMethod = $value;
+	}
 
-        public function getUpdatedAt()
-        {
-                return $this->updated_at;
-        }
+	public function getPaymentGatewayProcessor() {
+		return $this->paymentGatewayProcessor;
+	}
+
+	public function setPaymentGatewayProcessor($value) {
+		$this->paymentGatewayProcessor = $value;
+	}
+
+	public function getConnectedBookingReference() {
+		return $this->connectedBookingReference;
+	}
+
+	public function setConnectedBookingReference($value) {
+		if (is_array($value)) $value = json_encode($value);
+		$this->connectedBookingReference = $value;
+	}
+
+	public function getCreatedAt() {
+		return $this->created_at;
+	}
+
+	public function getUpdatedAt() {
+		return $this->updated_at;
+	}
+
+
 }
