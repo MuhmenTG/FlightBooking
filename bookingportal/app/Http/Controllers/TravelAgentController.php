@@ -8,6 +8,7 @@ use App\Mail\SendEmail;;
 use App\Models\HotelBooking;
 use App\Models\UserAccount;
 use App\Models\UserEnquiry;
+use App\Services\BackOffice\IBackOfficeService;
 use App\Services\BackOfficeService;
 use App\Services\Booking\IBookingService;
 use App\Services\BookingService;
@@ -19,14 +20,16 @@ class TravelAgentController extends Controller
 {
     //
     protected $IBookingService;
+    protected $IBackOfficeService;
     protected $IEmailSendService;
 
     
 
-    public function __construct(IBookingService $IBookingService, ISendEmailService $IEmailSendService)
+    public function __construct(IBookingService $IBookingService, ISendEmailService $IEmailSendService, IBackOfficeService $IBackOfficeService)
     {
         $this->IBookingService = $IBookingService;
         $this->IEmailSendService = $IEmailSendService;
+        $this->IBackOfficeService = $IBackOfficeService;
     }
 
     public function cancelFlightBooking(string $bookingReference)
@@ -200,6 +203,42 @@ class TravelAgentController extends Controller
 
     }
 
+    public function getAllFlightBookings(){
+
+        $payment = $this->IBookingService->getAllConfirmedBookings();
+
+        if($payment == null)
+        {
+            return ResponseHelper::jsonResponseMessage('There is not any payment info avaliable', Response::HTTP_NOT_FOUND);    
+        }
+
+        
+        return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payment');
+    }
+
+    public function getAllPaymentTransactions(){
+        $payment = $this->IBackOfficeService->getPayments();
+
+        if($payment == null)
+        {
+            return ResponseHelper::jsonResponseMessage('There is not any payment info avaliable', Response::HTTP_NOT_FOUND);    
+        }
+
+        
+        return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payment');
+    }
+
+    public function getSpecificPaymentTransactions(string $bookingReference, string $paymentId){
+        $payment = $this->IBackOfficeService->getSpecificPayments($bookingReference, $paymentId);
+
+        if($payment == null)
+        {
+            return ResponseHelper::jsonResponseMessage('Payment information not found about'. '.'.$bookingReference, Response::HTTP_NOT_FOUND);    
+        }
+
+        
+        return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payment');
+    }
     
     public function editAgentDetails(Request $request){
         
@@ -207,11 +246,6 @@ class TravelAgentController extends Controller
             'firstName'               => 'required|string',
             'lastName'                => 'required|string',
             'email'                   => 'required|string',
-            'status'                  => 'required|int',
-            'isAdmin'                 => 'nullable|int',
-            'isAgent'                 => 'nullable|int',
-
-            'userId'                  => 'nullable|int',
         ]);
 
 
@@ -222,29 +256,14 @@ class TravelAgentController extends Controller
         $firstName = $request->input('firstName');
         $lastName = $request->input('lastName');
         $email = $request->input('email');
-        $status = $request->input('status');
-        $isAdmin = $request->input('isAdmin');
-        $isAgent = $request->input('isAgent');
-
-        $userId = $request->input('userId');
 
         
         $loggedInUserId = $request->user()->id;
 
-        if ($loggedInUserId->role === 'admin' || ($loggedInUserId === $userId)) {
-            $userAccount = UserAccount::byId($userId ?? $loggedInUserId)->first();
-            if (!$userAccount) {
-                return ResponseHelper::jsonResponseMessage("User account not found", 404);
-            }
-        }
-
-        $userAccount = UserAccount::ById($userId)->first();
+        $userAccount = UserAccount::ById($loggedInUserId)->first();
         $userAccount->setFirstName($firstName);
         $userAccount->setLastName($lastName);
         $userAccount->setEmail($email);
-        $userAccount->setIsAgent($isAgent);
-        $userAccount->setIsAdmin($isAdmin);
-        $userAccount->setStatus($status);
         $userAccount->save();
 
         return ResponseHelper::jsonResponseMessage($userAccount, 400);
