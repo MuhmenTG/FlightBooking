@@ -28,7 +28,7 @@ interface ITravelAgentRepository
 
     public function markBookingAsPaid(string $bookingReference): void;
     
-    public function getPaidFlightBookings(string $bookingReference): array;
+    public function getPaidFlightBookings(string $bookingReference): Collection;
     
     public function getPassengerEmail(Collection $bookedPassengers): ?string;
     

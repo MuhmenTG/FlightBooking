@@ -1,10 +1,13 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Services\Booking;
 
+use Amadeus\Resources\FlightBaggageAllowance;
 use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
+use App\Http\Resources\FlightConfirmationResource;
 use App\Mail\ISendEmailService;
 use App\Models\Airline;
 use App\Models\PassengerInfo;
@@ -97,6 +100,7 @@ class BookingService implements IBookingService {
         $this->bookingRepository->markBookingAsPaid($bookingReference);
 
         $paidFlightBooking = $this->bookingRepository->getPaidFlightBookings($bookingReference);
+ 
         $bookedPassengers = $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
 
         $booking = [
@@ -127,6 +131,7 @@ class BookingService implements IBookingService {
     public function retrieveBookingInformation(string $bookingReference) : ?array
     {
         $bookedFlightSegments = $this->bookingRepository->findFlightSegmentsByBookingReference($bookingReference);
+        $bookedFlightSegments = FlightConfirmationResource::collection($bookedFlightSegments);
         $bookedFlightPassenger = $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
         
         $paymentDetails = Payment::ByConnectedBookingReference($bookingReference)->first();

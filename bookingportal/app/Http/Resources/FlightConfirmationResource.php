@@ -27,7 +27,6 @@ class FlightConfirmationResource extends JsonResource
             'arrivalDate' => $this->arrivalDate,
             'formattedArrivalDate' => $this->formatDateTime($this->arrivalDate),
             'flightDuration' => $this->flightDuration,
-            'formattedFlightDuration' => $this->formatDuration($this->flightDuration),
             'bookingStatus' => $this->isBookingConfirmed,
             'paymentStatus' => $this->isPaid,
         ];
@@ -42,6 +41,6 @@ class FlightConfirmationResource extends JsonResource
     private function formatDuration($duration)
     {
         // Format duration as desired, for example:
-        return \Carbon\CarbonInterval::createFromDateString($duration)->cascade()->forHumans();
+      //  return \Carbon\CarbonInterval::createFromDateString($duration)->cascade()->forHumans();
     }
 }

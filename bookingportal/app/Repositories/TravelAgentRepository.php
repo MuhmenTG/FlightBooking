@@ -70,10 +70,10 @@ class TravelAgentRepository implements ITravelAgentRepository
         FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISPAID => 1]);
     }
 
-    public function getPaidFlightBookings(string $bookingReference): array
+    public function getPaidFlightBookings(string $bookingReference): Collection
     {
         $bookings = FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 1)->get();
-        return $bookings->toArray();
+        return $bookings;
     }
 
     public function getPassengerEmail(Collection $bookedPassengers): ?string
