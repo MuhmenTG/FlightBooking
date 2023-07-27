@@ -43,4 +43,8 @@ interface IBackOfficeService
     ): Faq;
 
     public function findUserEnquiryById(int $id): ?UserEnquiry;
+
+    public function getPayments();
+
+    public function getSpecificPayments(string $bookingreference, string $transactionId) : array;
 }

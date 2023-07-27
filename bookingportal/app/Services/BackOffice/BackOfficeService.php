@@ -97,7 +97,7 @@ class BackOfficeService implements IBackOfficeService {
         return $faq;
     }
 
-    public  function findUserEnquiryById(int $id): ?UserEnquiry
+    public function findUserEnquiryById(int $id): ?UserEnquiry
     {
         $userEnquiry = UserEnquiry::ById($id);
         if($userEnquiry){
@@ -105,4 +105,25 @@ class BackOfficeService implements IBackOfficeService {
         }
         return false;
     }
+
+    public function getPayments(){        
+        $payments = $this->backOfficeRepository->getAllPayments();
+
+        if($payments !== null){
+            return $payments;
+        }
+
+        return [];
+    }
+
+    public function getSpecificPayments(string $bookingreference, string $transactionId) : array{
+        $payment = $this->backOfficeRepository->getSpecificPayments($bookingreference, $transactionId);
+
+        if($payment !== null){
+            return $payment;
+        }
+
+        return [];
+    }
+  
 }
