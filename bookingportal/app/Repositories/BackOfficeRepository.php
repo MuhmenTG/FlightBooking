@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Faq;
+use App\Models\Payment;
 use App\Models\UserAccount;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -78,4 +79,15 @@ class BackOfficeRepository implements IBackOfficeRepository{
         $agents = UserAccount::where(UserAccount::COL_STATUS, 0)->get()->ToArray();
         return $agents;
     }
+
+    public function getAllPayments() : array{
+        $payments = Payment::all()->toArray();
+        return $payments;
+    }
+
+    public function getSpecificPayments(string $bookingreference, string $transactionId) : ?array{
+        $payment = Payment::ByConnectedBookingReference($bookingreference)->ByPaymentTransactionId($transactionId)->first();
+        return $payment;
+    }
+    
 }

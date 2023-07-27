@@ -25,4 +25,9 @@ interface IBackOfficeRepository {
     public function getSpecificFaq(int $faqId) : ?Faq;
 
     public function getDeactivatedAgents(): array;
+
+    public function getAllPayments() : array;
+
+    public function getSpecificPayments(string $bookingreference, string $transactionId) : ?array;
+    
 }
