@@ -129,7 +129,7 @@ class BookingService implements IBookingService {
         $bookedFlightSegments = $this->bookingRepository->findFlightSegmentsByBookingReference($bookingReference);
         $bookedFlightPassenger = $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
         
-        $paymentDetails = Payment::ByNote($bookingReference)->first();
+        $paymentDetails = Payment::ByConnectedBookingReference($bookingReference)->first();
 
         if (!$bookedFlightSegments->isEmpty() && !$bookedFlightPassenger->isEmpty()) {
             return [
@@ -209,5 +209,9 @@ class BookingService implements IBookingService {
     public function updatePassenger(PassengerInfo $passenger, string $firstName, string $lastName, string $dateOfBirth, string $email): PassengerInfo
     {
         return $this->bookingRepository->updatePassenger($passenger, $firstName, $lastName, $dateOfBirth, $email);
+    }
+
+    public function getAllConfirmedBookings(){
+       return $this->bookingRepository->getAllConfirmedBookings();
     }
 }
