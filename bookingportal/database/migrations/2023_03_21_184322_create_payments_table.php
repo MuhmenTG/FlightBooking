@@ -18,10 +18,10 @@ return new class extends Migration
             $table->string('paymentCurrency');
             $table->string('paymentType');
             $table->string('paymentStatus');
-            $table->string('paymentInfoId');
+            $table->string('paymentTransactionId');
             $table->string('paymentMethod');
             $table->string('paymentGatewayProcessor');
-            $table->text('noteComments')->nullable();
+            $table->text('connectedBookingReference')->nullable();
             $table->timestamps();
         });
     }
