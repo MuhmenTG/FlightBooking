@@ -25,8 +25,8 @@ class FlightConfirmationResource extends JsonResource
             'arrivalTerminal' => $this->arrivalTerminal,
             'arrivalDate' => $this->formatDateTime($this->arrivalDate),
             'flightDuration' => $this->formatFlightDuration($this->flightDuration),
-            'bookingStatus' => $this->isBookingConfirmed,
-            'paymentStatus' => $this->isPaid,
+            'bookingStatus' => $bookingStatus = $this->isBookingConfirmed ? 'Confirmed' : 'Not Confirmed',
+            'paymentStatus' => $paymentStatus = $this->isPaid ? 'Paid' : 'Not Paid',   
         ];
     }
 
