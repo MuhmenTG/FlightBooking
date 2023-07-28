@@ -20,13 +20,11 @@ class FlightConfirmationResource extends JsonResource
             'flightNumber' => $this->flightNumber,
             'departureFrom' => $this->departureFrom,
             'departureTerminal' => $this->departureTerminal,
-            'departureDateTime' => $this->departureDateTime,
-            'formattedDepartureDateTime' => $this->formatDateTime($this->departureDateTime),
+            'departureDateTime' => $this->formatDateTime($this->departureDateTime),
             'arrivalTo' => $this->arrivalTo,
             'arrivalTerminal' => $this->arrivalTerminal,
-            'arrivalDate' => $this->arrivalDate,
-            'formattedArrivalDate' => $this->formatDateTime($this->arrivalDate),
-            'flightDuration' => $this->flightDuration,
+            'arrivalDate' => $this->formatDateTime($this->arrivalDate),
+            'flightDuration' => $this->formatFlightDuration($this->flightDuration),
             'bookingStatus' => $this->isBookingConfirmed,
             'paymentStatus' => $this->isPaid,
         ];
@@ -38,9 +36,11 @@ class FlightConfirmationResource extends JsonResource
         return \Carbon\Carbon::parse($dateTime)->format('Y-m-d H:i:s');
     }
 
-    private function formatDuration($duration)
-    {
-        // Format duration as desired, for example:
-      //  return \Carbon\CarbonInterval::createFromDateString($duration)->cascade()->forHumans();
+    private function formatFlightDuration($flightDuration) {
+        preg_match('/PT(\d+H)?(\d+M)?/', $flightDuration, $matches);
+        $hours = isset($matches[1]) ? intval(substr($matches[1], 0, -1)) : 0;
+        $minutes = isset($matches[2]) ? intval(substr($matches[2], 0, -1)) : 0;
+        return ($hours > 0 ? $hours . ' hour' . ($hours > 1 ? 's' : '') . ' and ' : '') . $minutes . ' minute' . ($minutes > 1 ? 's' : '');
     }
+    
 }
