@@ -151,7 +151,13 @@ class BookingService implements IBookingService {
 
     public static function generateTicketNumber(string $validatingAirline) : string {
         $validatingCarrier = Airline::ByIataDesignator($validatingAirline)->first();
-        $validatingAirlineDigits = $validatingCarrier->ByThreeDigitAirlineCode();
+        if($validatingCarrier){
+            $validatingAirlineDigits = $validatingCarrier->getThreeDigitAirlineCode();
+        }
+        $validatingAirlineDigits = "010";
+        if(!$validatingAirlineDigits){
+            return $validatingAirline;
+        }
         
         $ticketNumber = '';
         for($i = 0; $i < 11; $i++) {

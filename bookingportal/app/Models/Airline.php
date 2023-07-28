@@ -41,55 +41,59 @@ class Airline extends Model
      * GET / SET
      */
 
-    public function getAirlineId() {
-            return $this->id;
-    }
+    
+	public function getAirlineId() {
+		return $this->id;
+	}
 
-    public function getAirlineName() {
-            return $this->airlineName;
-    }
+	public function getAirlineName() {
+		return $this->airlineName;
+	}
 
-    public function setAirlineName($value) {
-            $this->airlineName = $value;
-    }
+	public function setAirlineName($value) {
+		$this->airlineName = $value;
+	}
 
-    public function getIataDesignator() {
-            return $this->IataDesignator;
-    }
+	public function getIataDesignator() {
+		return $this->IataDesignator;
+	}
 
-    public function setIataDesignator($value) {
-            $this->IataDesignator = $value;
-    }
+	public function setIataDesignator($value) {
+		$this->IataDesignator = $value;
+	}
 
-    public function ByThreeDigitAirlineCode() {
-            return $this->threeDigitAirlineCode;
-    }
+	public function getThreeDigitAirlineCode() {
+		return $this->threeDigitAirlineCode;
+	}
 
-    public function setThreeDigitAirlineCode($value) {     
-            $this->threeDigitAirlineCode = $value;
-    }
+	public function setThreeDigitAirlineCode($value) {
+		$this->threeDigitAirlineCode = $value;
+	}
 
-    public function getIataCode() {
-            return $this->IataCode;
-    }
+	public function getIataCode() {
+		return $this->IataCode;
+	}
 
-    public function setIataCode($value) {
-            $this->IataCode = $value;
-    }
+	public function setIataCode($value) {
+		$this->IataCode = $value;
+	}
 
-    public function getCountry() {
-            return $this->country;
-    }
+	public function getCountry() {
+		return $this->country;
+	}
 
-    public function setCountry($value) {
-            $this->country = $value;
-    }
+	public function setCountry($value) {
+		$this->country = $value;
+	}
 
-    public function getCreatedAt() {
-            return $this->created_at;
-    }
+	public function getCreatedAt() {
+		return $this->created_at;
+	}
 
-    public function getUpdatedAt() {
-            return $this->updated_at;
-    }
+	public function getUpdatedAt() {
+		return $this->updated_at;
+	}
+
+
 }
+

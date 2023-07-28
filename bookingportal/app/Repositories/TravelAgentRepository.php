@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
+use App\Models\Airline;
 use App\Models\AirportInfo;
 use App\Models\FlightBooking;
 use App\Models\PassengerInfo;
@@ -90,7 +91,7 @@ class TravelAgentRepository implements ITravelAgentRepository
     {
         $flightBooking = new FlightBooking();
         $flightBooking->setBookingReference($bookingReference);
-        $flightBooking->setAirline($flightSegment->airline);
+        $flightBooking->setAirline($this->getAirlineNameByAirlineIcao($flightSegment->airline));
         $flightBooking->setFlightNumber($flightSegment->flightNumber);
         $flightBooking->setDepartureFrom($this->getFullAirportNameByIcao($flightSegment->departureFrom));
         $flightBooking->setDepartureDateTime($flightSegment->departureDateTime);
@@ -114,12 +115,20 @@ class TravelAgentRepository implements ITravelAgentRepository
         return $flightBooking;
     }
 
-    public function getFullAirportNameByIcao(string $airportIcao) : string{
+    private function getFullAirportNameByIcao(string $airportIcao) : string{
         $airport = AirportInfo::ByAirportIcao($airportIcao)->first();
         $airportName = $airport->getAirportName();
         $cityName = $airport->getCity();
         $fullAirportName = "{$airportName} - {$cityName}";
         return $fullAirportName;
+    }
+
+    private function getAirlineNameByAirlineIcao(string $airlineIcao) : string {
+        $airline = Airline::ByIataDesignator($airlineIcao)->first();
+        if($airline){
+            return $airline->getAirlineName();
+        }
+        return $airlineIcao;
     }
 
     public function getUserEnquiryById (int $enquiryId){
