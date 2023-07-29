@@ -1,3 +1,5 @@
+// Aldrig kast .sql filer ind direkte rå. Kast dem i en seeder i stedet
+
 INSERT INTO `airline` (`airlineName`, `IataDesignator`, `threeDigitAirlineCode`, `IataCode`, `country`) VALUES
 	('ABX Air', 'GB', '832', 'ABX', 'United States'),
 	('Aegean Airlines', 'A3', '390', 'AEE', 'Greece'),

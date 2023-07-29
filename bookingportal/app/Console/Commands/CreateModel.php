@@ -1,4 +1,5 @@
 <?php
+// TODO: Er den her kommando nødvendig? 
 
 namespace App\Console\Commands;
 

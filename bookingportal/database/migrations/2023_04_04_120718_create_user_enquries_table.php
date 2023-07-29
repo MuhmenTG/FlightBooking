@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('subject');
             $table->string('bookingreference')->nullable();
             $table->text('message');
+            // Hvorfor ikke et timestamp i stedet?
             $table->integer("time");
             $table->boolean('isSolved')->default(0);
             $table->timestamps();

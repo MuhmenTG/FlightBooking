@@ -16,6 +16,7 @@ class PaymentService implements IPaymentService {
         
         $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
 
+        // Env filer eller andet
         $charge = $stripe->charges->create([
             'amount' => $amount * 100,
             'currency' => 'dkk',

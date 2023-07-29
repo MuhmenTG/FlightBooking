@@ -1,3 +1,4 @@
+// Kast dette i en seeder
 INSERT INTO `airports_info`(`airportIcao`, `airportName`, `city`, `country`) VALUES
 	('YCB', 'Cambridge Bay', 'Cambridge Bay', 'Canada'),
 	('YKD', 'Township Airport', 'Kincardine', 'Canada'),

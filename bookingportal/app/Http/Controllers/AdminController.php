@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 class AdminController extends Controller
 {
     //
-
+    // TODO: Mellemrum her tak :) 
     protected$IbackOfficeService;
 
     public function __construct(IBackOfficeService $IbackOfficeService)
@@ -115,6 +115,7 @@ class AdminController extends Controller
             return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
 
+        // TODO: Få en ordbog til din IDE
         $formatedAgents = AgentResource::collection($agents);
 
         return response()->json(['formatedAgents' => $formatedAgents], 200);

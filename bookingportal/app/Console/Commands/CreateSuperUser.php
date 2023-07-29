@@ -17,7 +17,8 @@ class CreateSuperUser extends Command
      */
     public function handle(): void
     {
-        //
+        // TODO: Kast det her i en seeder i stedet
+        // https://laravel.com/docs/10.x/seeding
         $userAccount = new UserAccount();
         $userAccount->setPassword(Hash::make("Admin123"));
         $userAccount->setFirstName("Admin");

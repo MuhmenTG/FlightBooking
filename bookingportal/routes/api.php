@@ -44,6 +44,7 @@ Route::prefix('public')->group(function () {
     Route::get('retriveBooking/{bookingReference}', [PublicSiteController::class, 'retrieveBookingInformation']);
     Route::post('contactform', [PublicSiteController::class, 'sendEnquirySupport']);
     Route::get('getAllFaqs', [PublicSiteController::class, 'getAllFaqs']);
+    // Hvorfor starter den her med skråstreg når dem ovenover ikke gør? 
     Route::get('/getSpecificFaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
 });
 

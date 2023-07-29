@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('passenger_info', function (Blueprint $table) {
             $table->id();
+            // Burde den her ikke være unik I DB'en?
             $table->string('bookingReference');
+            // Hvorfor er starter den her med stort?
             $table->integer('PaymentInfoId');
             $table->string('title');
             $table->string('firstName');
             $table->string('lastName');
+            // Hvorfor er det her ikke et timestamp?
             $table->string('dateOfBirth');
             $table->string('email');
             $table->string('passengerType');

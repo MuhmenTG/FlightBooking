@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+
 interface ISendEmailService
 {  
     /**

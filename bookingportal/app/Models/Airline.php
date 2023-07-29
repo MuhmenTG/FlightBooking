@@ -10,8 +10,10 @@ class Airline extends Model
     
     protected $table = 'airline';
     protected $primaryKey = 'id';
+	// TODO: Fjern udkommenteret kode. Det skaber mystik og forvirring for andre udviklere der skal kigge på det
 //      protected $guarded = [];
 //      protected $fillable = [];
+
 
     const COL_ID = 'id';
     const COL_AIRLINENAME = 'airlineName';

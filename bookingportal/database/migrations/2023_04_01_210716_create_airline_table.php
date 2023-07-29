@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('airline', function (Blueprint $table) {
             $table->id();
+            // Er det nødvendigt at ha airline med i navnet på kolonnen med?
             $table->string('airlineName');
             $table->string('IataDesignator');
             $table->string('threeDigitAirlineCode');

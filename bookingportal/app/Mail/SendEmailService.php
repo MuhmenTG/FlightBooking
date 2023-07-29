@@ -16,6 +16,7 @@ class SendEmailService implements ISendEmailService
     public function sendEmailWithAttachments(string $recipientName, string $recipientEmail, string $subject, string $text, array $attachments = null) : bool
     {
         $email = new SendGridMail();
+        // FROM skal komme fra en .env fil
         $email->setFrom("nmflights-costumerservice@hotmail.com", "N&M flights booking");
         $email->setSubject($subject);
         $email->addTo($recipientEmail, $recipientName);

@@ -19,10 +19,13 @@ return new class extends Migration
             $table->string('password');
             $table->boolean('emailConfirmation')->default(false);
             $table->string('status');
+            // Hvorfor er disse booleans nullable? Så man kan enten være agent, ikke-agent eller nothing?
             $table->boolean('isAgent')->nullable();
             $table->boolean('isAdmin')->nullable();
+            // Hvorfor er det her ikke et timestamp fremfor en integer?
             $table->integer('firstTimeLoggedIn')->default(0);
             $table->timestamp('registeredAt')->useCurrent();
+            // Hvorfor er det her ikke et timestamp fremfor en integer?
             $table->integer('deactivatedAt')->default(0);
             $table->timestamps();
 

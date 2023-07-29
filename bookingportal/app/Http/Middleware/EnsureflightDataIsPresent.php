@@ -6,6 +6,8 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+// TODO: Jeg tror ikke det her middleware er den bedste ide at bruge her
+
 class EnsureflightDataIsPresent
 {
     /**

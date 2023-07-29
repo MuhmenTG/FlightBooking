@@ -32,6 +32,7 @@ class FlightBookingController extends Controller
     //We have made this only because there is not any frontend yet, where acess token comes from
     public function getAccessToken()
     {
+        // TODO: Kast HTTP requests over i sin egen service  stedet fo controllers
         $url = 'https://test.api.amadeus.com/v1/security/oauth2/token';
 
         try {
@@ -42,6 +43,7 @@ class FlightBookingController extends Controller
                 ],
                 'form_params' => [
                     'grant_type' => 'client_credentials',
+                    // De her værdier skal ud i .env variabler
                     'client_id' => 'xlUodVi30L0U8snyBsa1qenY4BNyUjMA',
                     'client_secret' => 'A2GpGXyewfl0G3gu'
                 ]
@@ -51,6 +53,7 @@ class FlightBookingController extends Controller
             $accessTtoken = json_decode($response)->access_token;
             return $accessTtoken;
         } catch (GuzzleException $exception) {
+            // DD fejler hårdt i production. Aldrig commit dd
             dd($exception);
         }
         
@@ -175,6 +178,10 @@ class FlightBookingController extends Controller
         if(count($booking) == 0){
             return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_BAD_REQUEST);
         }
+
+
+        // Magiske numre er farlige. Kast dem i en konstant eller env 
+        // https://www.inf.unibz.it/~calvanese/teaching/04-05-ip/lecture-notes/uni04/node15.html
 
         if ($request->input('supportPackage')) {
             $grandTotal += 750;

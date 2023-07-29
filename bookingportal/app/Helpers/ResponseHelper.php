@@ -6,7 +6,8 @@ use Illuminate\Http\Response;
 
 class ResponseHelper
 {
-    
+    // Er det her for at du kan skifte sprog ud eller? Jeg ville kaste dem i translations
+    // https://laravel.com/docs/10.x/localization
     const EMPTY_FLIGHT_ARRAY = 'Empty flight data';
     const FLIGHTS_NOT_FOUND = 'Could not find any flights';
     const HOTEL_NOT_FOUND = 'Could not find hotel';

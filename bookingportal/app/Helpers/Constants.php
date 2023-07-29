@@ -5,6 +5,7 @@ namespace App\Helpers;
 class Constants
 {
     
+    // Behøves den her defineres? Jeg tænker der er en HTTP konstant fra din HTTP client du kan bruge i PHP i stedet
     public const CONTENT_TYPE_JSON = 'application/json';
     public const AUTHORIZATION_BEARER = 'Bearer ';
     public const HEADER_ACCEPT = 'Accept';
