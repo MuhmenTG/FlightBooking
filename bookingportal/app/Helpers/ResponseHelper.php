@@ -44,7 +44,12 @@ class ResponseHelper
     */
     public static function jsonResponseMessage($message, int $statusCode, $key = null): JsonResponse
     {
-        $responseData = is_array($message) ? $message : [$key ?? 'mesage'=> $message];
+        if (is_string($message)) {
+            $responseData = $key ? [$key => $message] : ['message' => $message];
+        } else {
+            $responseData = $key ? [$key => $message] : $message;
+        }
+
         return response()->json($responseData, $statusCode);
     }
 }
