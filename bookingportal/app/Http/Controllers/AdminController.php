@@ -171,12 +171,12 @@ class AdminController extends Controller
 
     public function removeFaq(int $faqId){
         $specificFaq = $this->IbackOfficeService->getFaqById($faqId);
-
-        if($specificFaq === null){
-            return ResponseHelper::jsonResponseMessage('Faq to delete not found', Response::HTTP_NOT_FOUND);    
+        if ($specificFaq === null) {
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);    
         }
-        if($specificFaq->delete()){
-            return ResponseHelper::jsonResponseMessage('Faq successfully deleted', Response::HTTP_OK);
+        
+        if ($specificFaq->delete()) {
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_DELETED_SUCCESSFULLY, Response::HTTP_OK);
         }
     }
 
