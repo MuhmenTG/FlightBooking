@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Models\Faq;
+use App\Services\BackOffice\IBackOfficeService;
 use App\Services\Booking\IBookingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -12,14 +13,15 @@ use Symfony\Component\HttpFoundation\Response;
 class PublicSiteController extends Controller
 {
     protected $IBookingService;
-
+    protected $IBackOfficeService;
     /**
     * PublicSiteController constructor.
     * @param IBookingService $IbookingService
     */
-    public function __construct(IBookingService $IbookingService)
+    public function __construct(IBookingService $IbookingService, IBackOfficeService $IBackOfficeService)
     {
         $this->IBookingService = $IbookingService;
+        $this->IBackOfficeService = $IBackOfficeService;
     }
 
     /**
@@ -84,7 +86,7 @@ class PublicSiteController extends Controller
     * @return \Illuminate\Http\JsonResponse The JSON response.
     */
     public function getAllFaqs(){
-        $faqs = Faq::all();
+        $faqs = $this->IBackOfficeService->getAllFaqs();
         if($faqs->isEmpty()){
             return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }

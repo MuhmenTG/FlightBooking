@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\AgentResource;
-use App\Models\Faq;
 use App\Models\UserAccount;
-use App\Models\UserRole;
 use App\Services\BackOffice\IBackOfficeService;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +17,7 @@ class AdminController extends Controller
 {
     //
 
-    protected$IbackOfficeService;
+    protected $IbackOfficeService;
 
     public function __construct(IBackOfficeService $IbackOfficeService)
     {
@@ -167,7 +165,7 @@ class AdminController extends Controller
     }
 
     public function removeFaq(int $faqId){
-        $specificFaq = Faq::ById($faqId)->first();
+        $specificFaq = $this->IbackOfficeService->getFaqById($faqId);
 
         if($specificFaq === null){
             return ResponseHelper::jsonResponseMessage('Faq to delete not found', Response::HTTP_NOT_FOUND);    

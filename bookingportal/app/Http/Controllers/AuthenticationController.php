@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Resources\AuthResource;
 use App\Services\Authentication\IAuthenticationService;
 use App\Services\AuthenticationService;
 use Illuminate\Support\Facades\Validator;
@@ -52,11 +53,13 @@ class AuthenticationController extends Controller
 
         $response = $this->IAuthenticationService->authenticate($email, $password);
 
+        //$response = new AuthResource($response);
+
         if (!$response) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::CREDENTIALS_WRONG, Response::HTTP_FORBIDDEN);
         }
 
-        return ResponseHelper::jsonResponseMessage($response, Response::HTTP_OK);
+        return new AuthResource($response);
     }
 
     /**

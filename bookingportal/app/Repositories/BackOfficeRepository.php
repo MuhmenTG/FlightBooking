@@ -29,6 +29,12 @@ class BackOfficeRepository implements IBackOfficeRepository{
         return UserAccount::find($id);
     }
 
+    public function getUserByEmail(string $email) : ?UserAccount
+    {
+        $user = UserAccount::ByEmail($email)->first();
+        return $user;
+    }
+
     public function findAgentByEmail(string $email): ?UserAccount
     {
         return UserAccount::where('email', $email)->first();

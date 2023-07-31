@@ -79,6 +79,10 @@ class BackOfficeService implements IBackOfficeService {
         return $faq;
     }
      
+    public function getAllFaqs() : ?Collection{
+        $faqs = Faq::all();
+        return $faqs;
+    }
 
     public function createOrUpdateFaq(string $question, string $answer, int $faqId = null) : Faq
     {

@@ -29,5 +29,7 @@ interface IBackOfficeRepository {
     public function getAllPayments() : array;
 
     public function getSpecificPayments(string $bookingreference, string $transactionId) : ?array;
+
+    public function getUserByEmail(string $email) : ?UserAccount;
     
 }

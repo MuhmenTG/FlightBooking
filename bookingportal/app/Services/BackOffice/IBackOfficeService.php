@@ -36,6 +36,8 @@ interface IBackOfficeService
 
     public function getFaqById(int $faqId) : ?Faq;
 
+    public function getAllFaqs() : ?Collection;
+
     public function createOrUpdateFaq(
         string $question,
         string $answer,
