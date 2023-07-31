@@ -104,7 +104,6 @@ class BookingService implements IBookingService {
         $bookedPassengers = $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
 
         $booking = [
-            'success' => true,
             'itinerary' => $paidFlightBooking,
             'passengers' => $bookedPassengers,
         ];
@@ -138,8 +137,7 @@ class BookingService implements IBookingService {
 
         if (!$bookedFlightSegments->isEmpty() && !$bookedFlightPassenger->isEmpty()) {
             return [
-                'success' => true,
-                'PAX' => $bookedFlightPassenger,
+                'passengers' => $bookedFlightPassenger,
                 'flight' => $bookedFlightSegments,
                 'payment' => $paymentDetails
             ];
@@ -211,6 +209,11 @@ class BookingService implements IBookingService {
     public function getUserEnquiryById(int $enquiryId)
     {
        return $this->bookingRepository->getUserEnquiryById($enquiryId);
+    }
+
+    public function getAllUserEnquiries()
+    {
+        return $this->bookingRepository->getAllUserEnquries();
     }
 
     public function getSpecificPassengerInBooking(int $passengerId, string $bookingReference){

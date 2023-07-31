@@ -30,6 +30,8 @@ interface IBookingService
 
     public function getUserEnquiryById(int $enquiryId);
 
+    public function getAllUserEnquiries();
+    
     public function getSpecificPassengerInBooking(int $passengerId, string $bookingReference);
 
     public function updatePassenger(PassengerInfo $passenger, string $firstName, string $lastName, string $dateOfBirth, string $email): PassengerInfo;
