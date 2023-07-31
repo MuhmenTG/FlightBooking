@@ -22,7 +22,7 @@ class PaymentResource extends JsonResource
             'paymentStatus' => $this->paymentStatus,
             'paymentMethod' => $this->paymentMethod,
             'paymentGatewayProcessor' => $this->paymentGatewayProcessor,
-            'inConnectionWithBookingReference' => $this->noteComments,
+            'inConnectionWithBookingReference' => $this->connectedBookingReference,
         ];
     }
 }

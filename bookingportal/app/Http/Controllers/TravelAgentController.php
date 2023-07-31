@@ -225,9 +225,9 @@ class TravelAgentController extends Controller
             return ResponseHelper::jsonResponseMessage('There is not any payment info avaliable', Response::HTTP_NOT_FOUND);    
         }
 
-        $payment = new PaymentResource($payment);
+        $payment = PaymentResource::collection($payment);
         
-        return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payment');
+        return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payments');
     }
 
     public function getSpecificPaymentTransactions(string $bookingReference, string $paymentId){

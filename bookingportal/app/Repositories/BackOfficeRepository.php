@@ -92,7 +92,8 @@ class BackOfficeRepository implements IBackOfficeRepository{
     }
 
     public function getSpecificPayments(string $bookingreference, string $transactionId) : ?array{
-        $payment = Payment::ByConnectedBookingReference($bookingreference)->ByPaymentTransactionId($transactionId)->first();
+        $payment = Payment::where(Payment::COL_CONNECTEDBOOKINGREFERENCE, $bookingreference)->first();
+        var_dump($payment);exit;
         return $payment;
     }
     
