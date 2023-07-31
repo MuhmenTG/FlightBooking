@@ -193,13 +193,9 @@ class FlightBookingController extends Controller
         try {
             $booking = $this->IBookingService->finalizeFlightReservation($bookingReference);            
             $payment = $this->IPaymentService->createCharge($grandTotal, Constants::CURRENCY_CODE, $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReference);      
-            $bookedFlightSegments = FlightConfirmationResource::collection($booking['itinerary']);
-            $bookedFlightPassenger = PassengerResource::collection($booking['passengers']);
-            $paymentDetails = new PaymentResource($payment);
             $bookingComplete = [
-                $bookedFlightSegments,
-                $bookedFlightPassenger,
-                $paymentDetails,
+                $booking,
+                $payment,
             ];
         } catch (Exception $e) {
             $alreadyPaidBooking = $this->IBookingService->retrieveBookingInformation($bookingReference);
