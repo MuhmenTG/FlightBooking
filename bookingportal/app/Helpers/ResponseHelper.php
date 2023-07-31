@@ -24,6 +24,8 @@ class ResponseHelper
     const FAQ_NOT_FOUND = 'Faq not found';
     const BOOKING_REFERENCE_NOT_PROVIDED = 'Booking reference not provided';
     const AGENT_REMOVED_SUCCESFULLY = 'Agent removed succesfully.';
+    public const FAQ_DELETED_SUCCESSFULLY = 'Faq successfully deleted';
+
     /**
     * Generate a validation error response.
     *
