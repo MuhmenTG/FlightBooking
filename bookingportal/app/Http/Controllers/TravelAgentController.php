@@ -3,15 +3,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Resources\PassengerResource;
+use App\Http\Resources\PaymentResource;
+use App\Http\Resources\SupportRequestResource;
 use App\Mail\ISendEmailService;
-use App\Mail\SendEmail;;
-use App\Models\HotelBooking;
 use App\Models\UserAccount;
 use App\Models\UserEnquiry;
 use App\Services\BackOffice\IBackOfficeService;
-use App\Services\BackOfficeService;
 use App\Services\Booking\IBookingService;
-use App\Services\BookingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
@@ -76,11 +75,7 @@ class TravelAgentController extends Controller
         $isSend = $this->IEmailSendService->sendEmailWithAttachments($name, $email, $subject, $text, $attachments);
         
         if($isSend){
-            $response = [
-                "success" => true,
-                "Booking confirmation has been sent",
-            ];
-            return ResponseHelper::jsonResponseMessage($response, Response::HTTP_OK);
+            return ResponseHelper::jsonResponseMessage("Booking confirmation has been sent", Response::HTTP_OK);
         }
 
         return ResponseHelper::jsonResponseMessage('Something went wrong while sending confirmation', Response::HTTP_BAD_REQUEST);        
@@ -88,13 +83,15 @@ class TravelAgentController extends Controller
 
     public function getAllUserEnquiries()
     {
-        $userEnquiries = UserEnquiry::all();
-    
+        $userEnquiries = $this->IBookingService->getAllUserEnquiries();
+        
         if($userEnquiries->isEmpty()) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::COSTUMER_ENQUIRY_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
-    
-        return ResponseHelper::jsonResponseMessage($userEnquiries, Response::HTTP_OK);
+
+        $userEnquiries = SupportRequestResource::collection($userEnquiries);
+
+        return ResponseHelper::jsonResponseMessage($userEnquiries, Response::HTTP_OK,  "supportRequests");
     }
     
     public function getSpecificUserEnquiry(int $enquiryId)
@@ -102,10 +99,12 @@ class TravelAgentController extends Controller
         $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
 
         if (!$specificUserEnquiry) {
-            return ResponseHelper::jsonResponseMessage(['message' => 'User enquiry not found'], Response::HTTP_NOT_FOUND);
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::COSTUMER_ENQUIRY_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
 
-        return ResponseHelper::jsonResponseMessage($specificUserEnquiry, Response::HTTP_OK);
+        $specificUserEnquiry = new SupportRequestResource($specificUserEnquiry);
+
+        return ResponseHelper::jsonResponseMessage($specificUserEnquiry, Response::HTTP_OK, "supportRequest");
     }
 
     public function answerUserEnquiry(Request $request){
@@ -125,7 +124,7 @@ class TravelAgentController extends Controller
         $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
         
         if(!$specificUserEnquiry){
-            return ResponseHelper::jsonResponseMessage('User enquiry not found', Response::HTTP_NOT_FOUND);    
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::COSTUMER_ENQUIRY_NOT_FOUND, Response::HTTP_NOT_FOUND);    
         }
         
         $emailSent = $this->IEmailSendService->sendEmailWithAttachments($specificUserEnquiry->getName(), $specificUserEnquiry->getEmail(),
@@ -138,8 +137,7 @@ class TravelAgentController extends Controller
         
         return ResponseHelper::jsonResponseMessage('Email could not be sent', Response::HTTP_BAD_REQUEST);
     }
-    
-    
+     
     public function removeUserEnquiry(int $enquiryId)
     {    
         $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
@@ -184,6 +182,8 @@ class TravelAgentController extends Controller
         }
 
         $passenger = $this->IBookingService->updatePassenger($passenger, $firstName, $lastName, $dateOfBirth, $email);
+
+        $passenger = new PassengerResource($passenger);
         
         return ResponseHelper::jsonResponseMessage($passenger, Response::HTTP_OK, 'updatedPassengerInfo');
     }
@@ -193,11 +193,13 @@ class TravelAgentController extends Controller
         $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
         
         if(!$specificUserEnquiry){
-            return ResponseHelper::jsonResponseMessage('User enquiry not found', Response::HTTP_NOT_FOUND);    
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::COSTUMER_ENQUIRY_NOT_FOUND, Response::HTTP_NOT_FOUND);    
         }
 
         $specificUserEnquiry->setIsSolved(1);
         $specificUserEnquiry->save();
+
+        $specificUserEnquiry = new SupportRequestResource($specificUserEnquiry);
 
         return ResponseHelper::jsonResponseMessage($specificUserEnquiry, Response::HTTP_OK, 'solvedUserEnquiry');
 
@@ -209,11 +211,10 @@ class TravelAgentController extends Controller
 
         if($payment == null)
         {
-            return ResponseHelper::jsonResponseMessage('There is not any payment info avaliable', Response::HTTP_NOT_FOUND);    
+            return ResponseHelper::jsonResponseMessage('There is not any booking info avaliable', Response::HTTP_NOT_FOUND);    
         }
-
         
-        return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payment');
+        return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'bookings');
     }
 
     public function getAllPaymentTransactions(){
@@ -224,6 +225,7 @@ class TravelAgentController extends Controller
             return ResponseHelper::jsonResponseMessage('There is not any payment info avaliable', Response::HTTP_NOT_FOUND);    
         }
 
+        $payment = new PaymentResource($payment);
         
         return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payment');
     }
@@ -235,7 +237,6 @@ class TravelAgentController extends Controller
         {
             return ResponseHelper::jsonResponseMessage('Payment information not found about'. '.'.$bookingReference, Response::HTTP_NOT_FOUND);    
         }
-
         
         return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payment');
     }
