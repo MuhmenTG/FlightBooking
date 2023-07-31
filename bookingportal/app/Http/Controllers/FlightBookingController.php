@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 use App\Helpers\Constants;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidationHelper;
-use App\Http\Resources\FlightConfirmationResource;
 use App\Services\Amadeus\IAmadeusService;
 use App\Services\Booking\IBookingService;
 use App\Services\Payment\IPaymentService;
