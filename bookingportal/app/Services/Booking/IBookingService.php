@@ -14,8 +14,6 @@ interface IBookingService
 
     public function retrieveBookingInformation(string $bookingReference): ?array;
 
-    public static function generateTicketNumber(string $validatingAirline): string;
-
     public function generateBookingReference(): string;
 
     public function sendRquestContactForm(string $name, string $email, string $subject, string $message, string $bookingReference = null);

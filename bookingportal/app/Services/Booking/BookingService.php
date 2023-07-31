@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Booking;
 
-use Amadeus\Resources\FlightBaggageAllowance;
 use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
 use App\Mail\ISendEmailService;
-use App\Models\Airline;
 use App\Models\PassengerInfo;
 use App\Repositories\ITravelAgentRepository;
 use App\Services\Booking\IBookingService;
@@ -140,25 +138,6 @@ class BookingService implements IBookingService {
         }               
 
         return null;
-    }
-
-    public static function generateTicketNumber(string $validatingAirline) : string {
-        $validatingCarrier = Airline::ByIataDesignator($validatingAirline)->first();
-        if($validatingCarrier){
-            $validatingAirlineDigits = $validatingCarrier->getThreeDigitAirlineCode();
-        }
-        $validatingAirlineDigits = "010";
-        if(!$validatingAirlineDigits){
-            return $validatingAirline;
-        }
-        
-        $ticketNumber = '';
-        for($i = 0; $i < 11; $i++) {
-            $ticketNumber .= mt_rand(0, 9);
-        }
-        
-        $generatedTicketNumber = $validatingAirlineDigits."-".$ticketNumber;
-        return $generatedTicketNumber;
     }
 
     public function generateBookingReference() : string{
