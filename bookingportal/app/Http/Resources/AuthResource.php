@@ -12,7 +12,7 @@ class AuthResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    function toArray($request) : array
+    public function toArray($request)
     {
         return [
             'user' => [
