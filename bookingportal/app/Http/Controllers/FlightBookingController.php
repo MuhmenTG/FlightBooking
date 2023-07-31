@@ -6,6 +6,9 @@ namespace App\Http\Controllers;
 use App\Helpers\Constants;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidationHelper;
+use App\Http\Resources\FlightConfirmationResource;
+use App\Http\Resources\PassengerResource;
+use App\Http\Resources\PaymentResource;
 use App\Services\Amadeus\IAmadeusService;
 use App\Services\Booking\IBookingService;
 use App\Services\Payment\IPaymentService;
@@ -189,17 +192,21 @@ class FlightBookingController extends Controller
         
         try {
             $booking = $this->IBookingService->finalizeFlightReservation($bookingReference);            
-            $payment = $this->IPaymentService->createCharge($grandTotal, Constants::CURRENCY_CODE, $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReference);
+            $payment = $this->IPaymentService->createCharge($grandTotal, Constants::CURRENCY_CODE, $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReference);      
+            $bookedFlightSegments = FlightConfirmationResource::collection($booking['itinerary']);
+            $bookedFlightPassenger = PassengerResource::collection($booking['passengers']);
+            $paymentDetails = new PaymentResource($payment);
             $bookingComplete = [
-                $payment,
-                $payment
+                $bookedFlightSegments,
+                $bookedFlightPassenger,
+                $paymentDetails,
             ];
         } catch (Exception $e) {
             $alreadyPaidBooking = $this->IBookingService->retrieveBookingInformation($bookingReference);
             return ResponseHelper::jsonResponseMessage($alreadyPaidBooking, Response::HTTP_ALREADY_REPORTED);
         }
 
-        return ResponseHelper::jsonResponseMessage($bookingComplete, Response::HTTP_OK);
+        return ResponseHelper::jsonResponseMessage($bookingComplete, Response::HTTP_BAD_REQUEST);
     }
 
 }

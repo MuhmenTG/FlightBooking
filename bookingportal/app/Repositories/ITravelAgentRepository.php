@@ -31,6 +31,8 @@ interface ITravelAgentRepository
     public function getPaidFlightBookings(string $bookingReference): Collection;
     
     public function getPassengerEmail(Collection $bookedPassengers): ?string;
+
+    public function getBookingPayment(string $bookingReference);
     
     public function createFlightBookingSegment(string $bookingReference, FlightSelectionDTO $flightSegment): FlightBooking;
     

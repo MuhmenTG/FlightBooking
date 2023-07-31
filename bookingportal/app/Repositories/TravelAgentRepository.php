@@ -8,6 +8,7 @@ use App\Models\Airline;
 use App\Models\AirportInfo;
 use App\Models\FlightBooking;
 use App\Models\PassengerInfo;
+use App\Models\Payment;
 use App\Models\UserEnquiry;
 use App\Services\Booking\BookingService;
 use Illuminate\Database\Eloquent\Collection;
@@ -47,6 +48,11 @@ class TravelAgentRepository implements ITravelAgentRepository
         $passengerInfo->setPassengerType($passenger->passengerType);
         $passengerInfo->setTicketNumber('Ticket not issued yet');
         return $passengerInfo->save();
+    }
+
+    public function getBookingPayment(string $bookingReference) {
+        $paymentDetails = Payment::ByConnectedBookingReference($bookingReference)->first();
+        return $paymentDetails;
     }
 
     public function generateTicketNumbers(string $bookingReference)

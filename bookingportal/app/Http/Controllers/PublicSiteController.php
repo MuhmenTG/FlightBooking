@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\FaqResource;
+use App\Http\Resources\FlightConfirmationResource;
+use App\Http\Resources\PassengerResource;
+use App\Http\Resources\PaymentResource;
 use App\Services\BackOffice\IBackOfficeService;
 use App\Services\Booking\IBookingService;
 use Illuminate\Http\Request;
@@ -35,15 +38,31 @@ class PublicSiteController extends Controller
         if ($bookingReference === null) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_REFERENCE_NOT_PROVIDED, Response::HTTP_BAD_REQUEST);
         }
-
+    
         $bookingInfo = $this->IBookingService->retrieveBookingInformation($bookingReference);
-
+    
         if ($bookingInfo) {
-            return ResponseHelper::jsonResponseMessage($bookingInfo, Response::HTTP_OK);
+            // Transform the booking info using the relevant resources
+            $bookedFlightSegments = $bookingInfo['flight'];
+            $bookedFlightPassenger = $bookingInfo['passengers'];
+            $paymentDetails = $bookingInfo['payment'];
+    
+            $bookedFlightSegments = FlightConfirmationResource::collection($bookedFlightSegments);
+            $bookedFlightPassenger = PassengerResource::collection($bookedFlightPassenger);
+            $paymentDetails = new PaymentResource($paymentDetails);
+    
+            $responseData = [
+                'passengers' => $bookedFlightPassenger,
+                'flight' => $bookedFlightSegments,
+                'payment' => $paymentDetails,
+            ];
+    
+            return ResponseHelper::jsonResponseMessage($responseData, Response::HTTP_OK);
         }
-
+    
         return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
     }
+    
 
     /**
     * Send an enquiry or support request.

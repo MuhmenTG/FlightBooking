@@ -7,11 +7,9 @@ namespace App\Services\Booking;
 use Amadeus\Resources\FlightBaggageAllowance;
 use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
-use App\Http\Resources\FlightConfirmationResource;
 use App\Mail\ISendEmailService;
 use App\Models\Airline;
 use App\Models\PassengerInfo;
-use App\Models\Payment;
 use App\Repositories\ITravelAgentRepository;
 use App\Services\Booking\IBookingService;
 use Exception;
@@ -110,7 +108,7 @@ class BookingService implements IBookingService {
 
         $email = $this->bookingRepository->getPassengerEmail($bookedPassengers);
 
-        $this->IEmailSendService->sendEmailWithAttachments("Muhmen", $email, $bookingReference, "Booking");
+        $this->IEmailSendService->sendEmailWithAttachments($email, $email, $bookingReference, "Booking");
 
         return $booking;
     }
@@ -130,19 +128,16 @@ class BookingService implements IBookingService {
     public function retrieveBookingInformation(string $bookingReference) : ?array
     {
         $bookedFlightSegments = $this->bookingRepository->findFlightSegmentsByBookingReference($bookingReference);
-        $bookedFlightSegments = FlightConfirmationResource::collection($bookedFlightSegments);
         $bookedFlightPassenger = $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
+        $paymentDetails = $this->bookingRepository->getBookingPayment($bookingReference);
         
-        $paymentDetails = Payment::ByConnectedBookingReference($bookingReference)->first();
-
         if (!$bookedFlightSegments->isEmpty() && !$bookedFlightPassenger->isEmpty()) {
             return [
                 'passengers' => $bookedFlightPassenger,
                 'flight' => $bookedFlightSegments,
                 'payment' => $paymentDetails
             ];
-        }
-
+        }               
 
         return null;
     }
