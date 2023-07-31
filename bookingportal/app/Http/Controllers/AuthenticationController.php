@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\AuthResource;
 use App\Services\Authentication\IAuthenticationService;
-use App\Services\AuthenticationService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,14 +51,12 @@ class AuthenticationController extends Controller
         $password = $request->input('password');
 
         $response = $this->IAuthenticationService->authenticate($email, $password);
-
-        //$response = new AuthResource($response);
-
         if (!$response) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::CREDENTIALS_WRONG, Response::HTTP_FORBIDDEN);
         }
 
-        return new AuthResource($response);
+        return ResponseHelper::jsonResponseMessage($response, Response::HTTP_OK);
+        
     }
 
     /**
