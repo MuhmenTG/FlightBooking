@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
-use App\Models\Faq;
+use App\Http\Resources\FaqResource;
 use App\Services\BackOffice\IBackOfficeService;
 use App\Services\Booking\IBookingService;
 use Illuminate\Http\Request;
@@ -87,9 +87,13 @@ class PublicSiteController extends Controller
     */
     public function getAllFaqs(){
         $faqs = $this->IBackOfficeService->getAllFaqs();
+
         if($faqs->isEmpty()){
             return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
-        return ResponseHelper::jsonResponseMessage($faqs, Response::HTTP_OK);
+
+        $faqs = FaqResource::collection($faqs);
+        
+        return ResponseHelper::jsonResponseMessage($faqs, Response::HTTP_OK, "FAQS");
     }
 }
