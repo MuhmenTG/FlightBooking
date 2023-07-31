@@ -62,11 +62,31 @@ class TravelAgentRepository implements ITravelAgentRepository
         $unTicketedPassengers = PassengerInfo::ByBookingReference($bookingReference)->get();
 
         foreach ($unTicketedPassengers as $passenger) {
-            $ticketNumber = BookingService::generateTicketNumber($airlineTicketNumberIssuer);
+            $ticketNumber = $this->generateTicketNumber($airlineTicketNumberIssuer);
             $passenger->setTicketNumber($ticketNumber);
             $passenger->save();
         }
     }
+
+    public function generateTicketNumber(string $validatingAirline) : string {
+        $validatingCarrier = Airline::ByIataDesignator($validatingAirline)->first();
+        if($validatingCarrier){
+            $validatingAirlineDigits = $validatingCarrier->getThreeDigitAirlineCode();
+        }
+        $validatingAirlineDigits = "010";
+        if(!$validatingAirlineDigits){
+            return $validatingAirline;
+        }
+        
+        $ticketNumber = '';
+        for($i = 0; $i < 11; $i++) {
+            $ticketNumber .= mt_rand(0, 9);
+        }
+        
+        $generatedTicketNumber = $validatingAirlineDigits."-".$ticketNumber;
+        return $generatedTicketNumber;
+    }
+
 
     public function getUnpaidFlightBookings(string $bookingReference): Collection
     {

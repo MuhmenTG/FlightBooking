@@ -24,6 +24,8 @@ interface ITravelAgentRepository
 
     public function generateTicketNumbers(string $bookingReference);
 
+    public function generateTicketNumber(string $validatingAirline) : string;
+    
     public function getUnpaidFlightBookings(string $bookingReference): Collection;
 
     public function markBookingAsPaid(string $bookingReference): void;
