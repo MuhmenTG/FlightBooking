@@ -21,18 +21,18 @@ class AuthenticationService implements IAuthenticationService {
     public function authenticate(string $email, string $password): ?Collection
     {
         $user = $this->backOfficeRepository->getUserByEmail($email);
-    
+
         if (!$user || !Hash::check($password, $user->getPassword())) {
             return null;
         }
-    
+
         $token = $user->createToken('apiToken')->plainTextToken;
-    
-        $response = collect([
+
+        $userData = collect([
             'user' => $user,
             'token' => $token
         ]);
-    
-        return $response;
+
+        return new Collection($userData->all());
     }
 }
