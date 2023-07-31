@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\AgentResource;
+use App\Http\Resources\FaqResource;
 use App\Models\UserAccount;
 use App\Services\BackOffice\IBackOfficeService;
 use Exception;
@@ -121,9 +122,9 @@ class AdminController extends Controller
     public function saveFaq(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'question' => 'required|string',
-            'answer' => 'required|string',
-            'faqId' => 'sometimes|numeric',
+            'question'  => 'required|string',
+            'answer'    => 'required|string',
+            'faqId'     => 'sometimes|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -147,6 +148,8 @@ class AdminController extends Controller
                 );
             }
 
+            $faq = new FaqResource($faq);
+
             return ResponseHelper::jsonResponseMessage($faq, Response::HTTP_OK, "FAQ");
         } catch (Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_ALREADY_REPORTED);
@@ -161,7 +164,9 @@ class AdminController extends Controller
             return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
         
-        return ResponseHelper::jsonResponseMessage($specificFaq, Response::HTTP_OK);
+        $specificFaq = new FaqResource($specificFaq);
+
+        return ResponseHelper::jsonResponseMessage($specificFaq, Response::HTTP_OK, "FAQ");
     }
 
     public function removeFaq(int $faqId){
