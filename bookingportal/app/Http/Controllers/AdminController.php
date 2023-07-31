@@ -183,14 +183,14 @@ class AdminController extends Controller
     public function resetAgentPassword(Request $request){
         
         $validator = Validator::make($request->all(), [
-            'userId'                  => 'required|int',
+            'agentId'                  => 'required|int',
         ]);
 
         if ($validator->fails()) {
             return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
-        $userId = $request->input('userId');
+        $userId = $request->input('agentId');
         $password = "systemAgentUser";
 
         $user = UserAccount::ById($userId)->first();
