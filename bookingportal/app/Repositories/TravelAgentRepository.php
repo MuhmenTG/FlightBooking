@@ -136,6 +136,11 @@ class TravelAgentRepository implements ITravelAgentRepository
        return $specificUserEnquiry;
     }
 
+    public function getAllUserEnquries() : Collection{
+        $userEnquiries = UserEnquiry::all();
+        return $userEnquiries;
+    }
+
     
     public function registerEnquiry(string $name, string $email, string $subject, string $message){
         $enquiry = new UserEnquiry();

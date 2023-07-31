@@ -35,6 +35,8 @@ interface ITravelAgentRepository
     public function createFlightBookingSegment(string $bookingReference, FlightSelectionDTO $flightSegment): FlightBooking;
     
     public function getUserEnquiryById (int $enquiryId);
+
+    public function getAllUserEnquries() : Collection;
     
     public function registerEnquiry(string $name, string $email, string $subject, string $message);
 
