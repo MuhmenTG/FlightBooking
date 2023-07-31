@@ -86,8 +86,8 @@ class BackOfficeRepository implements IBackOfficeRepository{
         return $agents;
     }
 
-    public function getAllPayments() : array{
-        $payments = Payment::all()->toArray();
+    public function getAllPayments() : Collection{
+        $payments = Payment::all();
         return $payments;
     }
 

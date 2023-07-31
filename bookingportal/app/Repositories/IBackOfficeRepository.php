@@ -5,7 +5,6 @@ namespace App\Repositories;
 
 use App\Models\Faq;
 use App\Models\UserAccount;
-use App\Models\UserEnquiry;
 use Illuminate\Database\Eloquent\Collection;
 
 interface IBackOfficeRepository {
@@ -26,7 +25,7 @@ interface IBackOfficeRepository {
 
     public function getDeactivatedAgents(): array;
 
-    public function getAllPayments() : array;
+    public function getAllPayments() : Collection;
 
     public function getSpecificPayments(string $bookingreference, string $transactionId) : ?array;
 
