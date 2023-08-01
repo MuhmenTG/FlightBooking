@@ -7,16 +7,19 @@ use App\Models\Faq;
 use App\Models\UserAccount;
 use App\Models\UserEnquiry;
 use App\Repositories\IBackOfficeRepository;
+use App\Repositories\ITravelAgentRepository;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
 
 class BackOfficeService implements IBackOfficeService {
     protected $backOfficeRepository;
+    protected $travelAgentRepository;
 
-    public function __construct(IBackOfficeRepository $backOfficeRepository)
+    public function __construct(IBackOfficeRepository $backOfficeRepository, ITravelAgentRepository $TravelAgentRepository)
     {
         $this->backOfficeRepository = $backOfficeRepository;
+        $this->travelAgentRepository = $TravelAgentRepository;
     }
     
     public function createAgent(string $firstName, string $lastName, string $email, string $status, int $isAdmin, int $isAgent): UserAccount
@@ -92,7 +95,7 @@ class BackOfficeService implements IBackOfficeService {
 
     public function findUserEnquiryById(int $id): ?UserEnquiry
     {
-        $userEnquiry = UserEnquiry::ById($id);
+        $userEnquiry = $this->travelAgentRepository->getUserEnquiryById($id);
         if($userEnquiry){
             return $userEnquiry;
         }
