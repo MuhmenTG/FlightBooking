@@ -49,7 +49,6 @@ class TravelAgentRepository implements ITravelAgentRepository
             $payment->save();
     
             return $payment;
-        }
     
         return null;
     }
