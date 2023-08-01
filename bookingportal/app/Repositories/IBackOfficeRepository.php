@@ -22,6 +22,8 @@ interface IBackOfficeRepository {
     public function getActivatedAgents(): Collection;
 
     public function getSpecificFaq(int $faqId) : ?Faq;
+    
+    public function createOrUpdateFaq(string $question, string $answer, int $faqId = null): Faq;
 
     public function getDeactivatedAgents(): array;
 
