@@ -80,6 +80,24 @@ class BackOfficeRepository implements IBackOfficeRepository{
         return null;
     }
 
+    public function createOrUpdateFaq(string $question, string $answer, int $faqId = null): Faq
+    {
+        if ($faqId !== null) {
+            $faq = Faq::find($faqId);
+            if (!$faq) {
+                throw new \InvalidArgumentException("FAQ with ID $faqId not found.");
+            }
+        } else {
+            $faq = new Faq();
+        }
+
+        $faq->setQuestion($question);
+        $faq->setAnswer($answer);
+        $faq->save();
+
+        return $faq;
+    }
+
     public function getDeactivatedAgents(): array
     {
         $agents = UserAccount::where(UserAccount::COL_STATUS, 0)->get()->ToArray();
