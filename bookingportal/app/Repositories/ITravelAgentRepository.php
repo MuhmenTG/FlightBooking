@@ -48,7 +48,7 @@ interface ITravelAgentRepository
 
     public function updatePassenger(PassengerInfo $passenger, string $firstName, string $lastName, string $dateOfBirth, string $email): PassengerInfo;
 
-     public function createPayment(float $amount, string $currency, string $bookingreference): ?Payment
+    public function createPayment(float $amount, string $currency, string $bookingreference): ?Payment;
 
     public function getAllConfirmedBookings();
 }
