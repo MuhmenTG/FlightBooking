@@ -8,6 +8,13 @@ use Stripe\BalanceTransaction;
 
 
 class PaymentService implements IPaymentService {
+
+    protected $bookingRepository;
+
+    public function __construct(ITravelAgentRepository $bookingRepository)
+    {
+        $this->bookingRepository = $bookingRepository;
+    }
     
     public function createCharge(int $amount, string $currency, string $cardNumber, string $expireYear, string $expireMonth, string $cvc, string $bookingreference) 
     {
@@ -25,16 +32,7 @@ class PaymentService implements IPaymentService {
         
         
         if($charge){    
-            $payment = New Payment();
-            $payment->setPaymentAmount($amount);       
-            $payment->setPaymentCurrency($currency);
-            $payment->setPaymentType('Online');
-            $payment->setPaymentStatus('Completed');
-            $payment->setPaymentTransactionId($charge->id);
-            $payment->setPaymentMethod("MasterCard");
-            $payment->setPaymentGatewayProcessor("Stripe Api");
-            $payment->setConnectedBookingReference($bookingreference);
-            $payment->save();
+           $payment = $this->bookingRepository->createPayment($amount, $currency, $bookingreference);
         }
         
         $payment = Payment::ByPaymentInfoId($charge->id)->get();;
