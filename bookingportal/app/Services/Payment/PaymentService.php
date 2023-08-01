@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Payment;
 use App\Models\Payment;
+use App\Repositories\ITravelAgentRepository;
 use Stripe\BalanceTransaction;
 
 
@@ -32,7 +33,7 @@ class PaymentService implements IPaymentService {
         
         
         if($charge){    
-           $payment = $this->bookingRepository->createPayment($amount, $currency, $bookingreference);
+           $payment = $this->bookingRepository->createPayment($charge, $amount, $currency, $bookingreference);
         }
         
         $payment = Payment::ByPaymentInfoId($charge->id)->get();;

@@ -6,9 +6,9 @@ use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
 use App\Models\FlightBooking;
 use App\Models\PassengerInfo;
-use App\Models\UserEnquiry;
-use App\Services\Booking\BookingService;
+use App\Models\Payment;
 use Illuminate\Database\Eloquent\Collection;
+use Stripe\Charge;
 
 interface ITravelAgentRepository
 {
@@ -25,7 +25,7 @@ interface ITravelAgentRepository
     public function generateTicketNumbers(string $bookingReference);
 
     public function generateTicketNumber(string $validatingAirline) : string;
-    
+
     public function getUnpaidFlightBookings(string $bookingReference): Collection;
 
     public function markBookingAsPaid(string $bookingReference): void;
@@ -38,7 +38,7 @@ interface ITravelAgentRepository
     
     public function createFlightBookingSegment(string $bookingReference, FlightSelectionDTO $flightSegment): FlightBooking;
     
-    public function getUserEnquiryById (int $enquiryId);
+    public function getUserEnquiryById(int $enquiryId);
 
     public function getAllUserEnquries() : Collection;
     
@@ -48,7 +48,7 @@ interface ITravelAgentRepository
 
     public function updatePassenger(PassengerInfo $passenger, string $firstName, string $lastName, string $dateOfBirth, string $email): PassengerInfo;
 
-    public function createPayment(float $amount, string $currency, string $bookingreference): ?Payment;
+    public function createPayment(Charge $charge, float $amount, string $currency, string $bookingreference): ?Payment;
 
     public function getAllConfirmedBookings();
 }
