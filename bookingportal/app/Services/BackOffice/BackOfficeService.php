@@ -86,18 +86,7 @@ class BackOfficeService implements IBackOfficeService {
 
     public function createOrUpdateFaq(string $question, string $answer, int $faqId = null) : Faq
     {
-        if($faqId && $faqId !== null){
-            $faq = Faq::byId($faqId)->first();
-            if (!$faq) {
-                return false;
-            }
-        }
-        else{
-            $faq = new Faq();
-        }
-        $faq->setQuestion($question);
-        $faq->setAnswer($answer);
-        $faq->save();
+        $faq = $this->backOfficeRepository->createOrUpdateFaq($question, $answer, $faqId);
         return $faq;
     }
 
