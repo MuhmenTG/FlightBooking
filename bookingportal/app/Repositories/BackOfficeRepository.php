@@ -80,6 +80,12 @@ class BackOfficeRepository implements IBackOfficeRepository{
         return null;
     }
 
+    public function getSpecificFaq(int $faqId) : Collection {
+        $faqs = Faq::all();
+        return $faqs;
+    }
+
+    
     public function createOrUpdateFaq(string $question, string $answer, int $faqId = null): Faq
     {
         if ($faqId !== null) {
