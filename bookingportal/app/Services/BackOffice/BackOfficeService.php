@@ -83,7 +83,7 @@ class BackOfficeService implements IBackOfficeService {
     }
      
     public function getAllFaqs() : ?Collection{
-        $faqs = Faq::all();
+        $faqs = this->backOfficeRepository->getAllFaq();
         return $faqs;
     }
 
