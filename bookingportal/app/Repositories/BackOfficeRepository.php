@@ -80,7 +80,7 @@ class BackOfficeRepository implements IBackOfficeRepository{
         return null;
     }
 
-    public function getAllFaq(int $faqId) : Collection {
+    public function getAllFaq() : Collection {
         $faqs = Faq::all();
         return $faqs;
     }
