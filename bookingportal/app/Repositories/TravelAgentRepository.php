@@ -35,7 +35,7 @@ class TravelAgentRepository implements ITravelAgentRepository
         return PassengerInfo::where(PassengerInfo::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISCANCELLED => true]);
     }
     
-    public function createPayment(Charge $charge, float $amount, string $currency, string $bookingreference): ?Payment
+    public function createPayment(Charge $charge, int $amount, string $currency, string $bookingreference): ?Payment
     {
         $payment = new Payment();
         $payment->setPaymentAmount($amount);
