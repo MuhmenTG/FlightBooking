@@ -88,7 +88,7 @@ class BackOfficeRepository implements IBackOfficeRepository{
     public function createOrUpdateFaq(string $question, string $answer, int $faqId = null): Faq
     {
         if ($faqId !== null) {
-            $faq = Faq::find($faqId);
+            $faq = Faq::ById($faqId)->first();
             if (!$faq) {
                 throw new \InvalidArgumentException("FAQ with ID $faqId not found.");
             }
