@@ -150,7 +150,7 @@ class TravelAgentRepository implements ITravelAgentRepository
         $flightBooking->setArrivalDate($flightSegment->arrivelDateTime);
 
         if (isset($flightSegment->arrivelTerminal)) {
-            $flightBooking->setArrivalTerminal($flightSegment->arrivelTerminal);
+            $flightBooking->setArrivalTerminal($flightSegment->arrivelTerminal ?? "Terminal not avliable.");
         }
 
         $flightBooking->setFlightDuration($flightSegment->flightDuration);
