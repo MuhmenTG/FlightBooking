@@ -47,7 +47,7 @@ Route::prefix('public')->group(function () {
     Route::get('/getSpecificFaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
 });
 
-//Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
+Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
     Route::post('/admin/createAgent', [AdminController::class, 'createAgent']);
     Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgent']);
     Route::get('/admin/getSpecificAgentDetails/{agentId}', [AdminController::class, 'getSpecificAgentDetails']);
@@ -59,7 +59,7 @@ Route::prefix('public')->group(function () {
     Route::get('/admin/getAllFaqs', [PublicSiteController::class, 'getAllFaqs']);
     Route::delete('/admin/removeFaq/{faqId}', [AdminController::class, 'removeFaq']);
     Route::post('/admin/resetAgentPassword', [AdminController::class, 'resetAgentPassword']);
-//});
+});
 
 Route::middleware(['auth:sanctum', 'isAgent'])->group(function () {
     Route::get('/travelAgent/getAllFlightBookings', [TravelAgentController::class, 'getAllFlightBookings']);
