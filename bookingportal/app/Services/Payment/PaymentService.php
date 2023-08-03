@@ -36,7 +36,7 @@ class PaymentService implements IPaymentService {
            $payment = $this->bookingRepository->createPayment($charge, $amount, $currency, $bookingreference);
         }
         
-        $payment = Payment::ByPaymentInfoId($charge->id)->get();;
+        $payment = Payment::ByPaymentTransactionId($charge->id)->first();
         return $payment;
     }
 
