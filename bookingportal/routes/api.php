@@ -47,19 +47,19 @@ Route::prefix('public')->group(function () {
     Route::get('/getSpecificFaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
 });
 
-Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
-    Route::post('/admin/createAgent', [AdminController::class, 'saveAgent']);
-    Route::post('/admin/editAgentDetails', [AdminController::class, 'saveAgent']);
+//Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
+    Route::post('/admin/createAgent', [AdminController::class, 'createAgent']);
+    Route::post('/admin/editAgentDetails', [AdminController::class, 'editAgent']);
     Route::get('/admin/getSpecificAgentDetails/{agentId}', [AdminController::class, 'getSpecificAgentDetails']);
     Route::put('/admin/setAgentAccountToDeactiveOrActive/{agentId}', [AdminController::class, 'deOrReactivateAgentAccount']);
     Route::get('/admin/showListOfTravelAgents', [AdminController::class, 'showListOfTravelAgents']);
-    Route::post('/admin/createNewFaq', [AdminController::class, 'saveFaq']);
-    Route::post('/admin/editFaq', [AdminController::class, 'saveFaq']);
+    Route::post('/admin/createNewFaq', [AdminController::class, 'createFaq']);
+    Route::post('/admin/editFaq', [AdminController::class, 'editFaq']);
     Route::get('/admin/getSpecificFaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
     Route::get('/admin/getAllFaqs', [PublicSiteController::class, 'getAllFaqs']);
     Route::delete('/admin/removeFaq/{faqId}', [AdminController::class, 'removeFaq']);
     Route::post('/admin/resetAgentPassword', [AdminController::class, 'resetAgentPassword']);
-});
+//});
 
 Route::middleware(['auth:sanctum', 'isAgent'])->group(function () {
     Route::get('/travelAgent/getAllFlightBookings', [TravelAgentController::class, 'getAllFlightBookings']);
