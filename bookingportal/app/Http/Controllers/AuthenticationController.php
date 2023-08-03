@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\LoginRequest;
 use App\Http\Resources\AuthResource;
 use App\Services\Authentication\IAuthenticationService;
 use Illuminate\Support\Facades\Validator;
@@ -36,28 +37,18 @@ class AuthenticationController extends Controller
     * @param Request $request The HTTP request object.
     * @return \Illuminate\Http\JsonResponse The JSON response.
     */
-    public function login(Request $request)
+
+    public function login(LoginRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string',
-            'password' => 'required|string'
-        ]);
+        $response = $this->IAuthenticationService->authenticate($request->input('email'), $request->input('password'));
 
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
-
-        $email = $request->input('email');
-        $password = $request->input('password');
-
-        $response = $this->IAuthenticationService->authenticate($email, $password);
         if (!$response) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::CREDENTIALS_WRONG, Response::HTTP_FORBIDDEN);
         }
 
         return ResponseHelper::jsonResponseMessage($response, Response::HTTP_OK);
-        
     }
+
 
     /**
     * Handle user logout request.
