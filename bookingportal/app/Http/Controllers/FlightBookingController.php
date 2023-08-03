@@ -6,6 +6,9 @@ namespace App\Http\Controllers;
 use App\Helpers\Constants;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidationHelper;
+use App\Http\Requests\FlightConfirmationRequest;
+use App\Http\Requests\FlightSearchRequest;
+use App\Http\Requests\PayFlightConfirmationRequest;
 use App\Services\Amadeus\IAmadeusService;
 use App\Services\Booking\IBookingService;
 use App\Services\Payment\IPaymentService;
@@ -62,56 +65,26 @@ class FlightBookingController extends Controller
     * @param Request $request The HTTP request object.
     * @return mixed The search results.
     */
-    public function searchFlights(Request $request) 
+    public function searchFlights(FlightSearchRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'originLocationCode'        => 'required|string',
-            'destinationLocationCode'   => 'required|string',
-            'departureDate'             => 'required|string',
-            'adults'                    => 'required|integer',
-            'returnDate'                => 'nullable|string',
-            'children'                  => 'nullable|integer',
-            'infants'                   => 'nullable|integer',
-            'travelClass'               => 'nullable|string',
-            'includedAirlineCodes'      => 'nullable|string',
-            'excludedAirlineCodes'      => 'nullable|string',
-            'nonStop'                   => 'nullable',
-        ]);
-        
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
-        
-        $originLocationCode = $request->input('originLocationCode');
-        $destinationLocationCode = $request->input('destinationLocationCode');
-        $departureDate = $request->input('departureDate');
-        $returnDate = $request->input('returnDate');
-        $adults = $request->input('adults');
-        $children = $request->input('children') !== null ? (int)$request->input('children') : 0;
-        $infants = $request->input('infants') !== null ? (int)$request->input('infants') : 0;
-        $travelClass = $request->input('travelClass');
-        $includedAirlineCodes = $request->input('includedAirlineCodes');
-        $excludedAirlineCodes = $request->input('excludedAirlineCodes');
-        $nonStop = boolval($request->input('nonStop'));
         $accessToken = $request->bearerToken();
-        
         $constructedSearchUrl = $this->IAmadeusService->AmadeusFlightSearchUrl(
-            $originLocationCode,
-            $destinationLocationCode,
-            $departureDate,
-            $adults,
-            $returnDate,
-            $children,
-            $infants,
-            $travelClass,
-            $includedAirlineCodes,
-            $excludedAirlineCodes,
-            $nonStop
+            $request->input('originLocationCode'),
+            $request->input('destinationLocationCode'),
+            $request->input('departureDate'),
+            $request->input('adults'),
+            $request->input('returnDate'),
+            $request->input('children', 0),
+            $request->input('infants', 0),
+            $request->input('travelClass'),
+            $request->input('includedAirlineCodes'),
+            $request->input('excludedAirlineCodes'),
+            boolval($request->input('nonStop'))
         );
         
         $data = $this->sendhttpRequest($constructedSearchUrl, $accessToken);
-        return $data;
         
+        return $data;
     }
 
     /**
@@ -121,17 +94,14 @@ class FlightBookingController extends Controller
     * @return mixed The chosen flight offer.
     */
     public function chooseFlightOffer(Request $request)
-    {
-        $jsonFlightData = $request->json()->all();
-        $accessToken = $request->bearerToken();
-              
-        if (empty($jsonFlightData)) {
+    {       
+        if (empty($request->json()->all())) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::EMPTY_FLIGHT_ARRAY, Response::HTTP_BAD_REQUEST);
         }
 
         try {
-            $selectedFormatedFlightOption = $this->IAmadeusService->prepareFlightOfferDataForAmadeusValidating($jsonFlightData);
-            return $this->sendhttpRequest(getenv('CHOOSE_FLIGHT_API_URL'), $accessToken, self::HTTP_METHOD_POST, $selectedFormatedFlightOption);
+            $selectedFormatedFlightOption = $this->IAmadeusService->prepareFlightOfferDataForAmadeusValidating($request->json()->all());
+            return $this->sendhttpRequest(getenv('CHOOSE_FLIGHT_API_URL'), $request->bearerToken(), self::HTTP_METHOD_POST, $selectedFormatedFlightOption);
 
         } catch (Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -144,30 +114,11 @@ class FlightBookingController extends Controller
     * @param Request $request The HTTP request object.
     * @return mixed The flight booking confirmation.
     */
-    public function FlightConfirmation(Request $request)
+    public function FlightConfirmation(FlightConfirmationRequest $request)
     {
-        $validator = Validator::make($request->all(), [    
-            'itineraries' => 'required|array',
-            'itineraries.*.segments.*.duration' => 'required|string',
-            'itineraries.*.segments' => 'required|array',
-            'passengers' => 'required|array',
-            'passengers.*.title' => 'required|string',
-            'passengers.*.firstName' => 'required|string',
-            'passengers.*.lastName' => 'required|string',
-            'passengers.*.dateOfBirth' => 'required|string',
-            'passengers.*.email' => 'required|email',
-            'passengers.*.passengerType' => 'required|string',
-        ]);
-        
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
-
         try {
             $bookedFlight = $this->IBookingService->bookFlight($request->json()->all());
-
             return ResponseHelper::jsonResponseMessage($bookedFlight, Response::HTTP_OK);
-
         } catch (Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -179,24 +130,8 @@ class FlightBookingController extends Controller
     * @param Request $request The HTTP request object.
     * @return mixed The payment result.
     */
-    public function payFlightConfirmation(Request $request)
+    public function payFlightConfirmation(PayFlightConfirmationRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'bookingReference'     => 'required|string',
-            'grandTotal'           => 'required|string',
-            'cardNumber'           => 'required|numeric|digits:16',
-            'expireMonth'          => 'required|numeric|between:1,12',
-            'expireYear'           => 'required|string|digits:4|numeric|min:2023|max:2040',   
-            'cvcDigits'            => 'required|string|digits:3',            
-            'supportPackage'       => 'nullable|boolean',
-            'changableTicket'      => 'nullable|boolean',
-            'cancellationableTicket' => 'nullable|boolean'
-        ]);
-        
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
-
         $bookingReference = $request->input('bookingReference');
         $cardNumber = $request->input('cardNumber');
         $expireMonth = $request->input('expireMonth');
