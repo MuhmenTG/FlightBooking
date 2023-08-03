@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\AdminCreateAgentRequest;
+use App\Http\Requests\CreateOrUpdateFaqRequest;
 use App\Http\Resources\AgentResource;
 use App\Http\Resources\FaqResource;
 use App\Models\UserAccount;
@@ -25,50 +27,35 @@ class AdminController extends Controller
         $this->IbackOfficeService = $IbackOfficeService;
     }
 
-    public function saveAgent(Request $request)
+    public function createAgent(AdminCreateAgentRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'firstName'     => 'required|string',
-            'lastName'      => 'required|string',
-            'email'         => 'required|email',
-            'status'        => 'required|string',
-            'isAdmin'       => 'required|boolean',
-            'isAgent'       => 'required|boolean',
-            'agentId'       => 'sometimes|numeric', 
-        ]);
-
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
-
         try {
-            $agentId = $request->input('agentId');
-            $userAccount = null;
+            return new AgentResource($this->IbackOfficeService->createAgent(
+                $request->get('firstName'),
+                $request->get('lastName'),
+                $request->get('email'),
+                $request->get('status'),
+                (int)$request->get('isAdmin'), 
+                (int)$request->get('isAgent')
+            ));
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_ALREADY_REPORTED);
+        }
+    }
 
-            if ($agentId) {              
-                $userAccount = $this->IbackOfficeService->editAgent(
-                    intval($agentId),
-                    $request->input('firstName'),
-                    $request->input('lastName'),
-                    $request->input('email'),
-                    $request->input('status'),
-                    intval($request->input('isAdmin')),
-                    intval($request->input('isAgent'))
-                );
-            } else {
-                $userAccount = $this->IbackOfficeService->createAgent(
-                    $request->input('firstName'),
-                    $request->input('lastName'),
-                    $request->input('email'),
-                    $request->input('status'),
-                    intval($request->input('isAdmin')),
-                    intval($request->input('isAgent'))
-                );
-            }
-
-            $agentResource = new AgentResource($userAccount);
-            return ResponseHelper::jsonResponseMessage($agentResource, Response::HTTP_OK, "Agent");
-        } catch (Exception $e) {
+    public function editAgent(AdminCreateAgentRequest $request)
+    {
+        try {
+            return new AgentResource($this->IbackOfficeService->editAgent(
+                intval($request->input('agentId')),
+                $request->input('firstName'),
+                $request->input('lastName'),
+                $request->input('email'),
+                $request->input('status'),
+                intval($request->input('isAdmin')),
+                intval($request->input('isAgent'))
+            ));
+        } catch (\Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_ALREADY_REPORTED);
         }
     }
@@ -78,99 +65,79 @@ class AdminController extends Controller
         try {
             $userAccount = $this->IbackOfficeService->getAgentById($agentId);
 
-            if (!$userAccount) {
-                return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
-            }  
-            
-            $agentResource = new AgentResource($userAccount);
-            return ResponseHelper::jsonResponseMessage($agentResource, Response::HTTP_OK, "Agent");
+            return $userAccount
+                ? new AgentResource($userAccount)
+                : ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND, "Agent");
         } catch (Exception $e) {
-            return ResponseHelper::jsonResponseMessage($e->getMessage(),Response::HTTP_IM_USED);        
+            return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_IM_USED);
         }
     }
 
-    public function deOrReactivateAgentAccount(int $agentId){
+    public function deOrReactivateAgentAccount(int $agentId)
+    {
         try {
-            $userAccount = $this->IbackOfficeService->getAgentById($agentId);
-
-            if (!$userAccount) {
-                return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
-            }  
-            
             $deactivatedAgent = $this->IbackOfficeService->removeAgentAccount($agentId);
 
-            $formatedAgent = new AgentResource($deactivatedAgent);
-            return ResponseHelper::jsonResponseMessage($formatedAgent, Response::HTTP_OK, "Agent");
+            return $deactivatedAgent
+                ? ResponseHelper::jsonResponseMessage(new AgentResource($deactivatedAgent), Response::HTTP_OK, "Agent")
+                : ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND, "Agent");
         } catch (Exception $e) {
-            return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_BAD_REQUEST);        
+            return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
 
     public function showListOfTravelAgents()
     {
-        $agents = $this->IbackOfficeService->getAllAgents();    
+        $agents = $this->IbackOfficeService->getAllAgents();
+        $responseMessage = $agents
+            ? ['formatedAgents' => AgentResource::collection($agents)]
+            : ResponseHelper::AGENT_NOT_FOUND;
+    
+        return ResponseHelper::jsonResponseMessage($responseMessage, Response::HTTP_OK);
+    } 
 
-        if (!$agents) {
-            return ResponseHelper::jsonResponseMessage(ResponseHelper::AGENT_NOT_FOUND, Response::HTTP_NOT_FOUND);
-        }
-
-        $formatedAgents = AgentResource::collection($agents);
-
-        return response()->json(['formatedAgents' => $formatedAgents], 200);
-    }
-
-    public function saveFaq(Request $request)
+    public function createFaq(CreateOrUpdateFaqRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'question'  => 'required|string',
-            'answer'    => 'required|string',
-            'faqId'     => 'sometimes|numeric',
-        ]);
-
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
-
         try {
-            $faqId = $request->input('faqId');
-            $faq = null;
+            return new FaqResource($this->IbackOfficeService->createOrUpdateFaq(
+                $request->input('question'),
+                $request->input('answer'),
+            ));
 
-            if ($faqId) {
-                $faq = $this->IbackOfficeService->createOrUpdateFaq(
-                    $request->input('question'),
-                    $request->input('answer'),
-                    intval($faqId)
-                );
-            } else {
-                $faq = $this->IbackOfficeService->createOrUpdateFaq(
-                    $request->input('question'),
-                    $request->input('answer')
-                );
-            }
-
-            $faq = new FaqResource($faq);
-
-            return ResponseHelper::jsonResponseMessage($faq, Response::HTTP_OK, "FAQ");
         } catch (Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_ALREADY_REPORTED);
         }
     }
 
+    
+    public function editFaq(CreateOrUpdateFaqRequest $request)
+    {
+        try {
+            return new FaqResource($this->IbackOfficeService->createOrUpdateFaq(
+                $request->input('question'),
+                $request->input('answer'),
+                intval($request->input('faqId'))
+            ));
+
+        } catch (Exception $e) {
+            return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_ALREADY_REPORTED);
+        }
+    }
+    
     public function getSpecificFaq(int $faqId){
         
-        $specificFaq = $this->IbackOfficeService->getFaqById($faqId);
+        $specificFaq = new FaqResource($this->IbackOfficeService->getFaqById($faqId));
         
         if(!$specificFaq){
             return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
         
-        $specificFaq = new FaqResource($specificFaq);
-
         return ResponseHelper::jsonResponseMessage($specificFaq, Response::HTTP_OK, "FAQ");
     }
 
     public function removeFaq(int $faqId){
         $specificFaq = $this->IbackOfficeService->getFaqById($faqId);
+
         if ($specificFaq === null) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);    
         }
