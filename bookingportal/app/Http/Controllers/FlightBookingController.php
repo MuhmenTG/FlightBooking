@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Http\Request;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Validator;
 
 class FlightBookingController extends Controller
 {
@@ -63,7 +64,19 @@ class FlightBookingController extends Controller
     */
     public function searchFlights(Request $request) 
     {
-        $validator = ValidationHelper::validateFlightSearchRequest($request);
+        $validator = Validator::make($request->all(), [
+            'originLocationCode'        => 'required|string',
+            'destinationLocationCode'   => 'required|string',
+            'departureDate'             => 'required|string',
+            'adults'                    => 'required|integer',
+            'returnDate'                => 'nullable|string',
+            'children'                  => 'nullable|integer',
+            'infants'                   => 'nullable|integer',
+            'travelClass'               => 'nullable|string',
+            'includedAirlineCodes'      => 'nullable|string',
+            'excludedAirlineCodes'      => 'nullable|string',
+            'nonStop'                   => 'nullable',
+        ]);
         
         if ($validator->fails()) {
             return ResponseHelper::validationErrorResponse($validator->errors());
@@ -133,8 +146,19 @@ class FlightBookingController extends Controller
     */
     public function FlightConfirmation(Request $request)
     {
-        $validator = ValidationHelper::validateFlightConfirmationRequest($request);
-
+        $validator = Validator::make($request->all(), [    
+            'itineraries' => 'required|array',
+            'itineraries.*.segments.*.duration' => 'required|string',
+            'itineraries.*.segments' => 'required|array',
+            'passengers' => 'required|array',
+            'passengers.*.title' => 'required|string',
+            'passengers.*.firstName' => 'required|string',
+            'passengers.*.lastName' => 'required|string',
+            'passengers.*.dateOfBirth' => 'required|string',
+            'passengers.*.email' => 'required|email',
+            'passengers.*.passengerType' => 'required|string',
+        ]);
+        
         if ($validator->fails()) {
             return ResponseHelper::validationErrorResponse($validator->errors());
         }
@@ -157,7 +181,17 @@ class FlightBookingController extends Controller
     */
     public function payFlightConfirmation(Request $request)
     {
-        $validator = ValidationHelper::validateFlightPayRequest($request);
+        $validator = Validator::make($request->all(), [
+            'bookingReference'     => 'required|string',
+            'grandTotal'           => 'required|string',
+            'cardNumber'           => 'required|numeric|digits:16',
+            'expireMonth'          => 'required|numeric|between:1,12',
+            'expireYear'           => 'required|string|digits:4|numeric|min:2023|max:2040',   
+            'cvcDigits'            => 'required|string|digits:3',            
+            'supportPackage'       => 'nullable|boolean',
+            'changableTicket'      => 'nullable|boolean',
+            'cancellationableTicket' => 'nullable|boolean'
+        ]);
         
         if ($validator->fails()) {
             return ResponseHelper::validationErrorResponse($validator->errors());
