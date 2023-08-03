@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\EnquirySupportRequest;
 use App\Http\Resources\FaqResource;
 use App\Http\Resources\FlightConfirmationResource;
 use App\Http\Resources\PassengerResource;
@@ -42,14 +43,10 @@ class PublicSiteController extends Controller
         $bookingInfo = $this->IBookingService->retrieveBookingInformation($bookingReference);
     
         if ($bookingInfo) {
-            // Transform the booking info using the relevant resources
-            $bookedFlightSegments = $bookingInfo['flight'];
-            $bookedFlightPassenger = $bookingInfo['passengers'];
-            $paymentDetails = $bookingInfo['payment'];
-    
-            $bookedFlightSegments = FlightConfirmationResource::collection($bookedFlightSegments);
-            $bookedFlightPassenger = PassengerResource::collection($bookedFlightPassenger);
-            $paymentDetails = new PaymentResource($paymentDetails);
+
+            $bookedFlightSegments = FlightConfirmationResource::collection($bookingInfo['flight']);
+            $bookedFlightPassenger = PassengerResource::collection($bookingInfo['passengers']);
+            $paymentDetails = new PaymentResource($bookingInfo['payment']);
     
             $responseData = [
                 'passengers' => $bookedFlightPassenger,
@@ -70,34 +67,29 @@ class PublicSiteController extends Controller
     * @param Request $request The request object.
     * @return \Illuminate\Http\JsonResponse The JSON response.
     */
-    public function sendEnquirySupport(Request $request){
-        $validator = Validator::make($request->all(), [
-            'name'            =>  'required|string',
-            'email'           =>  'required|string',
-            'subject'         =>  'required|string',
-            'message'         =>  'required|string',
-            'bookingReference' => 'nullable|string',
-        ]);
+
+    public function sendEnquirySupport(EnquirySupportRequest $request)
+    {    
+        $validator = Validator::make($request->all(), $request->rules());
 
         if ($validator->fails()) {
             return ResponseHelper::validationErrorResponse($validator->errors());
         }
-
-        $name = $request->input('name');
-        $email = $request->input('email');
-        $subject = $request->input('subject');
-        $message = $request->input('message');
-        $bookingReference = $request->input('bookingReference');
-
+        
         $response = $this->IBookingService->sendRquestContactForm(
-            $name, $email, $subject, $message, $bookingReference
+            $request->input('name'),
+            $request->input('email'),
+            $request->input('subject'),
+            $request->input('message'),
+            $request->input('bookingReference')
         );
 
-        if($response){
-            return ResponseHelper::jsonResponseMessage(ResponseHelper::ENQUIRY_SENT, Response::HTTP_OK);
-        }
-        return ResponseHelper::jsonResponseMessage(ResponseHelper::ENQUIRY_NOT_SENT, Response::HTTP_BAD_REQUEST);
+        $message = $response ? ResponseHelper::ENQUIRY_SENT : ResponseHelper::ENQUIRY_NOT_SENT;
+        $statusCode = $response ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST;
+
+        return ResponseHelper::jsonResponseMessage($message, $statusCode);
     }
+
     
     /**
     * Get all FAQs.
@@ -105,14 +97,12 @@ class PublicSiteController extends Controller
     * @return \Illuminate\Http\JsonResponse The JSON response.
     */
     public function getAllFaqs(){
-        $faqs = $this->IBackOfficeService->getAllFaqs();
+        $faqs = FaqResource::collection($this->IBackOfficeService->getAllFaqs());
 
         if($faqs->isEmpty()){
             return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
 
-        $faqs = FaqResource::collection($faqs);
-        
         return ResponseHelper::jsonResponseMessage($faqs, Response::HTTP_OK, "FAQS");
     }
 }
