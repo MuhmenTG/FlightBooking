@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Booking;
 
 use App\Models\PassengerInfo;
+use Illuminate\Database\Eloquent\Collection;
 
 interface IBookingService
 {
@@ -20,11 +21,11 @@ interface IBookingService
 
     public function getFlightSegmentsByBookingReference(string $bookingReference);
 
-    public function getFlightPassengersByPNR(string $bookingReference);
-
     public function cancelFlightBooking(string $bookingReference);
 
-    public function finalizeFlightReservation(string $bookingReference): ?array;
+    public function finalizeFlightReservation(string $bookingReference): ?Collection;
+
+    public function getFlightPassengersByPNR(string $bookingReference) : Collection;
 
     public function getUserEnquiryById(int $enquiryId);
 

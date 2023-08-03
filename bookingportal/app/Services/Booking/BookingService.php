@@ -6,11 +6,13 @@ namespace App\Services\Booking;
 
 use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
+use App\Http\Resources\FlightConfirmationResource;
 use App\Mail\ISendEmailService;
 use App\Models\PassengerInfo;
 use App\Repositories\ITravelAgentRepository;
 use App\Services\Booking\IBookingService;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use InvalidArgumentException;
 
 class BookingService implements IBookingService {
@@ -83,7 +85,7 @@ class BookingService implements IBookingService {
         ];
     }
 
-    public function finalizeFlightReservation(string $bookingReference): ?array
+    public function finalizeFlightReservation(string $bookingReference): ?Collection
     {
         $this->bookingRepository->generateTicketNumbers($bookingReference);
 
@@ -99,16 +101,16 @@ class BookingService implements IBookingService {
  
         $bookedPassengers = $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
 
-        $booking = [
+        /*$booking = [
             'itinerary' => $paidFlightBooking,
             'passengers' => $bookedPassengers,
-        ];
+        ];*/
 
         $email = $this->bookingRepository->getPassengerEmail($bookedPassengers);
 
         $this->IEmailSendService->sendEmailWithAttachments($email, $email, $bookingReference, "Booking");
 
-        return $booking;
+        return $paidFlightBooking;
     }
 
     public function createPassengerRecord(array $passengerData, string $bookingReference)
@@ -169,7 +171,7 @@ class BookingService implements IBookingService {
         return $this->bookingRepository->findFlightSegmentsByBookingReference($bookingReference);
     }
 
-    public function getFlightPassengersByPNR(string $bookingReference)
+    public function getFlightPassengersByPNR(string $bookingReference) : Collection
     {
         return $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
     }
