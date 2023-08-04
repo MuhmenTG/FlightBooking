@@ -70,8 +70,10 @@ class FlightBookingController extends Controller
     */
     public function searchFlights(FlightSearchRequest $request)
     {
-        //$accessToken = $request->bearerToken();
-        $accessToken = $this->getAccessToken();
+        $validated = $request->validated();
+
+        $accessToken = $request->bearerToken();
+        //$accessToken = $this->getAccessToken();
         $constructedSearchUrl = $this->IAmadeusService->AmadeusFlightSearchUrl(
             $request->input('originLocationCode'),
             $request->input('destinationLocationCode'),
@@ -105,7 +107,7 @@ class FlightBookingController extends Controller
 
         try {
             $selectedFormatedFlightOption = $this->IAmadeusService->prepareFlightOfferDataForAmadeusValidating($request->json()->all());
-            return $this->sendhttpRequest(getenv('CHOOSE_FLIGHT_API_URL'), $this->getAccessToken(), self::HTTP_METHOD_POST, $selectedFormatedFlightOption);
+            return $this->sendhttpRequest(getenv('CHOOSE_FLIGHT_API_URL'), $request->bearerToken(), self::HTTP_METHOD_POST, $selectedFormatedFlightOption);
 
         } catch (Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
