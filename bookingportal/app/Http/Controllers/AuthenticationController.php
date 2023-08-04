@@ -40,7 +40,9 @@ class AuthenticationController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $response = $this->IAuthenticationService->authenticate($request->input('email'), $request->input('password'));
+        $validated = $request->validated();
+
+        $response = $this->IAuthenticationService->authenticate($request->get('email'), $request->get('password'));
 
         if (!$response) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::CREDENTIALS_WRONG, Response::HTTP_FORBIDDEN);
