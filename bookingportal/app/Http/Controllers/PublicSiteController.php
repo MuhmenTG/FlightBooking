@@ -70,18 +70,14 @@ class PublicSiteController extends Controller
 
     public function sendEnquirySupport(EnquirySupportRequest $request)
     {    
-        $validator = Validator::make($request->all(), $request->rules());
-
-        if ($validator->fails()) {
-            return ResponseHelper::validationErrorResponse($validator->errors());
-        }
+      $validated = $request->validated();
         
         $response = $this->IBookingService->sendRquestContactForm(
-            $request->input('name'),
-            $request->input('email'),
-            $request->input('subject'),
-            $request->input('message'),
-            $request->input('bookingReference')
+            $request->get('name'),
+            $request->get('email'),
+            $request->get('subject'),
+            $request->get('message'),
+            $request->get('bookingReference')
         );
 
         $message = $response ? ResponseHelper::ENQUIRY_SENT : ResponseHelper::ENQUIRY_NOT_SENT;
