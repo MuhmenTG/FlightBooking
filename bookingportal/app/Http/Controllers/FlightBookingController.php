@@ -71,21 +71,20 @@ class FlightBookingController extends Controller
     public function searchFlights(FlightSearchRequest $request)
     {
         $validated = $request->validated();
-
-        $accessToken = $request->bearerToken();
-        //$accessToken = $this->getAccessToken();
+        
+        $accessToken = $request->bearerToken(); 
         $constructedSearchUrl = $this->IAmadeusService->AmadeusFlightSearchUrl(
-            $request->input('originLocationCode'),
-            $request->input('destinationLocationCode'),
-            $request->input('departureDate'),
-            $request->input('adults'),
-            $request->input('returnDate'),
-            $request->input('children', 0),
-            $request->input('infants', 0),
-            $request->input('travelClass'),
-            $request->input('includedAirlineCodes'),
-            $request->input('excludedAirlineCodes'),
-            boolval($request->input('nonStop'))
+            $request->get('originLocationCode'),
+            $request->get('destinationLocationCode'),
+            $request->get('departureDate'),
+            $request->get('adults'),
+            $request->get('returnDate'),
+            $request->get('children', 0),
+            $request->get('infants', 0),
+            $request->get('travelClass'),
+            $request->get('includedAirlineCodes'),
+            $request->get('excludedAirlineCodes'),
+            boolval($request->get('nonStop'))
         );
         
         $data = $this->sendhttpRequest($constructedSearchUrl, $accessToken);
@@ -138,34 +137,30 @@ class FlightBookingController extends Controller
     */
     public function payFlightConfirmation(PayFlightConfirmationRequest $request)
     {
-        $bookingReference = $request->input('bookingReference');
-        $cardNumber = $request->input('cardNumber');
-        $expireMonth = $request->input('expireMonth');
-        $expireYear = $request->input('expireYear');
-        $cvcDigits = $request->input('cvcDigits');
-        $grandTotal = intval($request->input('grandTotal'));
         
-        $booking = $this->IBookingService->getFlightSegmentsByBookingReference($bookingReference);
+        $validated = $request->validated();
+        
+        $booking = $this->IBookingService->getFlightSegmentsByBookingReference($request->get('bookingReference'));
         if(count($booking) == 0){
             return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_BAD_REQUEST);
         }
 
-        if ($request->input('supportPackage')) {
+        if ($request->get('supportPackage')) {
             $grandTotal += 750;
         }
 
-        if ($request->input('changableTicket')) {
+        if ($request->get('changableTicket')) {
             $grandTotal += 750;
         }
         
-        if ($request->input('cancellationableTicket')) {
+        if ($request->get('cancellationableTicket')) {
             $grandTotal += 750;
         }
         
         try {
-            $booking = FlightConfirmationResource::collection($this->IBookingService->finalizeFlightReservation($bookingReference)); 
-            $passengers = PassengerResource::collection($this->IBookingService->getFlightPassengersByPNR($bookingReference));           
-            $payment = new PaymentResource($this->IPaymentService->createCharge($grandTotal, Constants::CURRENCY_CODE, $cardNumber, $expireYear, $expireMonth, $cvcDigits, $bookingReference));      
+            $booking = FlightConfirmationResource::collection($this->IBookingService->finalizeFlightReservation($request->get('bookingReference'))); 
+            $passengers = PassengerResource::collection($this->IBookingService->getFlightPassengersByPNR($request->get('bookingReference')));           
+            $payment = new PaymentResource($this->IPaymentService->createCharge(intval($request->get('grandTotal')), Constants::CURRENCY_CODE, $request->get('cardNumber'), $request->get('expireYear'),  $request->get('expireMonth'), $request->get('cvcDigits'), $request->get('bookingReference')));      
             $bookingComplete = [
                "itinerary" => $booking,
                "passengers" => $passengers,
