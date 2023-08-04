@@ -29,6 +29,8 @@ class AdminController extends Controller
 
     public function createAgent(AdminCreateAgentRequest $request)
     {
+        $validated = $request->validated();
+        
         try {
             return new AgentResource($this->IbackOfficeService->createAgent(
                 $request->get('firstName'),
@@ -45,15 +47,17 @@ class AdminController extends Controller
 
     public function editAgent(AdminCreateAgentRequest $request)
     {
+        $validated = $request->validated();
+        
         try {
             return new AgentResource($this->IbackOfficeService->editAgent(
-                intval($request->input('agentId')),
-                $request->input('firstName'),
-                $request->input('lastName'),
-                $request->input('email'),
-                $request->input('status'),
-                intval($request->input('isAdmin')),
-                intval($request->input('isAgent'))
+                intval($request->get('agentId')),
+                $request->get('firstName'),
+                $request->get('lastName'),
+                $request->get('email'),
+                $request->get('status'),
+                intval($request->get('isAdmin')),
+                intval($request->get('isAgent'))
             ));
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_ALREADY_REPORTED);
@@ -98,10 +102,12 @@ class AdminController extends Controller
 
     public function createFaq(CreateOrUpdateFaqRequest $request)
     {
+        $validated = $request->validated();
+        
         try {
             return new FaqResource($this->IbackOfficeService->createOrUpdateFaq(
-                $request->input('question'),
-                $request->input('answer'),
+                $request->get('question'),
+                $request->get('answer'),
             ));
 
         } catch (Exception $e) {
@@ -112,11 +118,13 @@ class AdminController extends Controller
     
     public function editFaq(CreateOrUpdateFaqRequest $request)
     {
+          $validated = $request->validated();
+        
         try {
             return new FaqResource($this->IbackOfficeService->createOrUpdateFaq(
-                $request->input('question'),
-                $request->input('answer'),
-                intval($request->input('faqId'))
+                $request->get('question'),
+                $request->get('answer'),
+                intval($request->get('faqId'))
             ));
 
         } catch (Exception $e) {
