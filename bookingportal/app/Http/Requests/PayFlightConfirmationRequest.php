@@ -9,6 +9,12 @@ class PayFlightConfirmationRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
+
+       */
+    public function authorize(): bool
+    {
+        return true;
+    }
      * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
      */
     public function rules(): array
