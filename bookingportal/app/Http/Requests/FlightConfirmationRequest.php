@@ -6,6 +6,12 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class FlightConfirmationRequest extends FormRequest
 {
+      */
+    public function authorize(): bool
+    {
+        return true;
+    }
+    
     /**
      * Get the validation rules that apply to the request.
      *
