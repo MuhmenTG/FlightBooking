@@ -72,8 +72,8 @@ class FlightBookingController extends Controller
     {
         $validated = $request->validated();
         
-        //$accessToken = $request->bearerToken(); 
-        $accessToken = $this->getAccessToken();
+        $accessToken = $request->bearerToken(); 
+        //$accessToken = $this->getAccessToken();
         $constructedSearchUrl = $this->IAmadeusService->AmadeusFlightSearchUrl(
             $request->get('originLocationCode'),
             $request->get('destinationLocationCode'),
