@@ -72,7 +72,8 @@ class FlightBookingController extends Controller
     {
         $validated = $request->validated();
         
-        $accessToken = $request->bearerToken(); 
+        //$accessToken = $request->bearerToken(); 
+        $accessToken = $this->getAccessToken();
         $constructedSearchUrl = $this->IAmadeusService->AmadeusFlightSearchUrl(
             $request->get('originLocationCode'),
             $request->get('destinationLocationCode'),
@@ -143,18 +144,6 @@ class FlightBookingController extends Controller
         $booking = $this->IBookingService->getFlightSegmentsByBookingReference($request->get('bookingReference'));
         if(count($booking) == 0){
             return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_BAD_REQUEST);
-        }
-
-        if ($request->get('supportPackage')) {
-            $grandTotal += 750;
-        }
-
-        if ($request->get('changableTicket')) {
-            $grandTotal += 750;
-        }
-        
-        if ($request->get('cancellationableTicket')) {
-            $grandTotal += 750;
         }
         
         try {
