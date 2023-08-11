@@ -208,7 +208,7 @@ return [
     | the aliases are "lazy" loaded so they don't hinder performance.
     |
     */
-    'PDF' => Barryvdh\DomPDF\Facade::class,
+    'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
