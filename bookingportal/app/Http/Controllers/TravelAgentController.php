@@ -53,7 +53,6 @@ class TravelAgentController extends Controller
 
         return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
     }
-     
 
     public function resendBookingConfirmationPDF(Request $request)
     {
@@ -83,24 +82,13 @@ class TravelAgentController extends Controller
             $paymentDetails = new PaymentResource($bookingInfo['payment']);
 
             $bookingComplete = [
-                'passengers' => $bookedFlightPassenger,
+                'passenger' => $bookedFlightPassenger,
                 'flight' => $bookedFlightSegments,
                 'payment' => $paymentDetails,
             ];
 
-            // Generate PDF content
-            $pdfContent = $this->generatePDF($bookingComplete);
-
-            // Attachments array including the PDF content
-         /*   $attachments = [
-                [
-                    'content' => $pdfContent,
-                    'filename' => 'booking_confirmation.pdf', // Provide a suitable filename
-                    'type' => 'application/pdf', // MIME type for PDF
-                ],
-            ];*/
-
-            // Send email with attachments
+            $pdfContent = $this->IBookingService->generateBookingConfirmationPDF($bookingComplete);
+            
             $isSend = $this->IEmailSendService->sendEmailWithAttachments($name, $email, $subject, $text, $pdfContent);
 
             if ($isSend) {
@@ -112,11 +100,6 @@ class TravelAgentController extends Controller
     }
 
 
-    private function generatePDF($bookingComplete) : string
-    {
-        $pdf = PDF::loadView('booking_confirmation', compact('bookingComplete'));
-        return $pdf->output();
-    }
 
     public function getAllUserEnquiries()
     {
