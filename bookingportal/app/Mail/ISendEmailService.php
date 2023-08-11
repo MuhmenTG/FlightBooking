@@ -14,5 +14,5 @@ interface ISendEmailService
     * @param array|null $attachments (Optional) An array of attachments to include in the email.
     * @return bool Returns true if the email was sent successfully, false otherwise.
     */
-    public function sendEmailWithAttachments(string $recipientName, string $recipientEmail, string $subject, string $text, array $attachments = null): bool;
+    public function sendEmailWithAttachments(string $recipientName, string $recipientEmail, string $subject, string $text, string $pdfContennt): bool;
 }
