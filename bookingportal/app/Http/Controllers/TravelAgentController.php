@@ -127,7 +127,7 @@ class TravelAgentController extends Controller
         return ResponseHelper::jsonResponseMessage($specificUserEnquiry, Response::HTTP_OK, "supportRequest");
     }
 
-   /* public function answerUserEnquiry(Request $request){
+    public function answerUserEnquiry(Request $request){
 
         $validator = Validator::make($request->all(), [
             'id'                    => 'required|integer',
@@ -157,7 +157,7 @@ class TravelAgentController extends Controller
         
         return ResponseHelper::jsonResponseMessage('Email could not be sent', Response::HTTP_BAD_REQUEST);
     }
-     */
+     
     public function removeUserEnquiry(int $enquiryId)
     {    
         $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
