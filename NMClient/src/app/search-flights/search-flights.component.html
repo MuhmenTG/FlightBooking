@@ -43,7 +43,7 @@
             </div>
             <div class="form-group m-2">
                 <label for="selectAdults">Class</label>
-                <select class="form-select" id="selectAdults" name="class" [(ngModel)]="model.class" required>
+                <select class="form-select" id="selectAdults" name="class" [(ngModel)]="model.travelClass" required>
                     <option *ngFor="let class of classes" [value]="class">{{class}}</option>
                 </select>
             </div>
