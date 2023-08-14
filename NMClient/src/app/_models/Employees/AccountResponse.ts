@@ -1,9 +1,13 @@
 export interface AccountResponse {
-    id: number;
+    formatedAgents: agent[]
+}
+
+export interface agent {
+    agentId: number;
     firstName: string;
     lastName: string;
     email: string;
-    agentPermission: boolean;
-    adminPermission: boolean;
+    travelAgentPermission: number;
+    administratorPermission: number;
     accountStatus: string;
 }

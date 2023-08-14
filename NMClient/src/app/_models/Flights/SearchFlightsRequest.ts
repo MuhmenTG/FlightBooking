@@ -4,6 +4,6 @@ export interface SearchFlightsRequest {
     destinationLocationCode: string
     departureDate: string
     returnDate: string
-    class: string
+    travelClass: string
     adults: number
 }
