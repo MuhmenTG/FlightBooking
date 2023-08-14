@@ -1,6 +1,7 @@
 <?php
 //declare(strict_types=1);
 
+
 namespace App\Http\Controllers;
 
 use App\Helpers\Constants;
@@ -12,6 +13,7 @@ use App\Http\Requests\PayFlightConfirmationRequest;
 use App\Http\Resources\FlightConfirmationResource;
 use App\Http\Resources\PassengerResource;
 use App\Http\Resources\PaymentResource;
+use App\Mail\ISendEmailService;
 use App\Services\Amadeus\IAmadeusService;
 use App\Services\Booking\IBookingService;
 use App\Services\Payment\IPaymentService;
@@ -27,12 +29,14 @@ class FlightBookingController extends Controller
     protected $IBookingService;
     protected $IAmadeusService;
     protected $IPaymentService;
+    protected $ISendEmailService;
 
-    public function __construct(IBookingService $IbookingService,  IAmadeusService $IAmadeusService, IPaymentService $IPaymentService)
+    public function __construct(IBookingService $IbookingService,  IAmadeusService $IAmadeusService, IPaymentService $IPaymentService, ISendEmailService $ISendEmailService)
     {
         $this->IBookingService = $IbookingService;
         $this->IAmadeusService = $IAmadeusService;
         $this->IPaymentService = $IPaymentService;
+        $this->ISendEmailService = $ISendEmailService;
     }
 
     //We have made this only because there is not any frontend yet, where acess token comes from
@@ -73,6 +77,7 @@ class FlightBookingController extends Controller
         $validated = $request->validated();
         
         $accessToken = $request->bearerToken(); 
+        //$accessToken = $this->getAccessToken();
         $constructedSearchUrl = $this->IAmadeusService->AmadeusFlightSearchUrl(
             $request->get('originLocationCode'),
             $request->get('destinationLocationCode'),
@@ -140,36 +145,36 @@ class FlightBookingController extends Controller
         
         $validated = $request->validated();
         
-        $booking = $this->IBookingService->getFlightSegmentsByBookingReference($request->get('bookingReference'));
+       $booking = $this->IBookingService->getFlightSegmentsByBookingReference($request->get('bookingReference'));
         if(count($booking) == 0){
             return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_BAD_REQUEST);
-        }
-
-        if ($request->get('supportPackage')) {
-            $grandTotal += 750;
-        }
-
-        if ($request->get('changableTicket')) {
-            $grandTotal += 750;
-        }
-        
-        if ($request->get('cancellationableTicket')) {
-            $grandTotal += 750;
         }
         
         try {
             $booking = FlightConfirmationResource::collection($this->IBookingService->finalizeFlightReservation($request->get('bookingReference'))); 
             $passengers = PassengerResource::collection($this->IBookingService->getFlightPassengersByPNR($request->get('bookingReference')));           
             $payment = new PaymentResource($this->IPaymentService->createCharge(intval($request->get('grandTotal')), Constants::CURRENCY_CODE, $request->get('cardNumber'), $request->get('expireYear'),  $request->get('expireMonth'), $request->get('cvcDigits'), $request->get('bookingReference')));      
+          
             $bookingComplete = [
-               "itinerary" => $booking,
-               "passengers" => $passengers,
+              "flight" => $booking,
+              "passenger" => $passengers,
                "payment"   => $payment
             ];
-            return ResponseHelper::jsonResponseMessage($bookingComplete, Response::HTTP_OK);
+
+            $generatedBooking = $this->IBookingService->generateBookingConfirmationPDF($bookingComplete);
+            
+            $passengerEmail = $this->IBookingService->getPassengerEmail($request->get('bookingReference'));
+            
+            $isSend = $this->ISendEmailService->sendEmailWithAttachments($passengerEmail, $passengerEmail, "Thank you for the booking! We are sending your electronic e-tickets", "Please see attached", $generatedBooking);
+            if($isSend){
+                return ResponseHelper::jsonResponseMessage($bookingComplete, Response::HTTP_OK);
+            }
 
         } catch (Exception $e) {
-            return ResponseHelper::jsonResponseMessage("Booking confirmation already paid", Response::HTTP_ALREADY_REPORTED);
+            $errorMessage = "An error occurred: " . $e->getMessage();
+            $stackTrace = $e->getTraceAsString();
+            
+            return ResponseHelper::jsonResponseMessage($errorMessage, Response::HTTP_INTERNAL_SERVER_ERROR);        
         }
 
         return ResponseHelper::jsonResponseMessage($bookingComplete, Response::HTTP_BAD_REQUEST);

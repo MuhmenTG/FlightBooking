@@ -10,6 +10,7 @@ use App\Http\Resources\FlightConfirmationResource;
 use App\Mail\ISendEmailService;
 use App\Models\PassengerInfo;
 use App\Repositories\ITravelAgentRepository;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use App\Services\Booking\IBookingService;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
@@ -53,6 +54,12 @@ class BookingService implements IBookingService {
         }
 
         return $bookedSegments;
+    }
+
+    public function generateBookingConfirmationPDF($bookingComplete) : string
+    {
+        $pdf = FacadePdf::loadView('booking_confirmation', compact('bookingComplete'));
+        return $pdf->output();
     }
 
     public function bookFlight(array $flightData): array
@@ -99,18 +106,16 @@ class BookingService implements IBookingService {
 
         $paidFlightBooking = $this->bookingRepository->getPaidFlightBookings($bookingReference);
  
-        $bookedPassengers = $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
-
-        /*$booking = [
-            'itinerary' => $paidFlightBooking,
-            'passengers' => $bookedPassengers,
-        ];*/
-
-        $email = $this->bookingRepository->getPassengerEmail($bookedPassengers);
-
-        $this->IEmailSendService->sendEmailWithAttachments($email, $email, $bookingReference, "Booking");
-
         return $paidFlightBooking;
+    }
+
+    public function getPassengerEmail(string $bookingReference) : string{
+        $bookedPassengers = $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
+        $email = $this->bookingRepository->getPassengerEmail($bookedPassengers);
+        if($email){
+            return $email;
+        }
+        return null;
     }
 
     public function createPassengerRecord(array $passengerData, string $bookingReference)
@@ -158,7 +163,7 @@ class BookingService implements IBookingService {
         $registeredEnquiry = $this->bookingRepository->registerEnquiry($name, $email, $subject, $message);
         if($registeredEnquiry){
             
-        $userCopy = $this->IEmailSendService->sendEmailWithAttachments($name, $email, $subject, $message);
+        $userCopy = $this->IEmailSendService->sendEmailWithAttachments($name, $email, $subject, $message, "");
         if($userCopy){
             return true;
         }   
