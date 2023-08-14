@@ -45,10 +45,10 @@ export class SearchFlightsComponent {
         this.flightsResponses = response;
         this.findAllUniqueCarrierCodes();
         this.swapCarrierCodeForCompanyName();
-        this.isResults = true;
         this.formSubmitted = true;
       })
     }
+    this.isResults = true;
   }
 
   findAllUniqueCarrierCodes(){
