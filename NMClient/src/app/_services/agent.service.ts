@@ -3,6 +3,7 @@ import { HttpService } from './http.service';
 import { environment } from 'src/environments/environment.development';
 import { Observable } from 'rxjs';
 import { EnquiryResponse } from '../_models/Enquiries/EnquiryResponse';
+import { PassengerInfo } from '../_models/PassengerInfo';
 
 @Injectable({
   providedIn: 'root'
@@ -10,51 +11,55 @@ import { EnquiryResponse } from '../_models/Enquiries/EnquiryResponse';
 export class AgentService extends HttpService {
   private apiUrl = environment.apiUrl + "/travelAgent";
 
-  // getAllFlightBookings(): Observable<PH> {
-  //   return this.http.get<PH>(this.apiUrl + "/getAllFlightBookings");
-  // }
+  getAllFlightBookings(): Observable<any> {
+    return this.http.get<any>(this.apiUrl + "/getAllFlightBookings", this.httpOptionsAccount);
+  }
 
-  // getAllHotelBookings(): Observable<PH> {
-  //   return this.http.get<PH>(this.apiUrl + "/getAllHotelBookings");
-  // }
+  getBooking(bookingReference: string): Observable<any> {
+    return this.http.get<any>(this.apiUrl + "/getBooking/" + bookingReference, this.httpOptionsAccount);
+  }
 
-  // getBooking(id: number): Observable<PH> {
-  //   return this.http.get<PH>(this.apiUrl + "/getBooking/" + id);
-  // }
+  cancelFlightBooking(bookingReference: string): Observable<any> {
+    return this.http.get<any>(this.apiUrl + "/cancelFlight/" + bookingReference, this.httpOptionsAccount);
+  }
 
-  // cancelHotelBooking(id: number): Observable<AccountResponse> {
-  //   return this.http.put<AccountResponse>(this.apiUrl + "/cancelHotel/" + id, this.httpOptions);
-  // }
+  getAllPaymentTransactions(): Observable<any> {
+    return this.http.get<any>(this.apiUrl + "/getAllPaymentTransactions", this.httpOptionsAccount);
+  }
 
-  // cancelFlightBooking(id: number): Observable<AccountResponse> {
-  //   return this.http.put<AccountResponse>(this.apiUrl + "/cancelFlight/" + id, this.httpOptions);
-  // }
+  getSpecificPaymentTransactions(bookingReference: string, paymentId: string): Observable<any> {
+    return this.http.get<any>(this.apiUrl + "/getSpecificPaymentTransactions/" + bookingReference + "/" + paymentId, this.httpOptionsAccount);
+  }
 
-  // sendBookingToCustomer(): Observable<AccountResponse> {
-  //   return this.http.post<AccountResponse>(this.apiUrl + "/sendBooking", this.httpOptions);
-  // }
+  editPassengerInformation(passengerInfo: PassengerInfo): Observable<any> {
+    return this.http.post<any>(this.apiUrl + "/editPassengerInformation", passengerInfo, this.httpOptionsAccount);
+  }
 
-  // answerEnquiry(): Observable<AccountResponse> {
-  //   return this.http.post<AccountResponse>(this.apiUrl + "/answerUserEnquiry", this.httpOptions);
-  // }
+  sendBookingToCustomer(): Observable<any> {
+    return this.http.post<any>(this.apiUrl + "/sendBooking", this.httpOptionsAccount);
+  }
 
-  // setEnquiryStatus(id: number): Observable<AccountResponse> {
-  //   return this.http.post<AccountResponse>(this.apiUrl + "/setUserEnquiryStatus/" + id, this.httpOptions);
-  // }
+  answerEnquiry(): Observable<any> {
+    return this.http.post<any>(this.apiUrl + "/answerUserEnquiry", this.httpOptionsAccount);
+  }
 
-  // deleteEnquiryStatus(id: number): Observable<AccountResponse> {
-  //   return this.http.delete<AccountResponse>(this.apiUrl + "/removeUserEnquiry/" + id);
-  // }
+  setEnquiryStatus(id: number): Observable<any> {
+    return this.http.put<any>(this.apiUrl + "/setUserEnquiryStatus/" + id, this.httpOptionsAccount);
+  }
 
-  // getAllEnquiries(): Observable<EnquiryResponse[]> {
-  //   return this.http.get<EnquiryResponse[]>(this.apiUrl + "/getAllUserEnquries");
-  // }
+  deleteEnquiryStatus(id: number): Observable<any> {
+    return this.http.delete<any>(this.apiUrl + "/removeUserEnquiry/" + id, this.httpOptionsAccount);
+  }
 
-  // getSpecificEnquiry(id: number): Observable<EnquiryResponse> {
-  //   return this.http.get<EnquiryResponse>(this.apiUrl + "/getSpecificUserEnquiry/" + id);
-  // }
+  getAllEnquiries(): Observable<EnquiryResponse[]> {
+    return this.http.get<EnquiryResponse[]>(this.apiUrl + "/getAllUserEnquries", this.httpOptionsAccount);
+  }
 
-  // editAccount(): Observable<PH> {
-  //   return this.http.post<PH>(this.apiUrl + "/editAgentDetails", this.httpOptions);
-  // }
+  getSpecificEnquiry(id: number): Observable<EnquiryResponse> {
+    return this.http.get<EnquiryResponse>(this.apiUrl + "/getSpecificUserEnquiry/" + id, this.httpOptionsAccount);
+  }
+
+  editAccount(): Observable<any> {
+    return this.http.post<any>(this.apiUrl + "/editAgentDetails", this.httpOptions);
+  }
 }
