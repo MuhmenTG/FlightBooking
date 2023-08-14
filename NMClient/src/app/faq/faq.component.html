@@ -1,1 +1,8 @@
-<p>faq works!</p>
+<div *ngIf="faqs != null" class="component">
+    <div *ngFor="let faq of faqs.FAQS; let i = index;">
+        <div class="border my-2 flight-offer">
+            <h1>{{faq.question}}</h1>
+            <h2>{{faq.answer}}</h2>
+        </div>
+    </div>
+</div>
