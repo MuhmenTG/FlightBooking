@@ -41,18 +41,16 @@ export class HttpService {
     HttpService.accessTokenStatus = true;
     HttpService.accessTokenAge = Date.now();
 
-    console.log(HttpService.accessTokenAge);
+    //console.log(HttpService.accessTokenAge);
   }
 
-  setHttpOptionsTest(access_token: string): void {
+  setHttpOptionsAccount(access_token: string): void {
     this.httpOptionsAccount = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': "Bearer " + access_token
       })
     }
-
-    console.log(this.httpOptionsAccount);
   }
 
   getAccessToken(): Observable<AccessTokenResponse> {
