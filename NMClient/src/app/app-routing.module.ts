@@ -4,13 +4,19 @@ import { SearchFlightsComponent } from './search-flights/search-flights.componen
 import { SearchHotelsComponent } from './search-hotels/search-hotels.component';
 import { LoginComponent } from './login/login.component';
 import { AdminComponent } from './admin/admin.component';
+import { AgentComponent } from './agent/agent.component';
+import { FaqComponent } from './faq/faq.component';
+import { MyBookingComponent } from './my-booking/my-booking.component';
 
 const routes: Routes = [
   { path: '', component: SearchFlightsComponent },
   { path: 'hotels', component: SearchHotelsComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'admin', component: AdminComponent},
-  { path: 'showbooking', component: AdminComponent}
+  { path: 'admin', component: AdminComponent },
+  { path: 'showbooking', component: AdminComponent },
+  { path: 'agent', component: AgentComponent },
+  { path: 'faq', component: FaqComponent },
+  { path: 'mybooking', component: MyBookingComponent }
 ];
 
 @NgModule({

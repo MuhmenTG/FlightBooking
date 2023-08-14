@@ -18,11 +18,19 @@
       <li class="nav-item">
         <a class="nav-link" href="/admin">Admin</a>
       </li>
-      
+
+      <li class="nav-item">
+        <a class="nav-link" href="/agent">Agent</a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="/faq">FAQ</a>
+      </li>
+
     </ul>
     <ul class="navbar-nav ms-auto">
       <li class="nav-item">
-        <a class="nav-link" href="/showbooking">My booking</a>
+        <a class="nav-link" href="/mybooking">My booking</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">Support</a>
@@ -37,13 +45,13 @@
   <span class="ms-4 text-muted">© 2023 NM Flights</span>
   <div id="login">
     <div id="createLogin" *ngIf="sessionUsername == null; else elseBlock">
-        <app-login (sessionInfoEvent)="modifySessionInfo()"></app-login>
+      <app-login (sessionInfoEvent)="modifySessionInfo()"></app-login>
     </div>
     <ng-template #elseBlock>
-        <div class="d-flex">
-            <div id="loggedIn">Logged in as: <b>{{sessionUsername}}</b> </div>
-            <button class="mx-1" (click)="logout()">Log out</button>
-        </div>
+      <div class="d-flex">
+        <div id="loggedIn">Logged in as: <b>{{sessionUsername}}</b> </div>
+        <button class="mx-1" (click)="logout()">Log out</button>
+      </div>
     </ng-template>
-</div>
+  </div>
 </footer>

@@ -11,9 +11,10 @@ import { PaymentComponent } from './payment/payment.component';
 import { SearchHotelsComponent } from './search-hotels/search-hotels.component';
 import { AdminComponent } from './admin/admin.component';
 import { AgentComponent } from './agent/agent.component';
-import { FaqComponent } from './faq/faq.component';
 import { LoginComponent } from './login/login.component';
 import { ShowBookingComponent } from './show-booking/show-booking.component';
+import { FaqComponent } from './faq/faq.component';
+import { MyBookingComponent } from './my-booking/my-booking.component';
 
 @NgModule({
   declarations: [
@@ -25,9 +26,10 @@ import { ShowBookingComponent } from './show-booking/show-booking.component';
     SearchHotelsComponent,
     AdminComponent,
     AgentComponent,
-    FaqComponent,
     LoginComponent,
-    ShowBookingComponent
+    ShowBookingComponent,
+    FaqComponent,
+    MyBookingComponent
   ],
   imports: [
     BrowserModule,
