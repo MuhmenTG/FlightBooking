@@ -3,13 +3,13 @@ import { environment } from 'src/environments/environment.development';
 import { AccountResponse } from '../_models/Employees/AccountResponse';
 import { Observable } from 'rxjs';
 import { HttpService } from './http.service';
-import { FAQ } from '../_models/FAQ';
+import { FAQS } from '../_models/FAQS';
 import { AccountRequest } from '../_models/Employees/AccountRequest';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AdminService extends HttpService{
+export class AdminService extends HttpService {
   private apiUrl = environment.apiUrl + "/admin";
 
   // Accounts
@@ -17,16 +17,16 @@ export class AdminService extends HttpService{
     return this.http.post<AccountResponse>(this.apiUrl + "/createAgent", JSON.stringify(body), this.httpOptionsAccount);
   }
 
-  editAgent(id: number, body: AccountRequest): Observable<AccountResponse> {
-    return this.http.put<AccountResponse>(this.apiUrl + "/editAgentDetails/" + id, JSON.stringify(body), this.httpOptions);
+  editAgent(body: AccountRequest): Observable<AccountResponse> {
+    return this.http.post<AccountResponse>(this.apiUrl + "/editAgentDetails", JSON.stringify(body), this.httpOptionsAccount);
   }
 
   getAccountDetails(id: number): Observable<AccountResponse> {
     return this.http.get<AccountResponse>(this.apiUrl + "/getSpecificAgentDetails/" + id);
   }
 
-  getListOfAccounts(): Observable<AccountResponse[]> {
-    return this.http.get<AccountResponse[]>(this.apiUrl + "/showListOfAgent", this.httpOptionsAccount);
+  getListOfAccounts(): Observable<AccountResponse> {
+    return this.http.get<AccountResponse>(this.apiUrl + "/showListOfTravelAgents", this.httpOptionsAccount);
   }
 
   deactivateAccount(id: number): Observable<AccountResponse> {
@@ -39,11 +39,11 @@ export class AdminService extends HttpService{
 
 
   // FAQ
-  createFAQ(body: FAQ): Observable<void> {
+  createFAQ(body: FAQS): Observable<void> {
     return this.http.post<void>(this.apiUrl + "/createNewFaq", JSON.stringify(body), this.httpOptions);
   }
 
-  editFAQ(id: number, body: FAQ): Observable<void> {
+  editFAQ(id: number, body: FAQS): Observable<void> {
     return this.http.put<void>(this.apiUrl + "/editFaq/" + id, JSON.stringify(body), this.httpOptions);
   }
 
@@ -51,11 +51,11 @@ export class AdminService extends HttpService{
     return this.http.delete<void>(this.apiUrl + "/removeFaq/" + id, this.httpOptions);
   }
 
-  getFAQ(id: number): Observable<FAQ> {
-    return this.http.get<FAQ>(this.apiUrl + "/getSpecificFaq/" + id);
+  getFAQ(id: number): Observable<FAQS> {
+    return this.http.get<FAQS>(this.apiUrl + "/getSpecificFaq/" + id);
   }
 
-  getAllFAQ(): Observable<FAQ[]> {
-    return this.http.get<FAQ[]>(this.apiUrl + "/getAllfaq")
+  getAllFAQ(): Observable<FAQS[]> {
+    return this.http.get<FAQS[]>(this.apiUrl + "/getAllfaq")
   }
 }
