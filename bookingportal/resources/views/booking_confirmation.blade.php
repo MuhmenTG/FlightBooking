@@ -3,8 +3,10 @@
 <head>
     <title>Booking Complete Details</title>
 </head>
-<body><style>
-    .passenger-container {
+<body>
+
+<style>
+    .container {
         border: 1px solid #ddd;
         padding: 10px;
         margin-bottom: 20px;
@@ -27,33 +29,29 @@
 
 <h1>Passenger Details</h1>
 @foreach ($bookingComplete['passenger'] as $traveller)
-    <div class="passenger-container">
-        <div class="passenger-info">
-            <div class="passenger-label">Passenger ID:</div>
-            <div class="passenger-value">{{ $traveller['id'] }}</div>
-        </div>
-        <div class="passenger-info">
-            <div class="passenger-label">Title:</div>
-            <div class="passenger-value">{{ $traveller['title'] }}</div>
-        </div>
-        <div class="passenger-info">
-            <div class="passenger-label">First Name:</div>
-            <div class="passenger-value">{{ $traveller['firstName'] }}</div>
-        </div>
+    <div class="container">
+        <p>
+            <strong>Name:</strong> {{ $traveller['title'] }} {{ $traveller['firstName'] }} {{ $traveller['lastName'] }}
+        </p>
+        <p>
+            <strong>Passenger type:</strong> {{ $traveller['passengerType'] }}
+        </p>
+        <p>
+            <strong>Ticker number:</strong> {{ $traveller['ticketNumber'] }}
+        </p>
         <!-- Repeat the same structure for other passenger details -->
     </div>
 @endforeach
 
-    <h1>Itinerary Details</h1>
-    @foreach ($bookingComplete['flight'] as $segment)
-
-    <h1>Booking status: CONFIRMED</h1>
-    <div style="border: 1px solid #ddd; padding: 10px; margin-bottom: 20px;">
+<h1>Itinerary Details</h1>
+@foreach ($bookingComplete['flight'] as $segment)
+    <strong>Booking status: CONFIRMED</strong>
+    <div class="container">
         <p>
-            <strong>Flight:</strong> {{ $segment['airline'] }}   {{ $segment['flightNumber'] }}
+            <strong>Flight:</strong> {{ $segment['airline'] }} {{ $segment['flightNumber'] }}
         </p>
         <p>
-            <strong>Departure:</strong> {{ $segment['departureFrom'] }}  -  {{ $segment['departureTerminal'] }}
+            <strong>Departure:</strong> {{ $segment['departureFrom'] }} - {{ $segment['departureTerminal'] }}
         </p>
         <p>
             <strong>Departure Time:</strong> {{ $segment['departureDateTime'] }}
@@ -74,14 +72,27 @@
 
 
     <h1>Payment Details</h1>
-    <ul>
-        <li>Transaction Date: {{ $bookingComplete['payment']['transactionDate'] }}</li>
+    <div class="container">
+        <p>
+            <strong>Transaction Date:</strong> {{ $bookingComplete['payment']['transactionDate'] }}
+        </p>
+        <p>
+            <strong>Payment Amount:</strong> {{ $bookingComplete['payment']['paymentAmount'] }} {{ $bookingComplete['payment']['paymentCurrency'] }}
+        </p>
+        <p>
+            <strong>Payment Type:</strong> {{ $bookingComplete['payment']['paymentType'] }}
+        </p>
+        <p>
+            <strong>Payment Method:</strong> {{ $bookingComplete['payment']['paymentMethod'] }}
+        </p>
+    </div>
+    <!-- <ul>
         <li>Payment Amount: {{ $bookingComplete['payment']['paymentAmount'] }} {{ $bookingComplete['payment']['paymentCurrency'] }}</li>
         <li>Payment Type: {{ $bookingComplete['payment']['paymentType'] }}</li>
         <li>Payment Status: {{ $bookingComplete['payment']['paymentStatus'] }}</li>
         <li>Payment Method: {{ $bookingComplete['payment']['paymentMethod'] }}</li>
         <li>Payment Gateway Processor: {{ $bookingComplete['payment']['paymentGatewayProcessor'] }}</li>
-    </ul>
+    </ul> -->
     <!-- Add payment details if needed -->
 </body>
 </html>
