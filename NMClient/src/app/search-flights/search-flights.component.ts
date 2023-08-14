@@ -19,29 +19,34 @@ export class SearchFlightsComponent {
   carrierCodeResponse: CarrierCodesResponse = {data: []};
   model: SearchFlightsRequest = { travelType: 0, originLocationCode: '', destinationLocationCode: '', departureDate: '', returnDate: '', adults: this.adults[0], class: this.classes[0] }
   flightsResponses: FlightResponses = {count: 0, data: []};
-  formSubmitted = false;
+  formSubmitted: boolean = false;
+  isResults: boolean = true;
   todayDate = Date.now();
 
   constructor(private _flightService: FlightService) { }
 
   resetAll() {
     this.child.reset()
+    this.formSubmitted = false;
+    this.isResults = false;
   }
 
   submitForm(form: NgForm) {
     if (this.formSubmitted) {
-      this.formSubmitted = false;
       this.resetAll();
     }
 
     if (!form.valid) {
       return alert("Form is not valid. Try again.");
     } else {
+      this.isResults = false;
       if (this.model.travelType == 1) this.model.returnDate = "";
       this._flightService.getFlights(this.model).subscribe(response => {
         this.flightsResponses = response;
         this.findAllUniqueCarrierCodes();
         this.swapCarrierCodeForCompanyName();
+        this.isResults = true;
+        this.formSubmitted = true;
       })
     }
   }
@@ -69,8 +74,6 @@ export class SearchFlightsComponent {
           })
         })
       })
-
-      this.formSubmitted = true;
     });
   }
 }
