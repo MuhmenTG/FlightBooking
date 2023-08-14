@@ -30,15 +30,15 @@
     <div class="passenger-container">
         <div class="passenger-info">
             <div class="passenger-label">Passenger ID:</div>
-            <div class="passenger-value">{{ $traveller['passengerId'] }}</div>
+            <div class="passenger-value">{{ $traveller['id'] }}</div>
         </div>
         <div class="passenger-info">
             <div class="passenger-label">Title:</div>
-            <div class="passenger-value">{{ $traveller['passengerTitle'] }}</div>
+            <div class="passenger-value">{{ $traveller['title'] }}</div>
         </div>
         <div class="passenger-info">
             <div class="passenger-label">First Name:</div>
-            <div class="passenger-value">{{ $traveller['passengerFirstName'] }}</div>
+            <div class="passenger-value">{{ $traveller['firstName'] }}</div>
         </div>
         <!-- Repeat the same structure for other passenger details -->
     </div>
