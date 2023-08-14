@@ -23,6 +23,8 @@ interface IBookingService
 
     public function cancelFlightBooking(string $bookingReference);
 
+    public function getPassengerEmail(string $bookingReference) : string;
+
     public function finalizeFlightReservation(string $bookingReference): ?Collection;
 
     public function getFlightPassengersByPNR(string $bookingReference) : Collection;
@@ -36,4 +38,6 @@ interface IBookingService
     public function updatePassenger(PassengerInfo $passenger, string $firstName, string $lastName, string $dateOfBirth, string $email): PassengerInfo;
 
     public function getAllConfirmedBookings();
+
+    public function generateBookingConfirmationPDF($bookingComplete) : string;
 }

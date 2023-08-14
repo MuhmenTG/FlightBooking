@@ -15,6 +15,8 @@ import { LoginComponent } from './login/login.component';
 import { ShowBookingComponent } from './show-booking/show-booking.component';
 import { FaqComponent } from './faq/faq.component';
 import { MyBookingComponent } from './my-booking/my-booking.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,9 @@ import { MyBookingComponent } from './my-booking/my-booking.component';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule,
+    MatProgressSpinnerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

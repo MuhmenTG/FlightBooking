@@ -16,6 +16,7 @@ export class SearchFlightsComponent {
   classes = ['First class', 'Business class', 'Economy class']
   adults = [1, 2, 3, 4, 5]
   carrierCodes: String[] = [];
+  isResults: boolean = true;
   carrierCodeResponse: CarrierCodesResponse = { data: [] };
   model: SearchFlightsRequest = { travelType: 0, originLocationCode: '', destinationLocationCode: '', departureDate: '', returnDate: '', adults: this.adults[0], travelClass: "ECONOMY" }
   // this.classes[0]
@@ -27,24 +28,28 @@ export class SearchFlightsComponent {
 
   resetAll() {
     this.child.reset()
+    this.formSubmitted = false;
+    this.isResults = false;
   }
 
   submitForm(form: NgForm) {
     if (this.formSubmitted) {
-      this.formSubmitted = false;
       this.resetAll();
     }
 
     if (!form.valid) {
       return alert("Form is not valid. Try again.");
     } else {
+      this.isResults = false;
       if (this.model.travelType == 1) this.model.returnDate = "";
       this._flightService.getFlights(this.model).subscribe(response => {
         this.flightsResponses = response;
         this.findAllUniqueCarrierCodes();
         this.swapCarrierCodeForCompanyName();
+        this.formSubmitted = true;
       })
     }
+    this.isResults = true;
   }
 
   findAllUniqueCarrierCodes() {
@@ -70,8 +75,6 @@ export class SearchFlightsComponent {
           })
         })
       })
-
-      this.formSubmitted = true;
     });
   }
 }

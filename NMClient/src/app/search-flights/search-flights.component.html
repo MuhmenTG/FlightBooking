@@ -53,3 +53,6 @@
 </div>
 
 <app-show-flightoffers *ngIf="formSubmitted" [offers]="flightsResponses"></app-show-flightoffers>
+<div class="component d-flex justify-content-center" *ngIf="!isResults">
+    <mat-spinner></mat-spinner>
+</div>

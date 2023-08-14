@@ -65,18 +65,17 @@ Route::middleware(['auth:sanctum', 'isAgent'])->group(function () {
     Route::get('/travelAgent/getAllFlightBookings', [TravelAgentController::class, 'getAllFlightBookings']);
     Route::get('/travelAgent/getBooking/{bookingReference}', [PublicSiteController::class, 'retrieveBookingInformation']);
     Route::get('/travelAgent/getAllPaymentTransactions', [TravelAgentController::class, 'getAllPaymentTransactions']);
+    Route::post('/travelAgent/resendBookingConfirmationPDF', [TravelAgentController::class, 'resendBookingConfirmationPDF']);
     Route::get('/travelAgent/getSpecificPaymentTransactions/{bookingReference}/{paymentId}', [TravelAgentController::class , 'getSpecificPaymentTransactions']);
     Route::post('/travelAgent/editPassengerInformation', [TravelAgentController::class, 'editPassengerInformation']);
     Route::get('/travelAgent/cancelFlight/{flightBookingReference}', [TravelAgentController::class, 'cancelFlightBooking']);    
-    Route::post('/travelAgent/sendBooking', [TravelAgentController::class, 'resendBookingConfirmationPDF']);
-    Route::post('/travelAgent/answerUserEnquiry', [TravelAgentController::class, 'answerUserEnquiry']);
+   Route::post('/travelAgent/answerUserEnquiry', [TravelAgentController::class, 'answerUserEnquiry']);
     Route::put('/travelAgent/setUserEnquiryStatus/{enquiryId}', [TravelAgentController::class, 'setUserEnquiryStatus']);
     Route::delete('/travelAgent/removeUserEnquiry/{enquiryId}', [TravelAgentController::class, 'removeUserEnquiry']);
     Route::get('/travelAgent/getAllUserEnquries', [TravelAgentController::class, 'getAllUserEnquiries']);
     Route::get('/travelAgent/getSpecificUserEnquiry/{enquiryId}', [TravelAgentController::class, 'getSpecificUserEnquiry']);
     Route::post('/travelAgent/editOwnAgentDetails', [TravelAgentController::class, 'editAgentDetails']);
 });
-
 
 
 

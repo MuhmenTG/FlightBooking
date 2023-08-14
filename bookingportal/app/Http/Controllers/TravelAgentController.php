@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Resources\FlightConfirmationResource;
 use App\Http\Resources\PassengerResource;
 use App\Http\Resources\PaymentResource;
 use App\Http\Resources\SupportRequestResource;
@@ -13,6 +14,8 @@ use App\Services\Booking\IBookingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
+use Barryvdh\DomPDF\PDF;
+
 
 class TravelAgentController extends Controller
 {
@@ -50,35 +53,53 @@ class TravelAgentController extends Controller
 
         return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
     }
-     
+
     public function resendBookingConfirmationPDF(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email'     => 'required|email',
-            'name'      => 'required|string',
-            'text'      => 'required|string',
-            'subject'   => 'required|string',
-            'files.*'   => 'mimes:pdf',
+            'email' => 'required|email',
+            'name' => 'required|string',
+            'text' => 'required|string',
+            'subject' => 'required|string',
+            'bookingReference' => 'required|string',
         ]);
-    
+
         if ($validator->fails()) {
             return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
         }
-    
-        $attachments = $request->allFiles('files');
+
         $email = $request->input('email');
         $name = $request->input('name');
         $text = $request->input('text');
         $subject = $request->input('subject');
-    
-        $isSend = $this->IEmailSendService->sendEmailWithAttachments($name, $email, $subject, $text, $attachments);
-        
-        if($isSend){
-            return ResponseHelper::jsonResponseMessage("Booking confirmation has been sent", Response::HTTP_OK);
-        }
+        $bookingReference = $request->input('bookingReference');
 
-        return ResponseHelper::jsonResponseMessage('Something went wrong while sending confirmation', Response::HTTP_BAD_REQUEST);        
+        $bookingInfo = $this->IBookingService->retrieveBookingInformation($bookingReference);
+
+        if ($bookingInfo) {
+            $bookedFlightSegments = FlightConfirmationResource::collection($bookingInfo['flight']);
+            $bookedFlightPassenger = PassengerResource::collection($bookingInfo['passengers']);
+            $paymentDetails = new PaymentResource($bookingInfo['payment']);
+
+            $bookingComplete = [
+                'passenger' => $bookedFlightPassenger,
+                'flight' => $bookedFlightSegments,
+                'payment' => $paymentDetails,
+            ];
+
+            $pdfContent = $this->IBookingService->generateBookingConfirmationPDF($bookingComplete);
+            
+            $isSend = $this->IEmailSendService->sendEmailWithAttachments($name, $email, $subject, $text, $pdfContent);
+
+            if ($isSend) {
+                return ResponseHelper::jsonResponseMessage("Booking confirmation has been sent", Response::HTTP_OK);
+            }
+
+            return ResponseHelper::jsonResponseMessage('Something went wrong while sending confirmation', Response::HTTP_BAD_REQUEST);
+        }
     }
+
+
 
     public function getAllUserEnquiries()
     {
