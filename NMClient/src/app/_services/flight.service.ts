@@ -9,6 +9,7 @@ import { PaymentInfo } from '../_models/PaymentInfo';
 import { FlightOffer } from '../_models/Flights/FlightOffer';
 import { HttpService } from './http.service';
 import { CarrierCodesResponse } from '../_models/Flights/CarrierCodesResponse';
+import { FinalBookingResponse } from '../_models/Flights/FinalBookingResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,7 @@ export class FlightService extends HttpService{
     return this.http.post<FlightBookingResponse>(this.apiUrl + "/confirmFlight", JSON.stringify(bookingInfo), HttpService.httpOptionsBearer);
   }
 
-  getPaymentConfirmation(paymentInfo: PaymentInfo): Observable<{}> {
-    return this.http.post<{}>(this.apiUrl + "/payConfirmFlight", JSON.stringify(paymentInfo), this.httpOptions);
+  getPaymentConfirmation(paymentInfo: PaymentInfo): Observable<FinalBookingResponse> {
+    return this.http.post<FinalBookingResponse>(this.apiUrl + "/payConfirmFlight", JSON.stringify(paymentInfo), this.httpOptions);
   }
 }

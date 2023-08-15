@@ -1,0 +1,14 @@
+.container {
+    border: 1px solid black;
+    background-color: skyblue;
+}
+
+button {
+    background-color: skyblue;
+    border-radius: 10px;
+    border: 1px solid white;
+}
+
+button:hover {
+    color: white;
+}

@@ -4,6 +4,8 @@ import { FlightBookingResponse } from '../_models/Flights/FlightBookingResponse'
 import { FlightInfoResponse } from '../_models/Flights/FlightInfoResponse';
 import { PaymentInfo } from '../_models/PaymentInfo';
 import { FlightService } from '../_services/flight.service';
+import { Router } from '@angular/router';
+import { FinalBookingResponse } from '../_models/Flights/FinalBookingResponse';
 
 @Component({
   selector: 'app-payment',
@@ -13,9 +15,9 @@ import { FlightService } from '../_services/flight.service';
 export class PaymentComponent {
   @Input() flightInfo!: FlightInfoResponse;
   @Input() bookingResponse!: FlightBookingResponse;
-  model: PaymentInfo = { bookingReference: "", cardNumber: "", expireMonth: "", expireYear: "", cvcDigits: "", grandTotal: "" }
+  model: PaymentInfo = { bookingReference: "", cardNumber: "", expireMonth: "", expireYear: "", cvcDigits: "", grandTotal: "" };
 
-  constructor(private _flightService: FlightService) { }
+  constructor(private _flightService: FlightService, private _router: Router) { }
 
   submitForm(form: NgForm) {
     if (!form.valid) {
@@ -23,10 +25,9 @@ export class PaymentComponent {
     } else {
       this.model.bookingReference = this.bookingResponse.bookingReference;
       this.model.grandTotal = this.flightInfo.data.flightOffers[0].price.grandTotal;
-      this._flightService.getPaymentConfirmation(this.model).subscribe(x => {
-        console.log(JSON.stringify(x));
+      this._flightService.getPaymentConfirmation(this.model).subscribe(response => {
+      this._router.navigateByUrl('/bookingconfirmation', { state: response})
       })
-      return true;
     }
   }
 }

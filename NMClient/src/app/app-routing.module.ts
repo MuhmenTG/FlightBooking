@@ -7,6 +7,7 @@ import { AdminComponent } from './admin/admin.component';
 import { AgentComponent } from './agent/agent.component';
 import { FaqComponent } from './faq/faq.component';
 import { MyBookingComponent } from './my-booking/my-booking.component';
+import { BookingConfirmationComponent } from './booking-confirmation/booking-confirmation.component';
 
 const routes: Routes = [
   { path: '', component: SearchFlightsComponent },
@@ -16,7 +17,8 @@ const routes: Routes = [
   { path: 'showbooking', component: AdminComponent },
   { path: 'agent', component: AgentComponent },
   { path: 'faq', component: FaqComponent },
-  { path: 'mybooking', component: MyBookingComponent }
+  { path: 'mybooking', component: MyBookingComponent },
+  { path: 'bookingconfirmation', component: BookingConfirmationComponent }
 ];
 
 @NgModule({

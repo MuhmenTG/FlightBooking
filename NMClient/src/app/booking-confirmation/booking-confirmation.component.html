@@ -1,0 +1,64 @@
+<div class="component">
+    <div id="print-section">
+        <div *ngFor="let traveller of booking.passenger" class="container">
+            <h1>Passenger Details</h1>
+    
+                <p>
+                    <strong>Name:</strong> {{traveller.passengerTitle}} {{traveller.passengerFirstName}} {{traveller.passengerLastName}}
+                </p>
+                <p>
+                    <strong>Passenger type:</strong> {{traveller.passengerType}}
+                </p>
+                <p>
+                    <strong>Ticker number:</strong> {{traveller.passengerticketNumber}}
+                </p>
+            </div>
+        
+        
+            <div *ngFor="let segment of booking.flight" class="container">
+                <h1>Itinerary Details</h1>
+            <strong>Booking status: CONFIRMED</strong>
+                <p>
+                    <strong>Flight:</strong> {{ segment.airline }} {{ segment.flightNumber }}
+                </p>
+                <p>
+                    <strong>Departure:</strong> {{ segment.departureFrom }} - {{ segment.departureTerminal }}
+                </p>
+                <p>
+                    <strong>Departure Time:</strong> {{ segment.departureDateTime }}
+                </p>
+                <p>
+                    <strong>Arrival:</strong> {{ segment.arrivalTo }}  -  {{ segment.arrivalTerminal }}
+                </p>
+                
+                <p>
+                    <strong>Arrival:</strong> {{ segment.arrivalDate }}
+                </p>
+                <p>
+                    <strong>Duration:</strong> {{ segment.flightDuration }}
+                </p>
+            </div>
+        
+        
+            <div *ngIf="booking.payment != null" class="container">
+            <h1>Payment Details</h1>
+    
+                <p>
+                    <strong>Transaction Date:</strong> {{ booking.payment.transactionDate }}
+                </p>
+                <p>
+                    <strong>Payment Amount:</strong> {{ booking.payment.paymentAmount }} {{ booking.payment.paymentCurrency }}
+                </p>
+                <p>
+                    <strong>Payment Type:</strong> {{ booking.payment.paymentType }}
+                </p>
+                <p>
+                    <strong>Payment Method:</strong> {{ booking.payment.paymentMethod }}
+                </p>
+            </div>
+    </div>
+    <div class="d-flex mx-auto justify-content-center my-5">
+        <button printTitle="NMFlights" printSectionId="print-section" ngxPrint>Print booking</button>
+    </div>
+
+</div>

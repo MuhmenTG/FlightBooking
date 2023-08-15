@@ -17,6 +17,8 @@ import { FaqComponent } from './faq/faq.component';
 import { MyBookingComponent } from './my-booking/my-booking.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { BookingConfirmationComponent } from './booking-confirmation/booking-confirmation.component';
+import { NgxPrintModule } from 'ngx-print';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     LoginComponent,
     ShowBookingComponent,
     FaqComponent,
-    MyBookingComponent
+    MyBookingComponent,
+    BookingConfirmationComponent
   ],
   imports: [
     BrowserModule,
@@ -39,7 +42,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     HttpClientModule,
     FormsModule,
     BrowserAnimationsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    NgxPrintModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
