@@ -1,17 +1,3 @@
-<!-- <div class="component d-flex">
-    <form #loginReq="ngForm" (submit)="submitForm(loginReq)">
-        <div class="d-flex flex-row my-2 justify-content-start">
-            <input required class="form-control mx-2 px-2" placeholder="E-mail"
-            type="text" autocomplete="username" [(ngModel)]="model.email" name="email">
-        </div>
-        <div class="d-flex flex-row my-2 justify-content-start">
-            <input required class="form-control mx-2 px-2" placeholder="Password"
-            type="password" autocomplete="current-password" [(ngModel)]="model.password" name="password">
-        </div>
-        <button type="submit" class="btn btn-primary m-2 px-2">Employee login</button>
-    </form>
-</div> -->
-
 <div class="row">
     <form class="w-auto" #loginReq="ngForm" (submit)="submitForm(loginReq)">
         <input class="col-4 m-1" autocomplete="username" [(ngModel)]="model.email" type="text" placeholder="Username" name="user">
