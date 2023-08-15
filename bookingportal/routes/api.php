@@ -44,6 +44,7 @@ Route::prefix('public')->group(function () {
     Route::get('retriveBooking/{bookingReference}', [PublicSiteController::class, 'retrieveBookingInformation']);
     Route::post('contactform', [PublicSiteController::class, 'sendEnquirySupport']);
     Route::get('getAllFaqs', [PublicSiteController::class, 'getAllFaqs']);
+    Route::get('getCityName', [PublicSiteController::class, 'searchCity']);
     Route::get('/getSpecificFaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
 });
 
@@ -69,7 +70,7 @@ Route::middleware(['auth:sanctum', 'isAgent'])->group(function () {
     Route::get('/travelAgent/getSpecificPaymentTransactions/{bookingReference}/{paymentId}', [TravelAgentController::class , 'getSpecificPaymentTransactions']);
     Route::post('/travelAgent/editPassengerInformation', [TravelAgentController::class, 'editPassengerInformation']);
     Route::get('/travelAgent/cancelFlight/{flightBookingReference}', [TravelAgentController::class, 'cancelFlightBooking']);    
-   Route::post('/travelAgent/answerUserEnquiry', [TravelAgentController::class, 'answerUserEnquiry']);
+    Route::post('/travelAgent/answerUserEnquiry', [TravelAgentController::class, 'answerUserEnquiry']);
     Route::put('/travelAgent/setUserEnquiryStatus/{enquiryId}', [TravelAgentController::class, 'setUserEnquiryStatus']);
     Route::delete('/travelAgent/removeUserEnquiry/{enquiryId}', [TravelAgentController::class, 'removeUserEnquiry']);
     Route::get('/travelAgent/getAllUserEnquries', [TravelAgentController::class, 'getAllUserEnquiries']);

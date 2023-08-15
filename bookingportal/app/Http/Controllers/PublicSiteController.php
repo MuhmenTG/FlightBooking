@@ -8,6 +8,7 @@ use App\Http\Resources\FaqResource;
 use App\Http\Resources\FlightConfirmationResource;
 use App\Http\Resources\PassengerResource;
 use App\Http\Resources\PaymentResource;
+use App\Models\AirportInfo;
 use App\Services\BackOffice\IBackOfficeService;
 use App\Services\Booking\IBookingService;
 use Illuminate\Http\Request;
@@ -100,5 +101,15 @@ class PublicSiteController extends Controller
         }
 
         return ResponseHelper::jsonResponseMessage($faqs, Response::HTTP_OK, "FAQS");
+    }
+
+    public function searchCity(string $cityIcao){
+        $cityName = AirportInfo::ByAirportIcao($cityIcao)->first();
+
+        if(!$cityName){
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::CITY_NOT_FOUND, Response::HTTP_NOT_FOUND);
+        }
+
+        return ResponseHelper::jsonResponseMessage($cityName, Response::HTTP_OK, "city");
     }
 }
