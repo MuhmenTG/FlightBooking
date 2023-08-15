@@ -1,13 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 .component {
-    margin: 10vh 10vw;
+    margin: 10vh 0vw; 
+    padding: 10vh 0vw;
 }
 
 .component>form {
     background-color: skyblue;
     border-radius: 10px;
-    border-style: solid;
-    border-color: white;
+    border: solid white;
 }
 
 body {
