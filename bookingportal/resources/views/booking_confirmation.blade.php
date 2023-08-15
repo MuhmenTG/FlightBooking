@@ -11,20 +11,6 @@
         padding: 10px;
         margin-bottom: 20px;
     }
-
-    .passenger-info {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .passenger-label {
-        font-weight: bold;
-        width: 150px;
-    }
-
-    .passenger-value {
-        flex: 1;
-    }
 </style>
 
 <h1>Passenger Details</h1>
@@ -86,13 +72,6 @@
             <strong>Payment Method:</strong> {{ $bookingComplete['payment']['paymentMethod'] }}
         </p>
     </div>
-    <!-- <ul>
-        <li>Payment Amount: {{ $bookingComplete['payment']['paymentAmount'] }} {{ $bookingComplete['payment']['paymentCurrency'] }}</li>
-        <li>Payment Type: {{ $bookingComplete['payment']['paymentType'] }}</li>
-        <li>Payment Status: {{ $bookingComplete['payment']['paymentStatus'] }}</li>
-        <li>Payment Method: {{ $bookingComplete['payment']['paymentMethod'] }}</li>
-        <li>Payment Gateway Processor: {{ $bookingComplete['payment']['paymentGatewayProcessor'] }}</li>
-    </ul> -->
     <!-- Add payment details if needed -->
 </body>
 </html>
