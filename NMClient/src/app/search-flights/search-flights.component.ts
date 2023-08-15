@@ -29,7 +29,7 @@ export class SearchFlightsComponent {
   resetAll() {
     this.child.reset()
     this.formSubmitted = false;
-    this.isResults = false;
+    this.isResults = true;
   }
 
   submitForm(form: NgForm) {
@@ -47,9 +47,9 @@ export class SearchFlightsComponent {
         this.findAllUniqueCarrierCodes();
         this.swapCarrierCodeForCompanyName();
         this.formSubmitted = true;
+        this.isResults = true;
       })
     }
-    this.isResults = true;
   }
 
   findAllUniqueCarrierCodes() {
