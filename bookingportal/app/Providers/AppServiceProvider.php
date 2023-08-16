@@ -58,7 +58,7 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         Builder::macro('whereLike', function(string $column, string $search) {
-            return $this->orWhereRaw("LEFT($column, 3) = ?", [$search]);
-         });         
+            return $this->orWhereRaw("$column LIKE ?", ["%$search%"]);
+        });     
     }
 }
