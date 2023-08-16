@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SearchFlightsComponent } from './search-flights/search-flights.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ShowFlightoffersComponent } from './show-flightoffers/show-flightoffers.component';
 import { BookFlightComponent } from './book-flight/book-flight.component';
 import { PaymentComponent } from './payment/payment.component';
@@ -19,6 +19,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BookingConfirmationComponent } from './booking-confirmation/booking-confirmation.component';
 import { NgxPrintModule } from 'ngx-print';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { AsyncPipe, NgFor } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -44,6 +48,12 @@ import { NgxPrintModule } from 'ngx-print';
     BrowserAnimationsModule,
     MatProgressSpinnerModule,
     NgxPrintModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    ReactiveFormsModule,
+    NgFor,
+    AsyncPipe
   ],
   providers: [],
   bootstrap: [AppComponent]
