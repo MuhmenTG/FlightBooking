@@ -26,4 +26,9 @@ export class PublicService extends HttpService {
   retrieveBooking(bookingReferenceId: string): Observable<any> {
     return this.http.get<any>(this.apiUrl + "/retriveBooking/" + bookingReferenceId)
   }
+
+  getCityname(searchString: string): Observable<string> {
+    return this.http.get<string>(this.apiUrl + "/getCityName/" + searchString)
+  }
+
 }
