@@ -1,10 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormControl, NgForm } from '@angular/forms';
 import { ShowFlightoffersComponent } from '../show-flightoffers/show-flightoffers.component';
 import { FlightResponses } from '../_models/Flights/FlightResponses';
 import { SearchFlightsRequest } from '../_models/Flights/SearchFlightsRequest';
 import { FlightService } from '../_services/flight.service';
 import { CarrierCodesResponse } from '../_models/Flights/CarrierCodesResponse';
+import { Observable, map, startWith } from 'rxjs';
+import { PublicService } from '../_services/public.service';
 
 @Component({
   selector: 'app-search-flights',
@@ -23,8 +25,17 @@ export class SearchFlightsComponent {
   flightsResponses: FlightResponses = { count: 0, data: [] };
   formSubmitted = false;
   todayDate = Date.now();
+  private timeout?: number;
+  regex = /, (\w+) -/
 
-  constructor(private _flightService: FlightService) { }
+  // Search ng control
+  myControlFrom = new FormControl('');
+  myControlTo = new FormControl('');
+  options: string[] = [];
+  filteredOptionsFrom: Observable<string[]>;
+  filteredOptionsTo: Observable<string[]>;
+
+  constructor(private _flightService: FlightService, private _publicService: PublicService) { }
 
   resetAll() {
     this.child.reset()
@@ -41,6 +52,7 @@ export class SearchFlightsComponent {
       return alert("Form is not valid. Try again.");
     } else {
       this.isResults = false;
+      this.replaceDestinationStrings();
       if (this.model.travelType == 1) this.model.returnDate = "";
       this._flightService.getFlights(this.model).subscribe(response => {
         this.flightsResponses = response;
@@ -49,6 +61,20 @@ export class SearchFlightsComponent {
         this.formSubmitted = true;
         this.isResults = true;
       })
+    }
+  }
+
+  replaceDestinationStrings() {
+    let match = this.model.originLocationCode.match(this.regex);
+    console.log(match);
+    if(match != null){
+      this.model.originLocationCode = match[1];
+    }
+
+    match = this.model.destinationLocationCode.match(this.regex);
+
+    if(match != null) {
+      this.model.destinationLocationCode = match[1];
     }
   }
 
@@ -76,5 +102,50 @@ export class SearchFlightsComponent {
         })
       })
     });
+  }
+
+  setDropdown() {
+    this.filteredOptionsFrom = this.myControlFrom.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '')),
+    );
+
+    this.filteredOptionsTo = this.myControlTo.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '')),
+    );
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.options.filter(option => option.toLowerCase().includes(filterValue));
+  }
+
+  inputSearch(searchString: any) {
+    window.clearTimeout(this.timeout);
+    this.options = [];
+    this.setDropdown();
+    
+    if (searchString.target.value != ""){
+      this.timeout = window.setTimeout(() => this.makeSearchCall(searchString.target.value), 500);
+    }
+  }
+
+  makeSearchCall(search: string) {
+    this._publicService.getCityname(search).subscribe(response => {
+      console.log(response);
+      this.options = [];
+      response.city.forEach((x) => {
+        this.options.push(x.city + ", " + x.airportIcao + " - " + x.airportName);
+      })
+
+      this.setDropdown();
+    })
+  }
+
+  focus(){
+    this.options = [];
+    this.setDropdown()
   }
 }

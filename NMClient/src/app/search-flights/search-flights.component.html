@@ -16,13 +16,50 @@
                 </label>
             </div>
         </div>
+        <div>
+            <mat-form-field class="mx-1">
+                <mat-label>From</mat-label>
+                <input type="text"
+                       placeholder="Cityname1"
+                       aria-label="DestinationFrom"
+                       matInput
+                       [formControl]="myControlFrom"
+                       [matAutocomplete]="autoFrom"
+                       (input)="inputSearch($event)"
+                       (focus)='focus()'
+                       [(ngModel)]="model.originLocationCode">
+                <mat-autocomplete hideSingleSelectionIndicator requireSelection #autoFrom="matAutocomplete">
+                  <mat-option *ngFor="let optionFrom of filteredOptionsFrom | async" [value]="optionFrom">
+                    {{optionFrom}}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
 
-        <div class="d-flex flex-row my-2 justify-content-start">
+              <mat-form-field class="mx-1">
+                <mat-label>To</mat-label>
+                <input type="text"
+                       placeholder="Cityname2"
+                       aria-label="DestinationTo"
+                       matInput
+                       [formControl]="myControlTo"
+                       [matAutocomplete]="autoFrom"
+                       (input)="inputSearch($event)"
+                       (focus)='focus()'
+                       [(ngModel)]="model.destinationLocationCode">
+                <mat-autocomplete hideSingleSelectionIndicator requireSelection #autoTo="matAutocomplete">
+                  <mat-option *ngFor="let optionTo of filteredOptionsTo | async" [value]="optionTo">
+                    {{optionTo}}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+        </div>
+        
+        <!-- <div class="d-flex flex-row my-2 justify-content-start">
             <input required class="form-control mx-2 px-2 w-25" placeholder="From"
                 [(ngModel)]="model.originLocationCode" name="originLocationCode">
             <input required type="text" class="form-control mx-2 px-2 w-25" id="inputTo" placeholder="To"
                 [(ngModel)]="model.destinationLocationCode" name="destinationLocationCode">
-        </div>
+        </div> -->
         <div class="d-flex flex-row my-2 justify-content-start align-items-end flex-wrap">
             <div class="form-group m-2 w-auto">
                 <label for="departureDate">Departure date</label><br>

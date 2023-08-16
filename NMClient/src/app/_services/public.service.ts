@@ -4,6 +4,7 @@ import { HttpService } from './http.service';
 import { environment } from 'src/environments/environment.development';
 import { Observable } from 'rxjs';
 import { EnquiryRequest } from '../_models/EnquiryRequest';
+import { CitySearchResponse } from '../_models/Flights/CitySearchResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -27,8 +28,7 @@ export class PublicService extends HttpService {
     return this.http.get<any>(this.apiUrl + "/retriveBooking/" + bookingReferenceId)
   }
 
-  getCityname(searchString: string): Observable<string> {
-    return this.http.get<string>(this.apiUrl + "/getCityName/" + searchString)
+  getCityname(searchString: string): Observable<CitySearchResponse> {
+    return this.http.get<CitySearchResponse>(this.apiUrl + "/getCityName/" + searchString)
   }
-
 }
