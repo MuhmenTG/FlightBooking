@@ -20,6 +20,8 @@ use App\Services\Booking\IBookingService;
 use App\Services\Payment\IPaymentService;
 use App\Services\Payment\PaymentService;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -55,5 +57,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+        Builder::macro('whereLike', function(string $column, string $search) {
+            return $this->orWhereRaw("LEFT($column, 3) = ?", [$search]);
+         });         
     }
 }

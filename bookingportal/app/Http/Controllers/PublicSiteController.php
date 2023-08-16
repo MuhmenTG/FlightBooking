@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Amadeus\Airport;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\EnquirySupportRequest;
 use App\Http\Resources\FaqResource;
@@ -103,8 +104,8 @@ class PublicSiteController extends Controller
         return ResponseHelper::jsonResponseMessage($faqs, Response::HTTP_OK, "FAQS");
     }
 
-    public function searchCity(string $cityIcao){
-        $cityName = AirportInfo::ByAirportIcao($cityIcao)->first();
+    public function searchCity(string $cityName){
+        $cityName = AirportInfo::whereLike(AirportInfo::COL_CITY, $cityName)->get();
 
         if(!$cityName){
             return ResponseHelper::jsonResponseMessage(ResponseHelper::CITY_NOT_FOUND, Response::HTTP_NOT_FOUND);

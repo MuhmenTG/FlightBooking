@@ -42,9 +42,10 @@ Route::prefix('flight')->group(function () {
 
 Route::prefix('public')->group(function () {
     Route::get('retriveBooking/{bookingReference}', [PublicSiteController::class, 'retrieveBookingInformation']);
+    Route::post('resendBookingConfirmationPDF', [TravelAgentController::class, 'resendBookingConfirmationPDF']);
     Route::post('contactform', [PublicSiteController::class, 'sendEnquirySupport']);
     Route::get('getAllFaqs', [PublicSiteController::class, 'getAllFaqs']);
-    Route::get('getCityName', [PublicSiteController::class, 'searchCity']);
+    Route::get('getCityName/{cityName}', [PublicSiteController::class, 'searchCity']);
     Route::get('/getSpecificFaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
 });
 

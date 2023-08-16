@@ -151,7 +151,11 @@ class FlightBookingController extends Controller
         }
         
         try {
-            $payment = new PaymentResource($this->IPaymentService->createCharge(intval($request->get('grandTotal')), Constants::CURRENCY_CODE, $request->get('cardNumber'), $request->get('expireYear'),  $request->get('expireMonth'), $request->get('cvcDigits'), $request->get('bookingReference')));      
+            $payment = new PaymentResource($this->IPaymentService->createCharge(intval($request->get('grandTotal')), Constants::CURRENCY_CODE, $request->get('cardNumber'), $request->get('expireYear'),  $request->get('expireMonth'), $request->get('cvcDigits'), $request->get('bookingReference')));    
+            if(!$payment){
+                return ResponseHelper::jsonResponseMessage("Payment could not be done", Response::HTTP_BAD_REQUEST);
+            }
+            
             $booking = FlightConfirmationResource::collection($this->IBookingService->finalizeFlightReservation($request->get('bookingReference'))); 
             $passengers = PassengerResource::collection($this->IBookingService->getFlightPassengersByPNR($request->get('bookingReference')));           
           

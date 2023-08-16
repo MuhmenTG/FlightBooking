@@ -58,9 +58,6 @@ class TravelAgentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'name' => 'required|string',
-            'text' => 'required|string',
-            'subject' => 'required|string',
             'bookingReference' => 'required|string',
         ]);
 
@@ -69,9 +66,6 @@ class TravelAgentController extends Controller
         }
 
         $email = $request->input('email');
-        $name = $request->input('name');
-        $text = $request->input('text');
-        $subject = $request->input('subject');
         $bookingReference = $request->input('bookingReference');
 
         $bookingInfo = $this->IBookingService->retrieveBookingInformation($bookingReference);
@@ -89,7 +83,7 @@ class TravelAgentController extends Controller
 
             $pdfContent = $this->IBookingService->generateBookingConfirmationPDF($bookingComplete);
             
-            $isSend = $this->IEmailSendService->sendEmailWithAttachments($name, $email, $subject, $text, $pdfContent);
+            $isSend = $this->IEmailSendService->sendEmailWithAttachments($email, $email, "We're sendinding you electronic ticket", "Please see your attached tickets", $pdfContent);
 
             if ($isSend) {
                 return ResponseHelper::jsonResponseMessage("Booking confirmation has been sent", Response::HTTP_OK);
