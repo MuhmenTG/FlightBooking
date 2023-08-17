@@ -1,7 +1,11 @@
 .input {
-  width: 45%;
+  width: auto
 }
 
 .date {
-  width: 50%;
+  width: auto;
+}
+
+.select {
+  width: auto;
 }

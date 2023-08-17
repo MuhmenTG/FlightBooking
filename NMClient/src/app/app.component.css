@@ -1,3 +1,7 @@
 .headfoot {
-    background-color: skyblue !important;
+    background-color: #686868 !important;
+}
+
+.headfoot * {
+    color: white;
 }

@@ -5,14 +5,13 @@
 }
 
 .component>form {
-    background-color: skyblue;
+    background-color: #686868;
     border-radius: 10px;
     border: solid white;
 }
 
 body {
-    background-image: url("/assets/images/Lofoten.jpeg");
-    background-repeat: no-repeat;
+    background-image: linear-gradient(#686868, #c2185b);
 }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
