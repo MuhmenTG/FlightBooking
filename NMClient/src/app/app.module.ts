@@ -22,7 +22,10 @@ import { NgxPrintModule } from 'ngx-print';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { AsyncPipe, NgFor } from '@angular/common';
+import { AsyncPipe, JsonPipe, NgFor, NgIf } from '@angular/common';
+import {MAT_RADIO_DEFAULT_OPTIONS, MatRadioModule} from '@angular/material/radio';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MatDatepickerModule} from '@angular/material/datepicker';
 
 @NgModule({
   declarations: [
@@ -38,7 +41,7 @@ import { AsyncPipe, NgFor } from '@angular/common';
     ShowBookingComponent,
     FaqComponent,
     MyBookingComponent,
-    BookingConfirmationComponent
+    BookingConfirmationComponent,
   ],
   imports: [
     BrowserModule,
@@ -53,9 +56,16 @@ import { AsyncPipe, NgFor } from '@angular/common';
     MatAutocompleteModule,
     ReactiveFormsModule,
     NgFor,
-    AsyncPipe
+    NgIf,
+    AsyncPipe,
+    JsonPipe,
+    MatRadioModule,
+    MatDatepickerModule, 
+    MatNativeDateModule
   ],
-  providers: [],
+  providers: [{
+    provide: MAT_RADIO_DEFAULT_OPTIONS,
+    useValue: { color: 'primary'}}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
