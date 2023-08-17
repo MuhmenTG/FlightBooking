@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { FormControl, NgForm } from '@angular/forms';
+import { FormControl, FormGroup, NgForm } from '@angular/forms';
 import { ShowFlightoffersComponent } from '../show-flightoffers/show-flightoffers.component';
 import { FlightResponses } from '../_models/Flights/FlightResponses';
 import { SearchFlightsRequest } from '../_models/Flights/SearchFlightsRequest';
@@ -8,6 +8,13 @@ import { CarrierCodesResponse } from '../_models/Flights/CarrierCodesResponse';
 import { Observable, map, startWith } from 'rxjs';
 import { PublicService } from '../_services/public.service';
 
+enum FlightClassEnum {
+  ECONOMY = 0,
+  PREMIUM_ECONOMY,
+  BUSINESS,
+  FIRST
+};
+
 @Component({
   selector: 'app-search-flights',
   templateUrl: './search-flights.component.html',
@@ -15,25 +22,49 @@ import { PublicService } from '../_services/public.service';
 })
 export class SearchFlightsComponent {
   @ViewChild(ShowFlightoffersComponent) child!: ShowFlightoffersComponent;
-  classes = ['First class', 'Business class', 'Economy class']
   adults = [1, 2, 3, 4, 5]
+  classes = ['Economy class', 'Premium economy', 'Business class', 'First class'];
+  range = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
+  });
+
+  model: SearchFlightsRequest = { 
+    travelType: 0, 
+    originLocationCode: '', 
+    destinationLocationCode: '', 
+    departureDate: '', 
+    returnDate: '', 
+    departureDateVar: this.range.value.start,
+    returnDateVar: this.range.value.end, 
+    adults: this.adults[0], 
+    travelClass: this.classes[0], 
+    travelClassVar: this.classes[0] 
+  }
+
   carrierCodes: String[] = [];
   isResults: boolean = true;
   carrierCodeResponse: CarrierCodesResponse = { data: [] };
-  model: SearchFlightsRequest = { travelType: 0, originLocationCode: '', destinationLocationCode: '', departureDate: '', returnDate: '', adults: this.adults[0], travelClass: "ECONOMY" }
-  // this.classes[0]
   flightsResponses: FlightResponses = { count: 0, data: [] };
   formSubmitted = false;
-  todayDate = Date.now();
+  currentYear = new Date().getFullYear();
+  currentMonth = new Date().getMonth();
+  currentDate = new Date().getDate();
+  minDate = new Date(this.currentYear, this.currentMonth, this.currentDate)
+  maxDate = new Date(this.currentYear + 1, this.currentMonth, this.currentDate);
   private timeout?: number;
-  regex = /, (\w+) -/
+
+ 
 
   // Search ng control
   myControlFrom = new FormControl('');
   myControlTo = new FormControl('');
-  options: string[] = [];
+  optionsTo: string[] = [];
+  optionsFrom: string[] = [];
+  minSearchLength: number = 2;
   filteredOptionsFrom: Observable<string[]>;
   filteredOptionsTo: Observable<string[]>;
+  regex = /, (\w+) -/
 
   constructor(private _flightService: FlightService, private _publicService: PublicService) { }
 
@@ -41,6 +72,82 @@ export class SearchFlightsComponent {
     this.child.reset()
     this.formSubmitted = false;
     this.isResults = true;
+  }
+
+  inputSearchFrom(searchString: any): void {
+    window.clearTimeout(this.timeout);
+
+    this.clearOptions();
+    this.setDropdown();
+
+    if (searchString.target.value.length > this.minSearchLength){
+      this.timeout = window.setTimeout(() => this.makeSearchCallFrom(searchString.target.value), 500);
+    }
+  }
+
+  inputSearchTo(searchString: any): void {
+    window.clearTimeout(this.timeout);
+
+    this.clearOptions();
+    this.setDropdown();
+
+    if (searchString.target.value.length > this.minSearchLength){
+      this.timeout = window.setTimeout(() => this.makeSearchCallTo(searchString.target.value), 500);
+    }
+  }
+
+  makeSearchCallFrom(search: string): void {
+    this._publicService.getCityname(search).subscribe(response => {
+      this.clearOptions();
+      
+      response.city.forEach((x) => {
+        this.optionsFrom.push(x.city + ", " + x.airportIcao + " - " + x.airportName);
+      })
+
+      this.setDropdown();
+    })
+
+  }
+
+  makeSearchCallTo(search: string): void {
+    this._publicService.getCityname(search).subscribe(response => {
+      this.clearOptions();
+
+      response.city.forEach((x) => {
+        this.optionsTo.push(x.city + ", " + x.airportIcao + " - " + x.airportName);
+      })
+
+      this.setDropdown();
+    })
+  }
+
+  clearOptions(): void {
+    this.optionsFrom = [];
+    this.optionsTo = [];
+  }
+
+  setDropdown(): void {
+    this.filteredOptionsFrom = this.myControlFrom.valueChanges.pipe(
+      startWith(''),
+      map(value => this.filterFrom(value || '')),
+    );
+
+    this.filteredOptionsTo = this.myControlTo.valueChanges.pipe(
+      startWith(''),
+      map(value => this.filterTo(value || '')),
+    );
+  }
+
+  private filterFrom(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.optionsFrom.filter(option => option.toLowerCase().includes(filterValue));
+  }
+
+  private filterTo(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.optionsTo.filter(option => option.toLowerCase().includes(filterValue));
   }
 
   submitForm(form: NgForm) {
@@ -53,7 +160,18 @@ export class SearchFlightsComponent {
     } else {
       this.isResults = false;
       this.replaceDestinationStrings();
-      if (this.model.travelType == 1) this.model.returnDate = "";
+
+      if (this.model.departureDateVar != null){
+        this.model.departureDate = this.formatDate(this.model.departureDateVar);
+      }
+
+      if (this.model.returnDateVar != null){
+        this.model.returnDate = this.formatDate(this.model.returnDateVar);
+      }
+
+      this.model.travelClass = FlightClassEnum[this.classes.indexOf(this.model.travelClassVar)];
+
+      if (this.model.travelType == 1) this.model.returnDate = '';
       this._flightService.getFlights(this.model).subscribe(response => {
         this.flightsResponses = response;
         this.findAllUniqueCarrierCodes();
@@ -64,9 +182,9 @@ export class SearchFlightsComponent {
     }
   }
 
-  replaceDestinationStrings() {
+  replaceDestinationStrings(): void {
     let match = this.model.originLocationCode.match(this.regex);
-    console.log(match);
+
     if(match != null){
       this.model.originLocationCode = match[1];
     }
@@ -78,7 +196,7 @@ export class SearchFlightsComponent {
     }
   }
 
-  findAllUniqueCarrierCodes() {
+  findAllUniqueCarrierCodes(): void {
     this.flightsResponses.data.forEach(flightResponse => {
       flightResponse.itineraries.forEach(iti => {
         iti.segments.forEach(seg => {
@@ -88,7 +206,7 @@ export class SearchFlightsComponent {
     });
   }
 
-  swapCarrierCodeForCompanyName() {
+  swapCarrierCodeForCompanyName(): void {
     this._flightService.getCarriers(this.carrierCodes.join(",")).subscribe(response => {
       this.carrierCodeResponse = response;
 
@@ -104,48 +222,17 @@ export class SearchFlightsComponent {
     });
   }
 
-  setDropdown() {
-    this.filteredOptionsFrom = this.myControlFrom.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value || '')),
-    );
+  formatDate(date: Date): string{
+    let monthMod = '';
+    let dateMod = '';
 
-    this.filteredOptionsTo = this.myControlTo.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value || '')),
-    );
-  }
-
-  private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-
-    return this.options.filter(option => option.toLowerCase().includes(filterValue));
-  }
-
-  inputSearch(searchString: any) {
-    window.clearTimeout(this.timeout);
-    this.options = [];
-    this.setDropdown();
-    
-    if (searchString.target.value != ""){
-      this.timeout = window.setTimeout(() => this.makeSearchCall(searchString.target.value), 500);
+    if (date.getMonth() < 10) {
+      monthMod = '0';
     }
-  }
+    if (date.getDate() < 10) {
+      dateMod = '0';
+    }
 
-  makeSearchCall(search: string) {
-    this._publicService.getCityname(search).subscribe(response => {
-      console.log(response);
-      this.options = [];
-      response.city.forEach((x) => {
-        this.options.push(x.city + ", " + x.airportIcao + " - " + x.airportName);
-      })
-
-      this.setDropdown();
-    })
-  }
-
-  focus(){
-    this.options = [];
-    this.setDropdown()
+    return date.getFullYear() + "-" + monthMod + (date.getMonth() + 1) + "-" + dateMod + date.getDate();
   }
 }
