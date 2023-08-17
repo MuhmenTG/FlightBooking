@@ -23,9 +23,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AsyncPipe, JsonPipe, NgFor, NgIf } from '@angular/common';
-import {MAT_RADIO_DEFAULT_OPTIONS, MatRadioModule} from '@angular/material/radio';
-import {MatNativeDateModule} from '@angular/material/core';
-import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MAT_RADIO_DEFAULT_OPTIONS, MatRadioModule} from '@angular/material/radio';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSelectModule } from '@angular/material/select';
+import {MatIconModule} from '@angular/material/icon';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatButtonModule} from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -61,7 +65,11 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
     JsonPipe,
     MatRadioModule,
     MatDatepickerModule, 
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatSelectModule,
+    MatIconModule,
+    MatDividerModule,
+    MatButtonModule
   ],
   providers: [{
     provide: MAT_RADIO_DEFAULT_OPTIONS,
