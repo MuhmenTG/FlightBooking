@@ -2,31 +2,22 @@
     <form #searchFlights="ngForm" (submit)="submitForm(searchFlights)">
         <div class="m-2">
             <div class="form-check-inline my-1">
-                <input class="form-check-input me-1" type="radio" id="flightRadioTwoWay" [value]="0" name="travelType"
-                    [(ngModel)]="model.travelType">
-                <label class="form-check-label" for="exampleRadios1">
-                    Two way trip
-                </label>
-            </div>
-            <div class="form-check-inline my-1">
-                <input class="form-check-input me-1" type="radio" id="flightRadioSingle" [value]="1" ngModel
-                    name="travelType" [(ngModel)]="model.travelType">
-                <label class="form-check-label" for="exampleRadios1">
-                    Single
-                </label>
+                <mat-radio-group [(ngModel)]="model.travelType" name="trip" aria-label="Select an option">
+                    <mat-radio-button [value]="0" >Two-way trip</mat-radio-button>
+                    <mat-radio-button [value]="1" >Single</mat-radio-button>
+                  </mat-radio-group>
             </div>
         </div>
         <div>
-            <mat-form-field class="mx-1">
+            <mat-form-field class="mx-1 input">
                 <mat-label>From</mat-label>
                 <input type="text"
-                       placeholder="Cityname1"
+                       placeholder="Cityname"
                        aria-label="DestinationFrom"
                        matInput
                        [formControl]="myControlFrom"
                        [matAutocomplete]="autoFrom"
-                       (input)="inputSearch($event)"
-                       (focus)='focus()'
+                       (input)="inputSearchFrom($event)"
                        [(ngModel)]="model.originLocationCode">
                 <mat-autocomplete hideSingleSelectionIndicator requireSelection #autoFrom="matAutocomplete">
                   <mat-option *ngFor="let optionFrom of filteredOptionsFrom | async" [value]="optionFrom">
@@ -35,16 +26,15 @@
                 </mat-autocomplete>
               </mat-form-field>
 
-              <mat-form-field class="mx-1">
+              <mat-form-field class="mx-1 input">
                 <mat-label>To</mat-label>
                 <input type="text"
-                       placeholder="Cityname2"
+                       placeholder="Cityname"
                        aria-label="DestinationTo"
                        matInput
                        [formControl]="myControlTo"
-                       [matAutocomplete]="autoFrom"
-                       (input)="inputSearch($event)"
-                       (focus)='focus()'
+                       [matAutocomplete]="autoTo"
+                       (input)="inputSearchTo($event)"
                        [(ngModel)]="model.destinationLocationCode">
                 <mat-autocomplete hideSingleSelectionIndicator requireSelection #autoTo="matAutocomplete">
                   <mat-option *ngFor="let optionTo of filteredOptionsTo | async" [value]="optionTo">
@@ -53,38 +43,48 @@
                 </mat-autocomplete>
               </mat-form-field>
         </div>
-        
-        <!-- <div class="d-flex flex-row my-2 justify-content-start">
-            <input required class="form-control mx-2 px-2 w-25" placeholder="From"
-                [(ngModel)]="model.originLocationCode" name="originLocationCode">
-            <input required type="text" class="form-control mx-2 px-2 w-25" id="inputTo" placeholder="To"
-                [(ngModel)]="model.destinationLocationCode" name="destinationLocationCode">
-        </div> -->
-        <div class="d-flex flex-row my-2 justify-content-start align-items-end flex-wrap">
-            <div class="form-group m-2 w-auto">
-                <label for="departureDate">Departure date</label><br>
-                <input required id="departureDate" class="form-control" min="{{todayDate | date: 'yyyy-MM-dd'}}"
-                    type="date" [(ngModel)]="model.departureDate" name="departureDate" />
-            </div>
-            <div *ngIf="model.travelType == 0" class="form-group m-2 w-auto">
-                <label for="returnDate">Return date</label><br>
-                <input required id="returnDate" class="form-control" min="{{model.departureDate| date: 'yyyy-MM-dd'}}"
-                    type="date" [(ngModel)]="model.returnDate" name="returnDate" />
-            </div>
-            <div class="form-group m-2">
-                <label for="selectPassengers">Passengers</label>
-                <select class="form-select" id="selectPassengers" name="adults" [(ngModel)]="model.adults" required>
-                    <option *ngFor="let adult of adults" [value]="adult">{{adult}}</option>
-                </select>
 
-            </div>
-            <div class="form-group m-2">
-                <label for="selectAdults">Class</label>
-                <select class="form-select" id="selectAdults" name="class" [(ngModel)]="model.travelClass" required>
-                    <option *ngFor="let class of classes" [value]="class">{{class}}</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary m-2 px-2">Search flights</button>
+        <div class="d-flex flex-row my-2 justify-content-start align-items-end flex-wrap">
+            <mat-form-field *ngIf="model.travelType == 0; else noReturnDate" class="mx-1 date">
+                <mat-label>Choose dates</mat-label>
+                <mat-date-range-input [formGroup]="range" [min]="minDate" [max]="maxDate" [rangePicker]="picker" disabled>
+                  <input [(ngModel)]="model.departureDateVar" matStartDate formControlName="start"  placeholder="Start date">
+                  <input [(ngModel)]="model.returnDateVar" matEndDate formControlName="end" placeholder="End date">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
+              
+                <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
+                <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+            </mat-form-field>
+
+            <ng-template #noReturnDate>
+                <mat-form-field class="mx-1 date">
+                    <mat-label>Choose date</mat-label>
+                    <input matInput [(ngModel)]="model.departureDateVar" name="datepick" [min]="minDate" [max]="maxDate" [matDatepicker]="picker">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </ng-template>
+
+            <mat-form-field>
+              <mat-label>Adults</mat-label>
+              <mat-select [(value)]="model.adults">
+                <mat-option *ngFor="let amount of adults" [value]="amount">
+                  {{amount}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="mx-1 select">
+                <mat-label>Class</mat-label>
+                <mat-select [(value)]="model.travelClassVar">
+                  <mat-option *ngFor="let class of classes" [value]="class">
+                    {{class}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <button mat-raised-button class="m-2 px-2 my-4" type="submit">Search flights</button>
         </div>
     </form>
 </div>
