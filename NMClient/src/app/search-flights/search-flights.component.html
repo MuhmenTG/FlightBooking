@@ -1,5 +1,7 @@
 <div class="component d-flex justify-content-center">
     <form #searchFlights="ngForm" (submit)="submitForm(searchFlights)">
+
+      <!-- Travel type input - Radio -->
         <div class="m-2">
             <div class="form-check-inline my-1">
                 <mat-radio-group [(ngModel)]="model.travelType" name="trip" aria-label="Select an option">
@@ -8,6 +10,8 @@
                   </mat-radio-group>
             </div>
         </div>
+
+        <!-- Origin and destination input - Text -->
         <div>
             <mat-form-field class="mx-1 input">
                 <mat-label>From</mat-label>
@@ -44,6 +48,7 @@
               </mat-form-field>
         </div>
 
+        <!-- Datepicking fields - Datepicker -->
         <div class="d-flex flex-row my-2 justify-content-start align-items-end flex-wrap">
             <mat-form-field *ngIf="model.travelType == 0; else noReturnDate" class="mx-1 date">
                 <mat-label>Choose dates</mat-label>
@@ -61,13 +66,13 @@
             <ng-template #noReturnDate>
                 <mat-form-field class="mx-1 date">
                     <mat-label>Choose date</mat-label>
-                    <input matInput [(ngModel)]="model.departureDateVar" name="datepick" [min]="minDate" [max]="maxDate" [matDatepicker]="picker">
+                    <input matInput [(ngModel)]="model.departureDateVar" name="datepick" [min]="minDate" [max]="maxDate" [matDatepicker]="picker" disabled>
                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
             </ng-template>
 
-            <mat-form-field>
+            <mat-form-field class="mx-1">
               <mat-label>Adults</mat-label>
               <mat-select [(value)]="model.adults">
                 <mat-option *ngFor="let amount of adults" [value]="amount">
