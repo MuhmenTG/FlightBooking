@@ -52,9 +52,9 @@
         <div class="d-flex flex-row my-2 justify-content-start align-items-end flex-wrap">
             <mat-form-field *ngIf="model.travelType == 0; else noReturnDate" class="mx-1 date">
                 <mat-label>Choose dates</mat-label>
-                <mat-date-range-input [formGroup]="range" [min]="minDate" [max]="maxDate" [rangePicker]="picker">
-                  <input [(ngModel)]="model.departureDateVar" matStartDate formControlName="start"  placeholder="Start date">
-                  <input [(ngModel)]="model.returnDateVar" matEndDate formControlName="end" placeholder="End date">
+                <mat-date-range-input [formGroup]="range" [min]="minDate" [max]="maxDate" [rangePicker]="picker" disabled>
+                  <input [(ngModel)]="model.departureDateVar" matStartDate formControlName="start">
+                  <input [(ngModel)]="model.returnDateVar" matEndDate formControlName="end">
                 </mat-date-range-input>
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
@@ -67,9 +67,9 @@
             <ng-template #noReturnDate>
                 <mat-form-field class="mx-1 date">
                     <mat-label>Choose date</mat-label>
-                    <input matInput [(ngModel)]="model.departureDateVar" name="datepick" [min]="minDate" [max]="maxDate" [matDatepicker]="picker">
+                    <input matInput [(ngModel)]="model.departureDateVar" name="datepick" [min]="minDate" [max]="maxDate" [matDatepicker]="picker" disabled>
                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-datepicker #picker disabled="false"></mat-datepicker>
                 </mat-form-field>
             </ng-template>
 

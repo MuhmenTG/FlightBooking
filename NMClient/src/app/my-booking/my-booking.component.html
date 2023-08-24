@@ -2,12 +2,9 @@
     <form #bookingReq="ngForm" (submit)="submitForm(bookingReq)">
 
         <div class="d-flex flex-row my-2 justify-content-start">
-            <input required class="form-control mx-2 px-2" placeholder="Booking reference ID" type="text"
+            <input required class="w-auto form-control mx-2 px-2" placeholder="Booking reference ID" type="text"
                 [(ngModel)]="model.bookingReference" name="firstName">
-        </div>
-
-        <div class="m-2 d-flex">
-            <button type="submit" class="btn btn-primary px-2 ms-auto">Retrieve booking</button>
+                <button type="submit" class="btn btn-primary px-2 mx-2">Retrieve booking</button>
         </div>
     </form>
 </div>
