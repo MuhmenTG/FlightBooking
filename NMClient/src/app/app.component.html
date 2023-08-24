@@ -1,41 +1,18 @@
-<nav class="headfoot navbar navbar-expand-lg navbar-light bg-light px-4">
-  <a class="navbar-brand" href="#">NM Flights</a>
+<nav class="headfoot navbar navbar-expand-lg px-4">
+  <a class="navbar-brand" href="/">NM Flights</a>
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Flight</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/hotels">Hotel</a>
-      </li>
-
-      <!-- Temporary admin pos -->
-      <li class="nav-item">
-        <a class="nav-link" href="/admin">Admin</a>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link" href="/agent">Agent</a>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link" href="/faq">FAQ</a>
-      </li>
-
-    </ul>
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/mybooking">My booking</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Support</a>
-      </li>
-    </ul>
+    <button class="navbar-nav ms-auto" mat-button [matMenuTriggerFor]="menu">Support</button>
+    <mat-menu #menu="matMenu">
+      <a class="nav-link" href="/mybooking"><button mat-menu-item>My booking</button></a>
+      <a class="nav-link" href="/faq"><button mat-menu-item>FAQ</button></a>
+      <a class="nav-link" href="/admin"><button mat-menu-item *ngIf="sessionRole == 'admin'">Admin</button></a>
+      <a class="nav-link" href="/agent"><button mat-menu-item *ngIf="sessionRole == 'admin' || sessionRole == 'agent'">Agent</button></a>
+    </mat-menu>
   </div>
 </nav>
 
