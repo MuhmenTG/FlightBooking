@@ -1,7 +1,7 @@
 <div class="row">
-    <form class="w-auto" #loginReq="ngForm" (submit)="submitForm(loginReq)">
+    <form class="w-auto my-1" #loginReq="ngForm" (submit)="submitForm(loginReq)">
         <input class="col-4 m-1" autocomplete="username" [(ngModel)]="model.email" type="text" placeholder="Username" name="user">
         <input class="col-4 m-1" autocomplete="current-password" [(ngModel)]="model.password" type="password" placeholder="Password" name="pass">
-        <button class="btn btn-primary col-2 p-1" type="submit">Login</button>
+        <button class="col-2 mb-1" color="primary" mat-flat-button type="submit">Login</button>
     </form>
 </div>

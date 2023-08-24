@@ -6,7 +6,7 @@
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <button class="navbar-nav ms-auto" mat-flat-button [matMenuTriggerFor]="menu">Support</button>
+    <button class="navbar-nav ms-auto" mat-flat-button color="primary" [matMenuTriggerFor]="menu">Support</button>
     <mat-menu #menu="matMenu">
       <a class="nav-link" href="/mybooking"><button mat-menu-item>My booking</button></a>
       <a class="nav-link" href="/faq"><button mat-menu-item>FAQ</button></a>
@@ -18,7 +18,7 @@
 
 <router-outlet *ngIf="accessTokenSet"></router-outlet>
 
-<footer class="headfoot d-flex justify-content-between align-items-center border-top fixed-bottom">
+<footer class="headfoot d-flex justify-content-between align-items-center fixed-bottom">
   <span class="ms-4">© 2023 NM Flights</span>
   <div id="login">
     <div id="createLogin" *ngIf="sessionUsername == null; else elseBlock">
@@ -27,7 +27,7 @@
     <ng-template #elseBlock>
       <div class="d-flex">
         <div id="loggedIn">Logged in as: <b>{{sessionUsername}}</b> </div>
-        <button class="mx-1" (click)="logout()">Log out</button>
+        <button class="mx-1" mat-flat-button color="primary" (click)="logout()">Log out</button>
       </div>
     </ng-template>
   </div>

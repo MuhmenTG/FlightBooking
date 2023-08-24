@@ -1,10 +1,12 @@
 <div class="component d-flex justify-content-center">
     <form #bookingReq="ngForm" (submit)="submitForm(bookingReq)">
 
-        <div class="d-flex flex-row my-2 justify-content-start">
-            <input required class="w-auto form-control mx-2 px-2" placeholder="Booking reference ID" type="text"
-                [(ngModel)]="model.bookingReference" name="firstName">
-                <button type="submit" class="btn btn-primary px-2 mx-2">Retrieve booking</button>
+        <div class="d-flex flex-row mx-2 mt-2 justify-content-start">
+            <mat-form-field>
+                <mat-label>Booking reference ID</mat-label>
+                <input [(ngModel)]="model.bookingReference" matInput placeholder="Booking reference ID">
+            </mat-form-field>
+                <button type="submit" mat-flat-button color="primary" class="px-2 mx-2 my-auto">Retrieve booking</button>
         </div>
     </form>
 </div>
