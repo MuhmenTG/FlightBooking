@@ -3,6 +3,7 @@ import { AdminService } from '../_services/admin.service';
 import { NgForm } from '@angular/forms';
 import { AccountRequest } from '../_models/Employees/AccountRequest';
 import { AccountResponse, agent as Agent } from '../_models/Employees/AccountResponse';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin',
@@ -13,19 +14,26 @@ export class AdminComponent implements OnInit {
 
   model: AccountRequest = { email: "", firstName: "", lastName: "", status: "", isAdmin: 0, isAgent: 1, agentId: 0 };
   accounts: AccountResponse = { formatedAgents: [] };
+  role: boolean = false;
 
-  constructor(private _adminService: AdminService) { };
+  constructor(private _adminService: AdminService, private _router: Router) { };
 
   ngOnInit(): void {
-    var token = sessionStorage.getItem('token');
-    if (token != null) {
-      this._adminService.setHttpOptionsAccount(token);
-    }
+    if (sessionStorage.getItem('role') == 'admin'){
+      this.role = true;
+      var token = sessionStorage.getItem('token');
+      if (token != null) {
+        this._adminService.setHttpOptionsAccount(token);
+      }
 
-    this._adminService.getListOfAccounts().subscribe(response => {
-      this.accounts = response
-      console.log(response);
-    });
+      this._adminService.getListOfAccounts().subscribe(response => {
+        this.accounts = response
+        console.log(response);
+      });
+    }
+    else {
+      this._router.navigateByUrl('/')
+    }
   }
 
   editAccount(account: Agent) {
