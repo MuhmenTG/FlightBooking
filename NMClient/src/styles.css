@@ -1,18 +1,32 @@
 /* You can add global styles to this file, and also import other style files */
 .component {
-    margin: 10vh auto;
-    width: 75vw;
+    margin: 10vh auto 10vh auto;
+    padding-bottom: 20vh;
+    width: fit-content;
 }
 
 .component>form {
-    background-color: #686868;
+    background-color: #505050;
     border-radius: 10px;
-    border: solid white;
+    border: 1px solid white;
     width: 100%;
 }
 
-body {
-    background-image: linear-gradient(#686868, #c2185b);
-}
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+body { 
+    margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; 
+    background-color: #686868 !important
+}
+
+.headfoot * {
+    color: white;
+}
+
+.headfoot {
+    background-color: #505050 !important;
+}
+
+a {
+    color: white !important;
+}
