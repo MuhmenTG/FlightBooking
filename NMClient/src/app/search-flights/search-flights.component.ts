@@ -29,21 +29,21 @@ export class SearchFlightsComponent {
     end: new FormControl<Date | null>(null),
   });
 
-  model: SearchFlightsRequest = { 
-    travelType: 0, 
-    originLocationCode: '', 
-    destinationLocationCode: '', 
-    departureDate: '', 
-    returnDate: '', 
+  model: SearchFlightsRequest = {
+    travelType: 0,
+    originLocationCode: '',
+    destinationLocationCode: '',
+    departureDate: '',
+    returnDate: '',
     departureDateVar: this.range.value.start,
-    returnDateVar: this.range.value.end, 
-    adults: this.adults[0], 
-    travelClass: this.classes[0], 
-    travelClassVar: this.classes[0] 
+    returnDateVar: this.range.value.end,
+    adults: this.adults[0],
+    travelClass: this.classes[0],
+    travelClassVar: this.classes[0]
   }
 
   carrierCodes: String[] = [];
-  isResults: boolean = true;
+  isLoading: boolean = false;
   carrierCodeResponse: CarrierCodesResponse = { data: [] };
   flightsResponses: FlightResponses = { count: 0, data: [] };
   formSubmitted = false;
@@ -53,8 +53,6 @@ export class SearchFlightsComponent {
   minDate = new Date(this.currentYear, this.currentMonth, this.currentDate)
   maxDate = new Date(this.currentYear + 1, this.currentMonth, this.currentDate);
   private timeout?: number;
-
- 
 
   // Search ng control
   myControlFrom = new FormControl('');
@@ -71,7 +69,7 @@ export class SearchFlightsComponent {
   resetAll() {
     this.child.reset()
     this.formSubmitted = false;
-    this.isResults = true;
+    this.isLoading = false;
   }
 
   inputSearchFrom(searchString: any): void {
@@ -80,7 +78,7 @@ export class SearchFlightsComponent {
     this.clearOptions();
     this.setDropdown();
 
-    if (searchString.target.value.length > this.minSearchLength){
+    if (searchString.target.value.length > this.minSearchLength) {
       this.timeout = window.setTimeout(() => this.makeSearchCallFrom(searchString.target.value), 500);
     }
   }
@@ -91,7 +89,7 @@ export class SearchFlightsComponent {
     this.clearOptions();
     this.setDropdown();
 
-    if (searchString.target.value.length > this.minSearchLength){
+    if (searchString.target.value.length > this.minSearchLength) {
       this.timeout = window.setTimeout(() => this.makeSearchCallTo(searchString.target.value), 500);
     }
   }
@@ -99,7 +97,7 @@ export class SearchFlightsComponent {
   makeSearchCallFrom(search: string): void {
     this._publicService.getCityname(search).subscribe(response => {
       this.clearOptions();
-      
+
       response.city.forEach((x) => {
         this.optionsFrom.push(x.city + ", " + x.airportIcao + " - " + x.airportName);
       })
@@ -158,26 +156,31 @@ export class SearchFlightsComponent {
     if (!form.valid) {
       return alert("Form is not valid. Try again.");
     } else {
-      this.isResults = false;
+      this.isLoading = true;
+
       this.replaceDestinationStrings();
 
-      if (this.model.departureDateVar != null){
+      if (this.model.departureDateVar != null) {
         this.model.departureDate = this.formatDate(this.model.departureDateVar);
       }
 
-      if (this.model.returnDateVar != null){
+      if (this.model.returnDateVar != null) {
         this.model.returnDate = this.formatDate(this.model.returnDateVar);
       }
 
       this.model.travelClass = FlightClassEnum[this.classes.indexOf(this.model.travelClassVar)];
 
       if (this.model.travelType == 1) this.model.returnDate = '';
-      this._flightService.getFlights(this.model).subscribe(response => {
-        this.flightsResponses = response;
-        this.findAllUniqueCarrierCodes();
-        this.swapCarrierCodeForCompanyName();
-        this.formSubmitted = true;
-        this.isResults = true;
+
+      this._flightService.getFlights(this.model).subscribe({
+        next: response => {
+          this.flightsResponses = response;
+          this.findAllUniqueCarrierCodes();
+          this.swapCarrierCodeForCompanyName();
+        }, error: err => {
+          this.isLoading = false;
+          console.log(err)
+        }
       })
     }
   }
@@ -185,13 +188,13 @@ export class SearchFlightsComponent {
   replaceDestinationStrings(): void {
     let match = this.model.originLocationCode.match(this.regex);
 
-    if(match != null){
+    if (match != null) {
       this.model.originLocationCode = match[1];
     }
 
     match = this.model.destinationLocationCode.match(this.regex);
 
-    if(match != null) {
+    if (match != null) {
       this.model.destinationLocationCode = match[1];
     }
   }
@@ -219,10 +222,12 @@ export class SearchFlightsComponent {
           })
         })
       })
+      this.formSubmitted = true;
+      this.isLoading = false;
     });
   }
 
-  formatDate(date: Date): string{
+  formatDate(date: Date): string {
     let monthMod = '';
     let dateMod = '';
 
@@ -234,5 +239,12 @@ export class SearchFlightsComponent {
     }
 
     return date.getFullYear() + "-" + monthMod + (date.getMonth() + 1) + "-" + dateMod + date.getDate();
+  }
+
+  ngAfterViewChecked() {
+    if (this.isLoading) {
+      let mySpinner = document.getElementById('spinner');
+      if (mySpinner != null) mySpinner.scrollIntoView({ behavior: 'smooth' })
+    }
   }
 }

@@ -1,22 +1,28 @@
-<div *ngIf="offers != null && !flightChosen" class="component">
+<div *ngIf="offers != null && !flightChosen" class="component offer-component">
     <div *ngFor="let offer of offers.data; let i = index;">
-        <div *ngIf="shownOffers > i"  class="border my-2 flight-offer">
+        <div *ngIf="shownOffers > i" class="border my-2 content">
             <div *ngFor="let iti of offer.itineraries">
-                    <div *ngFor="let seg of iti.segments">
-                        <h1>{{seg.carrierName}}</h1>
-                        <h2>Departure: {{seg.departure.at}} at terminal {{seg.departure.terminal}} from
-                            {{seg.departure.iataCode}}</h2>
-                        <h2>Arrival: {{seg.arrival.at}} at terminal {{seg.arrival.terminal}} to {{seg.arrival.iataCode}}</h2>
-                    </div>
-                    <h3>Duration: {{iti.duration}}</h3>
+                <div *ngFor="let seg of iti.segments">
+                    <h3>Company: {{seg.carrierName}}</h3>
+                    <p>Departure: {{seg.departure.at}} at terminal {{seg.departure.terminal}} from
+                        {{seg.departure.iataCode}}
+                    </p>
+                    <p>Arrival: {{seg.arrival.at}} at terminal {{seg.arrival.terminal}} to {{seg.arrival.iataCode}}
+                    </p>
+                </div>
+                <p>Duration: {{iti.duration}}</p>
             </div>
-            <div class="d-flex justify-content-end">
-                <h1>{{offer.price.currency}} {{offer.price.grandTotal}}</h1>
-                <button (click)="chooseFlight(offer.id)" type="button" class="btn btn-primary m-2 px-2">Book flight</button>
+            <div class="d-flex justify-content-end align-items-end">
+                <h3>{{offer.price.currency}} {{offer.price.grandTotal}}</h3>
+                <button mat-flat-button color="primary" (click)="bookFlight(offer.id)">Book flight</button>
             </div>
         </div>
     </div>
-    <button *ngIf="moreOffers" (click)="showMoreOffers()">Show more</button>
+    <button mat-flat-button color="primary" *ngIf="moreOffers" (click)="showMoreOffers()">Show more</button>
 </div>
 
-<app-book-flight *ngIf="flightChosen" [flightInfo]="flightInfo"></app-book-flight>
+<app-book-flight *ngIf="flightChosenHasResponse" [flightInfo]="flightInfo"></app-book-flight>
+
+<div class="component spinner d-flex justify-content-center" id="spinner" *ngIf="isLoading" scrollTo>
+    <mat-spinner></mat-spinner>
+</div>

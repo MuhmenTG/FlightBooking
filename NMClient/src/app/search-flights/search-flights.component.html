@@ -1,106 +1,100 @@
-<div class="component d-flex justify-content-center">
-    <form #searchFlights="ngForm" (submit)="submitForm(searchFlights)">
+<div class="component component-top">
+  <form #searchFlights="ngForm" (submit)="submitForm(searchFlights)">
 
-      <!-- Travel type input - Radio -->
-        <div class="m-2">
-            <div class="form-check-inline my-1">
-                <mat-radio-group [(ngModel)]="model.travelType" name="trip" aria-label="Select an option">
-                    <mat-radio-button [value]="0" >Two-way trip</mat-radio-button>
-                    <mat-radio-button [value]="1" >Single</mat-radio-button>
-                  </mat-radio-group>
-            </div>
-        </div>
+    <!-- Travel type input - Radio -->
+    <div class="form-check-inline d-flex justify-content-center">
+      <mat-radio-group [(ngModel)]="model.travelType" name="trip" aria-label="Select an option">
+        <mat-radio-button [value]="0">Two-way trip</mat-radio-button>
+        <mat-radio-button [value]="1">Single</mat-radio-button>
+      </mat-radio-group>
+    </div>
 
-        <!-- Origin and destination input - Text -->
-        <div>
-            <mat-form-field class="mx-1 input">
-                <mat-label>From</mat-label>
-                <input type="text"
-                       placeholder="Cityname"
-                       aria-label="DestinationFrom"
-                       matInput
-                       [formControl]="myControlFrom"
-                       [matAutocomplete]="autoFrom"
-                       (input)="inputSearchFrom($event)"
-                       [(ngModel)]="model.originLocationCode">
-                <mat-autocomplete hideSingleSelectionIndicator requireSelection #autoFrom="matAutocomplete">
-                  <mat-option *ngFor="let optionFrom of filteredOptionsFrom | async" [value]="optionFrom">
-                    {{optionFrom}}
-                  </mat-option>
-                </mat-autocomplete>
-              </mat-form-field>
+    <!-- Datepicking fields - Datepicker -->
+    <div class="d-flex justify-content-center flex-wrap">
+      <mat-form-field subscriptSizing="dynamic" *ngIf="model.travelType == 0; else noReturnDate" class="date">
+        <mat-label>Choose dates</mat-label>
+        <mat-date-range-input [formGroup]="range" [min]="minDate" [max]="maxDate" [rangePicker]="picker" disabled>
+          <input [(ngModel)]="model.departureDateVar" matStartDate formControlName="start">
+          <input [(ngModel)]="model.returnDateVar" matEndDate formControlName="end">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
+      </mat-form-field>
 
-              <mat-form-field class="mx-1 input">
-                <mat-label>To</mat-label>
-                <input type="text"
-                       placeholder="Cityname"
-                       aria-label="DestinationTo"
-                       matInput
-                       [formControl]="myControlTo"
-                       [matAutocomplete]="autoTo"
-                       (input)="inputSearchTo($event)"
-                       [(ngModel)]="model.destinationLocationCode">
-                <mat-autocomplete hideSingleSelectionIndicator requireSelection #autoTo="matAutocomplete">
-                  <mat-option *ngFor="let optionTo of filteredOptionsTo | async" [value]="optionTo">
-                    {{optionTo}}
-                  </mat-option>
-                </mat-autocomplete>
-              </mat-form-field>
-        </div>
+      <!-- Alternative date for single travel use - Datepicker -->
+      <ng-template #noReturnDate>
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Choose date</mat-label>
+          <input matInput [(ngModel)]="model.departureDateVar" name="datepick" [min]="minDate" [max]="maxDate"
+            [matDatepicker]="picker" disabled>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker disabled="false"></mat-datepicker>
+        </mat-form-field>
+      </ng-template>
 
-        <!-- Datepicking fields - Datepicker -->
-        <div class="d-flex flex-row my-2 justify-content-start align-items-end flex-wrap">
-            <mat-form-field *ngIf="model.travelType == 0; else noReturnDate" class="mx-1 date">
-                <mat-label>Choose dates</mat-label>
-                <mat-date-range-input [formGroup]="range" [min]="minDate" [max]="maxDate" [rangePicker]="picker" disabled>
-                  <input [(ngModel)]="model.departureDateVar" matStartDate formControlName="start">
-                  <input [(ngModel)]="model.returnDateVar" matEndDate formControlName="end">
-                </mat-date-range-input>
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
-              
-                <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
-                <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
-            </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic" class="input">
+        <mat-label>From</mat-label>
+        <input type="text" placeholder="City" aria-label="DestinationFrom" matInput [formControl]="myControlFrom"
+          [matAutocomplete]="autoFrom" (input)="inputSearchFrom($event)" [(ngModel)]="model.originLocationCode">
+        <button *ngIf="model.originLocationCode" matSuffix mat-icon-button aria-label="Clear" type="button"
+          (click)="model.originLocationCode=''">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-autocomplete hideSingleSelectionIndicator requireSelection #autoFrom="matAutocomplete">
+          <mat-option *ngFor="let optionFrom of filteredOptionsFrom | async" [value]="optionFrom">
+            {{optionFrom}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
 
-            <!-- Alternative date for single travel use - Datepicker -->
-            <ng-template #noReturnDate>
-                <mat-form-field class="mx-1 date">
-                    <mat-label>Choose date</mat-label>
-                    <input matInput [(ngModel)]="model.departureDateVar" name="datepick" [min]="minDate" [max]="maxDate" [matDatepicker]="picker" disabled>
-                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker disabled="false"></mat-datepicker>
-                </mat-form-field>
-            </ng-template>
+      <mat-form-field subscriptSizing="dynamic" class="input">
+        <mat-label>To</mat-label>
+        <input type="text" placeholder="City" aria-label="DestinationTo" matInput [formControl]="myControlTo"
+          [matAutocomplete]="autoTo" (input)="inputSearchTo($event)" [(ngModel)]="model.destinationLocationCode">
+        <button *ngIf="model.destinationLocationCode" matSuffix mat-icon-button aria-label="Clear" type="button"
+          (click)="model.destinationLocationCode=''">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-autocomplete hideSingleSelectionIndicator requireSelection #autoTo="matAutocomplete">
+          <mat-option *ngFor="let optionTo of filteredOptionsTo | async" [value]="optionTo">
+            {{optionTo}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
 
-            <!-- Fields for choosing number of passengers - Select -->
-            <mat-form-field class="mx-1">
-              <mat-label>Adults</mat-label>
-              <mat-select [(value)]="model.adults">
-                <mat-option *ngFor="let amount of adults" [value]="amount">
-                  {{amount}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+      <div class="d-flex justify-content-center flex-wrap w-100">
+        <!-- Fields for choosing number of passengers - Select -->
+        <mat-form-field subscriptSizing="dynamic" class="select">
+          <mat-label>Adults</mat-label>
+          <mat-select [(value)]="model.adults">
+            <mat-option *ngFor="let amount of adults" [value]="amount">
+              {{amount}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
 
-            <!-- Fields for choosing flight class - Select -->
-            <mat-form-field class="mx-1 select">
-                <mat-label>Class</mat-label>
-                <mat-select [(value)]="model.travelClassVar">
-                  <mat-option *ngFor="let class of classes" [value]="class">
-                    {{class}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-              <button mat-flat-button color="primary" class="m-2 px-2 my-4" type="submit">Search flights</button>
-        </div>
-    </form>
+        <!-- Fields for choosing flight class - Select -->
+        <mat-form-field subscriptSizing="dynamic" class="select">
+          <mat-label>Class</mat-label>
+          <mat-select [(value)]="model.travelClassVar">
+            <mat-option *ngFor="let class of classes" [value]="class">
+              {{class}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+      <button mat-flat-button color="primary" type="submit">Search flights</button>
+    </div>
+  </form>
 </div>
 
 <!-- Show flightoffers component -->
 <app-show-flightoffers *ngIf="formSubmitted" [offers]="flightsResponses"></app-show-flightoffers>
 
 <!-- Loading animation when searching -->
-<div class="component d-flex justify-content-center" *ngIf="!isResults">
-    <mat-spinner></mat-spinner>
+<div class="component spinner d-flex justify-content-center" id="spinner" *ngIf="isLoading" scrollTo>
+  <mat-spinner></mat-spinner>
 </div>

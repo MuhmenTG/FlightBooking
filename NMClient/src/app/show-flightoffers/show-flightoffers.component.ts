@@ -8,12 +8,14 @@ import { FlightService } from '../_services/flight.service';
   templateUrl: './show-flightoffers.component.html',
   styleUrls: ['./show-flightoffers.component.css']
 })
-export class ShowFlightoffersComponent implements OnInit{
+export class ShowFlightoffersComponent implements OnInit {
   @Input() offers!: FlightResponses;
   @Input() formSubmitted!: boolean;
+  isLoading: boolean = false;
   flightInfo = {} as FlightInfoResponse;
   flightChosen: boolean = false;
-  moreOffers: boolean = true;
+  flightChosenHasResponse: boolean = false;
+  moreOffers: boolean = false;
   shownOffers: number = 10;
   private paginationCount: number = 10;
 
@@ -21,17 +23,33 @@ export class ShowFlightoffersComponent implements OnInit{
   constructor(private _flightService: FlightService) { }
 
   ngOnInit(): void {
-    this.offers.data.length > this.paginationCount ? this.moreOffers == true : this.moreOffers == false;
+    console.log(this.offers.data.length + ' - ' + this.paginationCount);
+    console.log(this.moreOffers)
+    this.offers.data.length > this.paginationCount ? this.moreOffers = true : this.moreOffers = false;
+    console.log(this.moreOffers)
+
+    const mySpinner = document.getElementById('spinner');
+    if (mySpinner != null) mySpinner.scrollIntoView({ behavior: 'smooth' });
   }
 
-  chooseFlight(id: string) {
-    this._flightService.getFlightInfo(this.offers.data[parseInt(id) - 1]).subscribe(info => {
-      this.flightChosen = true;
-      this.flightInfo = info;
+  bookFlight(id: string) {
+    this.isLoading = true;
+    this.flightChosen = true;
+
+    this._flightService.getFlightInfo(this.offers.data[parseInt(id) - 1]).subscribe({
+      next: response => {
+        this.flightChosenHasResponse = true;
+        this.flightInfo = response;
+        this.isLoading = false;
+      },
+      error: err => {
+        this.flightChosen = false;
+        this.isLoading = false;
+      }
     })
   }
 
-  showMoreOffers(){
+  showMoreOffers() {
     if (this.shownOffers + this.paginationCount > this.offers.data.length) {
       this.shownOffers = this.offers.data.length;
       this.moreOffers = false;
@@ -43,5 +61,12 @@ export class ShowFlightoffersComponent implements OnInit{
     this.flightChosen = false;
     this.shownOffers = this.paginationCount;
     this.moreOffers = true;
+  }
+
+  ngAfterViewChecked() {
+    if (this.isLoading) {
+      let mySpinner = document.getElementById('spinner');
+      if (mySpinner != null) mySpinner.scrollIntoView({ behavior: 'smooth' })
+    }
   }
 }

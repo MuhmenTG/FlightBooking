@@ -1,3 +1,7 @@
-.flight-offer{
-    background-color: #686868;
+* {
+    color: lightgrey;
+}
+
+h3 {
+    margin: 0;
 }

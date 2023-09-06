@@ -1,19 +1,53 @@
 <div class="component">
     <form #sendPayment="ngForm" (submit)="submitForm(sendPayment)">
-        <div class="d-flex flex-row my-2 justify-content-start">
-            <input required class="form-control mx-2 px-2 w-25" placeholder="Card number" [(ngModel)]="model.cardNumber"
-                name="cardNumber">
+        <div class="d-flex flex-row justify-content-start">
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>Card number</mat-label>
+                <input matInput type="number" [(ngModel)]="model.cardNumber" name="cardNumber">
+                <button *ngIf="model.cardNumber" matSuffix mat-icon-button aria-label="Clear"
+                    (click)="model.cardNumber=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
         </div>
-        <div class="d-flex flex-row my-2 justify-content-start align-items-end flex-wrap">
-            <div class="form-group m-2 w-auto">
-                <input required type="text" class="form-control mx-2 px-2" placeholder="Expiration month"
-                    [(ngModel)]="model.expireMonth" name="expireDate">
-                <input required type="text" class="form-control mx-2 px-2" placeholder="Expiration year"
-                    [(ngModel)]="model.expireYear" name="expireYear">
-                <input required type="text" class="form-control mx-2 px-2" placeholder="CVC number"
-                    [(ngModel)]="model.cvcDigits" name="cvcDigits">
+        <div class="d-flex flex-row justify-content-start align-items-end flex-wrap">
+            <div class="form-group w-auto">
+                <!-- <input required type="text" class="form-control mx-2 px-2" placeholder="Expiration month"
+                    [(ngModel)]="model.expireMonth" name="expireDate"> -->
+                <mat-form-field subscriptSizing="dynamic" class="input">
+                    <mat-label>Expiration month</mat-label>
+                    <input matInput type="text" [(ngModel)]="model.expireMonth" name="expireMonth">
+                    <button *ngIf="model.expireMonth" matSuffix mat-icon-button aria-label="Clear"
+                        (click)="model.expireMonth=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+                <!-- <input required type="text" class="form-control mx-2 px-2" placeholder="Expiration year"
+                    [(ngModel)]="model.expireYear" name="expireYear"> -->
+                <mat-form-field subscriptSizing="dynamic" class="input">
+                    <mat-label>Expiration year</mat-label>
+                    <input matInput type="text" [(ngModel)]="model.expireYear" name="expireYear">
+                    <button *ngIf="model.expireYear" matSuffix mat-icon-button aria-label="Clear"
+                        (click)="model.expireYear=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+                <!-- <input required type="text" class="form-control mx-2 px-2" placeholder="CVC number"
+                    [(ngModel)]="model.cvcDigits" name="cvcDigits"> -->
+                <mat-form-field subscriptSizing="dynamic" class="input">
+                    <mat-label>CVC number</mat-label>
+                    <input matInput type="text" [(ngModel)]="model.cvcDigits" name="cvcDigits">
+                    <button *ngIf="model.cvcDigits" matSuffix mat-icon-button aria-label="Clear"
+                        (click)="model.cvcDigits=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
             </div>
-            <button type="submit" class="btn btn-primary m-2 px-2">Pay</button>
+            <button mat-flat-button color="primary" type="submit">Confirm payment</button>
         </div>
     </form>
+</div>
+
+<div class="component spinner d-flex justify-content-center" id="spinner" *ngIf="isLoading" scrollTo>
+    <mat-spinner></mat-spinner>
 </div>
