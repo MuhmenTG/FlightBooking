@@ -14,7 +14,8 @@
 </style>
 
 <h1>Passenger Details</h1>
-@foreach ($bookingComplete['passenger'] as $traveller)
+<!-- Jeg har ændret variabel til 'passengers' og rettet stavefejl -->
+@foreach ($bookingComplete['passengers'] as $traveller)
     <div class="container">
         <p>
             <strong>Name:</strong> {{ $traveller['title'] }} {{ $traveller['firstName'] }} {{ $traveller['lastName'] }}
@@ -23,7 +24,7 @@
             <strong>Passenger type:</strong> {{ $traveller['passengerType'] }}
         </p>
         <p>
-            <strong>Ticker number:</strong> {{ $traveller['ticketNumber'] }}
+            <strong>Ticket number:</strong> {{ $traveller['ticketNumber'] }}
         </p>
         <!-- Repeat the same structure for other passenger details -->
     </div>

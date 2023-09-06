@@ -31,7 +31,7 @@ class FlightBookingController extends Controller
     protected $IPaymentService;
     protected $ISendEmailService;
 
-    public function __construct(IBookingService $IbookingService,  IAmadeusService $IAmadeusService, IPaymentService $IPaymentService, ISendEmailService $ISendEmailService)
+    public function __construct(IBookingService $IbookingService, IAmadeusService $IAmadeusService, IPaymentService $IPaymentService, ISendEmailService $ISendEmailService)
     {
         $this->IBookingService = $IbookingService;
         $this->IAmadeusService = $IAmadeusService;
@@ -63,20 +63,20 @@ class FlightBookingController extends Controller
         } catch (GuzzleException $exception) {
             dd($exception);
         }
-        
+
     }
 
     /**
-    * Search flights based on the request parameters.
-    *
-    * @param Request $request The HTTP request object.
-    * @return mixed The search results.
-    */
+     * Search flights based on the request parameters.
+     *
+     * @param Request $request The HTTP request object.
+     * @return mixed The search results.
+     */
     public function searchFlights(FlightSearchRequest $request)
     {
         $validated = $request->validated();
-        
-        $accessToken = $request->bearerToken(); 
+
+        $accessToken = $request->bearerToken();
         //$accessToken = $this->getAccessToken();
         $constructedSearchUrl = $this->IAmadeusService->AmadeusFlightSearchUrl(
             $request->get('originLocationCode'),
@@ -91,20 +91,20 @@ class FlightBookingController extends Controller
             $request->get('excludedAirlineCodes'),
             boolval($request->get('nonStop'))
         );
-        
+
         $data = $this->sendhttpRequest($constructedSearchUrl, $accessToken);
-        
+
         return $data;
     }
 
     /**
-    * Choose a flight offer based on the request data.
-    *
-    * @param Request $request The HTTP request object.
-    * @return mixed The chosen flight offer.
-    */
+     * Choose a flight offer based on the request data.
+     *
+     * @param Request $request The HTTP request object.
+     * @return mixed The chosen flight offer.
+     */
     public function chooseFlightOffer(Request $request)
-    {       
+    {
         if (empty($request->json()->all())) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::EMPTY_FLIGHT_ARRAY, Response::HTTP_BAD_REQUEST);
         }
@@ -115,15 +115,15 @@ class FlightBookingController extends Controller
 
         } catch (Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }     
+        }
     }
-    
+
     /**
-    * Confirm a flight booking (Not paid yet).
-    *
-    * @param Request $request The HTTP request object.
-    * @return mixed The flight booking confirmation.
-    */
+     * Confirm a flight booking (Not paid yet).
+     *
+     * @param Request $request The HTTP request object.
+     * @return mixed The flight booking confirmation.
+     */
     public function FlightConfirmation(FlightConfirmationRequest $request)
     {
         try {
@@ -135,55 +135,55 @@ class FlightBookingController extends Controller
     }
 
     /**
-    * Pay for a flight confirmation.
-    *
-    * @param Request $request The HTTP request object.
-    * @return mixed The payment result.
-    */
+     * Pay for a flight confirmation.
+     *
+     * @param Request $request The HTTP request object.
+     * @return mixed The payment result.
+     */
     public function payFlightConfirmation(PayFlightConfirmationRequest $request)
     {
-        
+
         $validated = $request->validated();
-        
-       $booking = $this->IBookingService->getFlightSegmentsByBookingReference($request->get('bookingReference'));
-        if(count($booking) == 0){
+
+        $booking = $this->IBookingService->getFlightSegmentsByBookingReference($request->get('bookingReference'));
+        if (count($booking) == 0) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_BAD_REQUEST);
         }
-        
+
         try {
-            $payment = new PaymentResource($this->IPaymentService->createCharge(intval($request->get('grandTotal')), Constants::CURRENCY_CODE, $request->get('cardNumber'), $request->get('expireYear'),  $request->get('expireMonth'), $request->get('cvcDigits'), $request->get('bookingReference')));    
-            if(!$payment){
+            $payment = new PaymentResource($this->IPaymentService->createCharge(intval($request->get('grandTotal')), Constants::CURRENCY_CODE, $request->get('cardNumber'), $request->get('expireYear'), $request->get('expireMonth'), $request->get('cvcDigits'), $request->get('bookingReference')));
+            if (!$payment) {
                 return ResponseHelper::jsonResponseMessage("Payment could not be done", Response::HTTP_BAD_REQUEST);
             }
-            
-            $booking = FlightConfirmationResource::collection($this->IBookingService->finalizeFlightReservation($request->get('bookingReference'))); 
-            $passengers = PassengerResource::collection($this->IBookingService->getFlightPassengersByPNR($request->get('bookingReference')));           
-          
+
+            $booking = FlightConfirmationResource::collection($this->IBookingService->finalizeFlightReservation($request->get('bookingReference')));
+            $passengers = PassengerResource::collection($this->IBookingService->getFlightPassengersByPNR($request->get('bookingReference')));
+
+            /* OBS: Jeg har ændret passenger til passengers */
             $bookingComplete = [
-              "flight" => $booking,
-              "passenger" => $passengers,
-               "payment"   => $payment
+                "bookingReference" => $request->input('bookingReference'),
+                "flight" => $booking,
+                "passengers" => $passengers,
+                "payment" => $payment
             ];
 
             $generatedBooking = $this->IBookingService->generateBookingConfirmationPDF($bookingComplete);
-            
+
             $passengerEmail = $this->IBookingService->getPassengerEmail($request->get('bookingReference'));
-            
+
             $isSend = $this->ISendEmailService->sendEmailWithAttachments($passengerEmail, $passengerEmail, "Thank you for the booking! We are sending your electronic e-tickets", "Please see attached", $generatedBooking);
-            if($isSend){
+            if ($isSend) {
                 return ResponseHelper::jsonResponseMessage($bookingComplete, Response::HTTP_OK);
             }
 
         } catch (Exception $e) {
             $errorMessage = "An error occurred: " . $e->getMessage();
             $stackTrace = $e->getTraceAsString();
-            
-            return ResponseHelper::jsonResponseMessage($errorMessage, Response::HTTP_INTERNAL_SERVER_ERROR);        
+
+            return ResponseHelper::jsonResponseMessage($errorMessage, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return ResponseHelper::jsonResponseMessage($bookingComplete, Response::HTTP_BAD_REQUEST);
     }
 
 }
-
-

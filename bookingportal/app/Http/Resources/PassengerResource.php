@@ -23,8 +23,9 @@ class PassengerResource extends JsonResource
             'passengerEmail' => $this->email,
             'passengerType' => $this->passengerType,
             'passengerticketNumber' => $this->ticketNumber,
-            'conntecedBookingReference' => $this->bookingReference,
+            /* OBS: Jeg har rettet en stavefejl */
+            'connectedBookingReference' => $this->bookingReference,
             'connectedPaymentReference' => $this->PaymentInfoId,
-       ];
+        ];
     }
 }
