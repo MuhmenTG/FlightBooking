@@ -10,11 +10,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  model: LoginRequest = {email: "", password: ""};
+  model: LoginRequest = { email: "", password: "" };
 
   @Output() sessionInfoEvent = new EventEmitter<void>();
 
-  constructor(private _loginService: LoginService, private router: Router){};
+  constructor(private _loginService: LoginService, private router: Router) { };
 
   submitForm(form: NgForm) {
 
@@ -26,7 +26,7 @@ export class LoginComponent {
         sessionStorage.setItem('user', response.user.email);
         sessionStorage.setItem('role', response.user.isAdmin ? 'admin' : 'agent');
         this.sessionInfoEvent.emit();
-        this.router.navigate(['']);
+        this.router.navigate([sessionStorage.getItem('role')]);
       })
     }
   }

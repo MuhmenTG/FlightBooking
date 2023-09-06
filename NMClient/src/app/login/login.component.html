@@ -1,7 +1,17 @@
-<div class="row">
-    <form class="w-auto my-1" #loginReq="ngForm" (submit)="submitForm(loginReq)">
-        <input class="col-4 m-1" autocomplete="username" [(ngModel)]="model.email" type="text" placeholder="Username" name="user">
-        <input class="col-4 m-1" autocomplete="current-password" [(ngModel)]="model.password" type="password" placeholder="Password" name="pass">
-        <button class="col-2 mb-1" color="primary" mat-flat-button type="submit">Login</button>
+<div class="component component-top component-fit">
+    <form #loginReq="ngForm" (submit)="submitForm(loginReq)">
+        <div class="d-flex flex-column justify-content-center">
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>E-mail</mat-label>
+                <input matInput type="email" [(ngModel)]="model.email" name="email">
+            </mat-form-field>
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>Password</mat-label>
+                <input matInput type="password" [(ngModel)]="model.password" name="password">
+            </mat-form-field>
+            <div class="d-flex justify-content-center">
+                <button type="submit" mat-flat-button color="primary">Login</button>
+            </div>
+        </div>
     </form>
 </div>
