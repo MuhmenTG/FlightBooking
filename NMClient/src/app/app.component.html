@@ -1,34 +1,29 @@
-<nav class="headfoot navbar navbar-expand-lg px-4">
-  <a class="navbar-brand" href="/">NM Flights</a>
-  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <button class="navbar-nav ms-auto" mat-flat-button color="primary" [matMenuTriggerFor]="menu">Support</button>
-    <mat-menu #menu="matMenu">
-      <a class="nav-link" href="/mybooking"><button mat-menu-item>My booking</button></a>
-      <a class="nav-link" href="/faq"><button mat-menu-item>FAQ</button></a>
-      <a class="nav-link" href="/admin"><button mat-menu-item *ngIf="sessionRole == 'admin'">Admin</button></a>
-      <a class="nav-link" href="/agent"><button mat-menu-item *ngIf="sessionRole == 'admin' || sessionRole == 'agent'">Agent</button></a>
-    </mat-menu>
-  </div>
-</nav>
+<div class="pb-5">
+  <nav id="head" class="headfoot navbar navbar-expand-lg px-4 fixed-top">
+    <a class="navbar-brand" href="/">NM Flights</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <button class="navbar-nav ms-auto" mat-flat-button color="primary" [matMenuTriggerFor]="menu">Support</button>
+      <mat-menu #menu="matMenu">
+        <a class="nav-link" href="/mybooking"><button mat-menu-item>My booking</button></a>
+        <a class="nav-link" href="/faq"><button mat-menu-item>FAQ</button></a>
+        <a class="nav-link" href="/admin"><button mat-menu-item *ngIf="sessionRole == 'admin'">Admin</button></a>
+        <a class="nav-link" href="/agent"><button mat-menu-item
+            *ngIf="sessionRole == 'admin' || sessionRole == 'agent'">Agent</button></a>
+        <a class="nav-link" href=""><button *ngIf="sessionUsername != null" mat-menu-item (click)="logout()"><b>Log
+              out</b></button></a>
+      </mat-menu>
+    </div>
+  </nav>
+</div>
 
 <router-outlet *ngIf="accessTokenSet"></router-outlet>
 
-<footer class="headfoot d-flex justify-content-between align-items-center fixed-bottom">
-  <span class="ms-4">© 2023 NM Flights</span>
-  <div id="login">
-    <div id="createLogin" *ngIf="sessionUsername == null; else elseBlock">
-      <app-login (sessionInfoEvent)="modifySessionInfo()"></app-login>
-    </div>
-    <ng-template #elseBlock>
-      <div class="d-flex">
-        <div id="loggedIn">Logged in as: <b>{{sessionUsername}}</b> </div>
-        <button class="mx-1" mat-flat-button color="primary" (click)="logout()">Log out</button>
-      </div>
-    </ng-template>
-  </div>
-</footer>
+<div class="pt-5">
+  <footer id="foot" class="headfoot d-flex justify-content-between align-items-center fixed-bottom">
+    <span class="ms-4">© 2023 NM Flights</span>
+  </footer>
+</div>

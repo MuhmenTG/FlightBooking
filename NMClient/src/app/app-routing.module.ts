@@ -12,7 +12,7 @@ import { BookingConfirmationComponent } from './booking-confirmation/booking-con
 const routes: Routes = [
   { path: '', component: SearchFlightsComponent },
   { path: 'hotels', component: SearchHotelsComponent },
-  { path: 'login', component: LoginComponent },
+  { path: 'work/login', component: LoginComponent },
   { path: 'admin', component: AdminComponent },
   { path: 'showbooking', component: AdminComponent },
   { path: 'agent', component: AgentComponent },
