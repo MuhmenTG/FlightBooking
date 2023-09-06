@@ -23,14 +23,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AsyncPipe, JsonPipe, NgFor, NgIf } from '@angular/common';
-import { MAT_RADIO_DEFAULT_OPTIONS, MatRadioModule} from '@angular/material/radio';
+import { MAT_RADIO_DEFAULT_OPTIONS, MatRadioModule } from '@angular/material/radio';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
-import {MatIconModule} from '@angular/material/icon';
-import {MatDividerModule} from '@angular/material/divider';
-import {MatButtonModule} from '@angular/material/button';
-import {MatMenuModule} from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -65,17 +66,19 @@ import {MatMenuModule} from '@angular/material/menu';
     AsyncPipe,
     JsonPipe,
     MatRadioModule,
-    MatDatepickerModule, 
+    MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
     MatIconModule,
     MatDividerModule,
     MatButtonModule,
-    MatMenuModule
+    MatMenuModule,
+    MatSnackBarModule
   ],
   providers: [{
     provide: MAT_RADIO_DEFAULT_OPTIONS,
-    useValue: { color: 'primary'}}],
+    useValue: { color: 'primary' }
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
