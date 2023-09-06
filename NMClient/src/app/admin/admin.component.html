@@ -1,58 +1,65 @@
 <div *ngIf="role">
-    <div class="component d-flex justify-content-center">
-        <form #loginReq="ngForm" (submit)="submitForm(loginReq)">
-    
-            <div class="d-flex flex-row my-2 justify-content-start">
-                <input required class="form-control mx-2 px-2" placeholder="E-mail" type="text" [(ngModel)]="model.email"
-                    name="email">
-            </div>
-    
-            <div class="d-flex flex-row my-2 justify-content-start">
-                <input required class="form-control mx-2 px-2" placeholder="First name" type="text"
-                    [(ngModel)]="model.firstName" name="firstName">
-            </div>
-    
-            <div class="d-flex flex-row my-2 justify-content-start">
-                <input required class="form-control mx-2 px-2" placeholder="Last name" type="text"
-                    [(ngModel)]="model.lastName" name="lastName">
-            </div>
-    
-            <div class="d-flex flex-row my-2 justify-content-start">
-                <input required class="form-control mx-2 px-2" placeholder="Status" type="text" [(ngModel)]="model.status"
-                    name="status">
-            </div>
-    
-            <div class="m-2 d-flex">
-                <div class="form-check-inline my-1">
-                    <input class="form-check-input me-1" type="radio" [value]="0" ngModel name="isAdmin"
-                        [(ngModel)]="model.isAdmin">
-                    <label class="form-check-label" for="exampleRadios1">
-                        Agent
-                    </label>
+    <div class="component component-top">
+        <form #saveReq="ngForm" (submit)="submitForm(saveReq)">
+            <div class="d-flex flex-column justify-content-center">
+                <mat-form-field subscriptSizing="dynamic" class="input">
+                    <mat-label>E-mail</mat-label>
+                    <input matInput type="email" [(ngModel)]="model.email" name="email">
+                    <button *ngIf="model.email" matSuffix mat-icon-button aria-label="Clear" type="button"
+                        (click)="model.email=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+
+                <mat-form-field subscriptSizing="dynamic" class="input">
+                    <mat-label>First name</mat-label>
+                    <input matInput type="text" [(ngModel)]="model.firstName" name="firstName">
+                    <button *ngIf="model.firstName" matSuffix mat-icon-button aria-label="Clear" type="button"
+                        (click)="model.firstName=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+
+                <mat-form-field subscriptSizing="dynamic" class="input">
+                    <mat-label>Last name</mat-label>
+                    <input matInput type="text" [(ngModel)]="model.lastName" name="lastName">
+                    <button *ngIf="model.lastName" matSuffix mat-icon-button aria-label="Clear" type="button"
+                        (click)="model.lastName=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+
+                <mat-form-field subscriptSizing="dynamic" class="select">
+                    <mat-label>Status</mat-label>
+                    <mat-select [(value)]="model.status">
+                        <mat-option *ngFor="let value of status" [value]="value">
+                            {{value}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <div class="form-check-inline d-flex justify-content-center">
+                    <mat-radio-group [(ngModel)]="model.isAdmin" name="trip" aria-label="Select an option">
+                        <mat-radio-button [value]="0">Agent</mat-radio-button>
+                        <mat-radio-button [value]="1">Admin</mat-radio-button>
+                    </mat-radio-group>
                 </div>
-                <div class="form-check-inline my-1">
-                    <input class="form-check-input me-1" type="radio" [value]="1" name="isAdmin"
-                        [(ngModel)]="model.isAdmin">
-                    <label class="form-check-label" for="exampleRadios1">
-                        Admin
-                    </label>
+
+                <div class="d-flex justify-content-center">
+                    <button type="submit" mat-flat-button color="primary">Save</button>
                 </div>
-    
-                <button type="submit" class="btn btn-primary px-2 ms-auto">Save</button>
             </div>
         </form>
     </div>
-    
-    <div *ngIf="accounts != null">
-        <div *ngFor="let account of accounts.formatedAgents; let i = index;">
-            <div class="border my-2">
-                <h1>{{account.agentId}}</h1>
-                <h2>Name: {{account.firstName + " " + account.lastName}}</h2>
-                <h2>Email: {{account.email}}</h2>
-                <div class="d-flex justify-content-end">
-                    <button (click)="editAccount(account)" class="btn btn-primary m-2 px-2">Edit</button>
-                </div>
-            </div>
+</div>
+
+<div *ngIf="accounts != null">
+    <div *ngFor="let account of accounts.formatedAgents; let i = index;" class="container">
+        <h1>ID: {{account.agentId}}</h1>
+        <h2>Name: {{account.firstName + " " + account.lastName}}</h2>
+        <h2>Email: {{account.email}}</h2>
+        <div class="d-flex justify-content-end">
+            <button (click)="editAccount(account)" type="submit" mat-flat-button color="primary">Edit</button>
         </div>
     </div>
 </div>

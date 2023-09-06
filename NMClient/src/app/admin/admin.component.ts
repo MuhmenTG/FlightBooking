@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 })
 export class AdminComponent implements OnInit {
 
+  status = ["Active", "Inactive"];
   model: AccountRequest = { email: "", firstName: "", lastName: "", status: "", isAdmin: 0, isAgent: 1, agentId: 0 };
   accounts: AccountResponse = { formatedAgents: [] };
   role: boolean = false;
@@ -19,7 +20,7 @@ export class AdminComponent implements OnInit {
   constructor(private _adminService: AdminService, private _router: Router) { };
 
   ngOnInit(): void {
-    if (sessionStorage.getItem('role') == 'admin'){
+    if (sessionStorage.getItem('role') == 'admin') {
       this.role = true;
       var token = sessionStorage.getItem('token');
       if (token != null) {
