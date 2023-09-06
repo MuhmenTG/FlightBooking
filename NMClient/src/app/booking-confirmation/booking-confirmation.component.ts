@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FinalBookingResponse } from '../_models/Flights/FinalBookingResponse';
 import { Router } from '@angular/router';
 
@@ -8,15 +8,15 @@ import { Router } from '@angular/router';
   styleUrls: ['./booking-confirmation.component.css']
 })
 export class BookingConfirmationComponent implements OnInit {
-  booking: FinalBookingResponse = { navigationId: 0, passenger: [], flight: []}
+  booking: FinalBookingResponse = { bookingReference: "", navigationId: 0, passengers: [], flight: [] }
   isValid: boolean = false;
 
-  constructor(private _router: Router) {}
+  constructor(private _router: Router) { }
 
   ngOnInit(): void {
     this.booking = history.state;
 
-    if (!this.booking.passenger){
+    if (!this.booking.passengers) {
       this._router.navigateByUrl('');
     }
 
