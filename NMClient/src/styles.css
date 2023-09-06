@@ -1,26 +1,43 @@
 /* You can add global styles to this file, and also import other style files */
 .component {
-    margin: 10vh auto 10vh auto;
-    padding-bottom: 20vh;
-    width: fit-content;
-}
-
-.component>form {
-    background-color: #505050;
-    border-radius: 10px;
-    border: 1px solid white;
+    margin: 2vh auto;
     width: 100%;
 }
 
-html, body { height: 100%; }
+.component-top {
+    padding-top: 10px;
+}
 
-body { 
-    margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; 
+.component>form,
+.component .content,
+.print-section {
+    background-color: #505050;
+    border-radius: 10px;
+    border: 1px solid lightgrey;
+    width: 100%;
+    padding: 10px;
+}
+
+.component-fit {
+    width: fit-content;
+}
+
+
+html,
+body {
+    height: 100vh;
+    width: 100vw;
+}
+
+body {
+    margin: 0;
+    padding: 0 5vw 0 5vw;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
     background-color: #686868 !important
 }
 
 .headfoot * {
-    color: white;
+    color: lightgrey;
 }
 
 .headfoot {
@@ -28,5 +45,87 @@ body {
 }
 
 a {
-    color: white !important;
+    color: lightgrey !important;
+}
+
+.input,
+.date,
+.select {
+    width: 100%;
+    padding: 0 0 10px 0;
+}
+
+/*  
+    Autofill on input field override to avoid an ugly white box appearing when you use autofill. 
+    Hack required for angular material, as it has no option to change the state
+*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    transition: background-color 5000s !important;
+    -webkit-text-fill-color: lightgrey !important;
+}
+
+#head {
+    z-index: 1;
+}
+
+#cdk-overlay-0 {
+    z-index: 2 !important;
+}
+
+.container {
+    color: lightgrey;
+    background-color: #505050;
+    padding: 5px;
+}
+
+h1 {
+    color: lightgrey;
+}
+
+@media only screen and (min-width: 600px) {
+
+    body {
+        padding: 0 30vw 0 30vw;
+    }
+
+    .input,
+    .date {
+        width: 100%;
+    }
+
+    .select {
+        width: 50%;
+        padding: 0 3px 10px 3px !important;
+    }
+
+    .input,
+    .date {
+        margin: 0 3px 0 3px !important;
+    }
+}
+
+@media only screen and (min-width: 600px) and (max-width: 1200px) {
+
+    body {
+        padding: 0 15vw 0 15vw;
+    }
+
+    .input,
+    .date {
+        width: 100%;
+    }
+
+    .select {
+        width: 100%;
+        padding: 0 3px 10px 3px !important;
+    }
+
+    .input,
+    .date,
+    button {
+        margin: 0 3px 0 3px !important;
+    }
 }
