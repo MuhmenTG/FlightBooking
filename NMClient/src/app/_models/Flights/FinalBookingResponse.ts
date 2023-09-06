@@ -1,9 +1,10 @@
 import { PassengerInfo } from "../PassengerInfo";
 
 export interface FinalBookingResponse {
+    bookingReference: string;
     navigationId: number;
     flight: Flight[];
-    passenger: Passenger[];
+    passengers: Passenger[];
     payment?: Payment;
 }
 
