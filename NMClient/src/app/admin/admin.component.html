@@ -1,7 +1,7 @@
 <div *ngIf="role">
     <div class="component component-top">
         <form #saveReq="ngForm" (submit)="submitForm(saveReq)">
-            <div class="d-flex flex-column justify-content-center">
+            <div class="d-flex justify-content-center flex-wrap">
                 <mat-form-field subscriptSizing="dynamic" class="input">
                     <mat-label>E-mail</mat-label>
                     <input matInput type="email" [(ngModel)]="model.email" name="email">
@@ -29,7 +29,7 @@
                     </button>
                 </mat-form-field>
 
-                <mat-form-field subscriptSizing="dynamic" class="select">
+                <mat-form-field subscriptSizing="dynamic" class="select-standalone">
                     <mat-label>Status</mat-label>
                     <mat-select [(value)]="model.status">
                         <mat-option *ngFor="let value of status" [value]="value">
@@ -59,7 +59,9 @@
         <h2>Name: {{account.firstName + " " + account.lastName}}</h2>
         <h2>Email: {{account.email}}</h2>
         <div class="d-flex justify-content-end">
+            <button (click)="accountActivation(account)" type="submit" mat-flat-button color="secondary">Delete</button>
             <button (click)="editAccount(account)" type="submit" mat-flat-button color="primary">Edit</button>
         </div>
+        <hr *ngIf="accounts.formatedAgents.indexOf(account) + 1 < accounts.formatedAgents.length">
     </div>
 </div>
