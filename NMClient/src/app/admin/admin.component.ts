@@ -48,6 +48,12 @@ export class AdminComponent implements OnInit {
     this.model.status = account.accountStatus;
   }
 
+  accountActivation(account: Agent) {
+    this._adminService.deactivateOrActivateAccount(account.agentId).subscribe(response => {
+      console.log(response);
+    });
+  }
+
   submitForm(form: NgForm) {
     if (!form.valid) {
       return alert("Form is not valid. Try again.");
