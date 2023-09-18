@@ -29,14 +29,13 @@ export class AdminService extends HttpService {
     return this.http.get<AccountResponse>(this.apiUrl + "/showListOfTravelAgents", this.httpOptionsAccount);
   }
 
-  deactivateAccount(id: number): Observable<AccountResponse> {
-    return this.http.post<AccountResponse>(this.apiUrl + "/setAgentAccountToDeactive/" + id, this.httpOptions);
+  deactivateOrActivateAccount(id: number): Observable<AccountResponse> {
+    return this.http.put<AccountResponse>(this.apiUrl + "/setAgentAccountToDeactiveOrActive/" + id, JSON.stringify(id), this.httpOptionsAccount);
   }
 
   resetAccountPassword(id: number): Observable<AccountResponse> {
     return this.http.post<AccountResponse>(this.apiUrl + "/resetAgentPassword", JSON.stringify(id), this.httpOptions);
   }
-
 
   // FAQ
   createFAQ(body: FAQS): Observable<void> {
