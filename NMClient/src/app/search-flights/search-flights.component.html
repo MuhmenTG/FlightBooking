@@ -1,12 +1,12 @@
 <div class="component component-top">
   <form #searchFlights="ngForm" (submit)="submitForm(searchFlights)">
-
     <!-- Travel type input - Radio -->
-    <div class="form-check-inline d-flex justify-content-center">
+    <div class="form-check-inline d-flex justify-content-center flex-wrap">
       <mat-radio-group [(ngModel)]="model.travelType" name="trip" aria-label="Select an option">
         <mat-radio-button [value]="0">Two-way trip</mat-radio-button>
         <mat-radio-button [value]="1">Single</mat-radio-button>
       </mat-radio-group>
+      <mat-checkbox name="direct" [(ngModel)]="model.isDirect">Direct flight</mat-checkbox>
     </div>
 
     <!-- Datepicking fields - Datepicker -->
@@ -23,7 +23,7 @@
 
       <!-- Alternative date for single travel use - Datepicker -->
       <ng-template #noReturnDate>
-        <mat-form-field subscriptSizing="dynamic">
+        <mat-form-field subscriptSizing="dynamic" class="date">
           <mat-label>Choose date</mat-label>
           <input matInput [(ngModel)]="model.departureDateVar" name="datepick" [min]="minDate" [max]="maxDate"
             [matDatepicker]="picker" disabled>
@@ -65,10 +65,21 @@
       <div class="d-flex justify-content-center flex-wrap w-100">
         <!-- Fields for choosing number of passengers - Select -->
         <mat-form-field subscriptSizing="dynamic" class="select">
-          <mat-label>Adults</mat-label>
-          <mat-select [(value)]="model.adults">
-            <mat-option *ngFor="let amount of adults" [value]="amount">
-              {{amount}}
+          <mat-label id="passengers"><span>Passengers: {{passengers[0]}} Adults</span><span *ngIf="passengers[1] > 0"> -
+              {{passengers[1]}} Children </span><span *ngIf="passengers[2] > 0"> -
+              {{passengers[2]}} Infants</span></mat-label>
+          <mat-select>
+            <mat-option *ngFor="let type of passengerTypes" disabled>
+              {{type}}
+              <div>
+                <button mat-flat-button aria-label="subtractPassenger" class="icon-button"
+                  (click)="subtractOnePassengerType(type)"><mat-icon class="icon" svgIcon="minus-icon"
+                    aria-hidden="false" aria-label="Example thumbs up SVG icon"></mat-icon></button>
+                {{passengers[passengerTypes.indexOf(type)]}}
+                <button mat-flat-button aria-label="addPassenger" class="icon-button"
+                  (click)="addOnePassengerType(type)"><mat-icon class="icon" svgIcon="plus-icon" aria-hidden="false"
+                    aria-label="Example thumbs up SVG icon"></mat-icon></button>
+              </div>
             </mat-option>
           </mat-select>
         </mat-form-field>
