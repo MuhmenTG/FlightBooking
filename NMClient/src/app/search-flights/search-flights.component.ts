@@ -7,6 +7,8 @@ import { FlightService } from '../_services/flight.service';
 import { CarrierCodesResponse } from '../_models/Flights/CarrierCodesResponse';
 import { Observable, map, startWith } from 'rxjs';
 import { PublicService } from '../_services/public.service';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 
 enum FlightClassEnum {
   ECONOMY = 0,
@@ -22,7 +24,8 @@ enum FlightClassEnum {
 })
 export class SearchFlightsComponent {
   @ViewChild(ShowFlightoffersComponent) child!: ShowFlightoffersComponent;
-  adults = [1, 2, 3, 4, 5]
+  passengerTypes = ["Adults (18+)", "Children (2-17)", "Infants (0-2)"]
+  passengers = [1, 0, 0]
   classes = ['Economy class', 'Premium economy', 'Business class', 'First class'];
   range = new FormGroup({
     start: new FormControl<Date | null>(null),
@@ -37,9 +40,12 @@ export class SearchFlightsComponent {
     returnDate: '',
     departureDateVar: this.range.value.start,
     returnDateVar: this.range.value.end,
-    adults: this.adults[0],
+    adults: 1,
+    children: 0,
+    infants: 0,
     travelClass: this.classes[0],
-    travelClassVar: this.classes[0]
+    travelClassVar: this.classes[0],
+    isDirect: false
   }
 
   carrierCodes: String[] = [];
@@ -64,7 +70,10 @@ export class SearchFlightsComponent {
   filteredOptionsTo: Observable<string[]>;
   regex = /, (\w+) -/
 
-  constructor(private _flightService: FlightService, private _publicService: PublicService) { }
+  constructor(private _flightService: FlightService, private _publicService: PublicService, iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {
+    iconRegistry.addSvgIcon('plus-icon', sanitizer.bypassSecurityTrustResourceUrl('./assets/images/plus.svg'));
+    iconRegistry.addSvgIcon('minus-icon', sanitizer.bypassSecurityTrustResourceUrl('./assets/images/minus.svg'))
+  }
 
   resetAll() {
     this.child.reset()
@@ -168,6 +177,9 @@ export class SearchFlightsComponent {
         this.model.returnDate = this.formatDate(this.model.returnDateVar);
       }
 
+      this.model.adults = this.passengers[0];
+      this.model.children = this.passengers[1];
+      this.model.infants = this.passengers[2];
       this.model.travelClass = FlightClassEnum[this.classes.indexOf(this.model.travelClassVar)];
 
       if (this.model.travelType == 1) this.model.returnDate = '';
@@ -245,6 +257,35 @@ export class SearchFlightsComponent {
     if (this.isLoading) {
       let mySpinner = document.getElementById('spinner');
       if (mySpinner != null) mySpinner.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
+  addOnePassengerType(passengerType: string): void {
+    let upperLimit = 4;
+
+    for (let index = 0; index < this.passengerTypes.length; index++) {
+      if (index == 1) upperLimit = this.passengers[0] * 2;
+      if (index == 2) upperLimit = this.passengers[0] / 2;
+
+      if (passengerType == this.passengerTypes[index] && this.passengers[index] < upperLimit) {
+        this.passengers[index] += 1;
+      }
+    }
+  }
+
+  subtractOnePassengerType(passengerType: string): void {
+    let lowerLimit = 1;
+
+    for (let index = 0; index < this.passengerTypes.length; index++) {
+      if (index > 0) lowerLimit = 0;
+      if (passengerType == this.passengerTypes[index] && this.passengers[index] > lowerLimit) {
+        this.passengers[index] -= 1;
+
+        if (index == 0) {
+          if (this.passengers[1] > this.passengers[0] * 2) this.passengers[1] = this.passengers[0] * 2;
+          if (this.passengers[2] > this.passengers[0] / 2) this.passengers[2] = Math.round(this.passengers[0] / 2)
+        }
+      }
     }
   }
 }
