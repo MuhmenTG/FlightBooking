@@ -8,5 +8,8 @@ export interface SearchFlightsRequest {
     returnDate: string;
     travelClass: string
     travelClassVar: string;
-    adults: number
+    adults: number;
+    children: number;
+    infants: number;
+    isDirect: boolean;
 }
