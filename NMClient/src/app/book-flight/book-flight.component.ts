@@ -56,9 +56,11 @@ export class BookFlightComponent implements OnInit {
     } else {
       this.flightBooked = true;
       this.isLoading = true;
-      this.flightInfo.data.flightOffers[0].passengers = [];
-
       this.flightInfo.data.flightOffers[0].passengers = this.passengersAdults.concat(this.passengersChildren, this.passengersInfants)
+      // Snak med Muhmen omkring titel, email og køn
+      this.flightInfo.data.flightOffers[0].passengers.forEach(passenger => {
+        passenger.email = this.model.email;
+      });
 
       this._flightService.getFlightConfirmation(this.flightInfo.data.flightOffers[0]).subscribe({
         next: response => {
