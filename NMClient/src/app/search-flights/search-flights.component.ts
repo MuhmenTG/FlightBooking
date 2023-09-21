@@ -9,6 +9,7 @@ import { Observable, map, startWith } from 'rxjs';
 import { PublicService } from '../_services/public.service';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import { PassengerCount } from '../_models/Flights/PassengerCount';
 
 enum FlightClassEnum {
   ECONOMY = 0,
@@ -48,6 +49,7 @@ export class SearchFlightsComponent {
     isDirect: false
   }
 
+  passengerCount: PassengerCount = { adults: 0, children: 0, infants: 0 };
   carrierCodes: String[] = [];
   isLoading: boolean = false;
   carrierCodeResponse: CarrierCodesResponse = { data: [] };
@@ -177,9 +179,9 @@ export class SearchFlightsComponent {
         this.model.returnDate = this.formatDate(this.model.returnDateVar);
       }
 
-      this.model.adults = this.passengers[0];
-      this.model.children = this.passengers[1];
-      this.model.infants = this.passengers[2];
+      this.model.adults = this.passengerCount.adults = this.passengers[0];
+      this.model.children = this.passengerCount.children = this.passengers[1];
+      this.model.infants = this.passengerCount.infants = this.passengers[2];
       this.model.travelClass = FlightClassEnum[this.classes.indexOf(this.model.travelClassVar)];
 
       if (this.model.travelType == 1) this.model.returnDate = '';

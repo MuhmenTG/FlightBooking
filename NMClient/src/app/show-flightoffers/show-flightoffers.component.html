@@ -21,7 +21,8 @@
     <button mat-flat-button color="primary" *ngIf="moreOffers" (click)="showMoreOffers()">Show more</button>
 </div>
 
-<app-book-flight *ngIf="flightChosenHasResponse" [flightInfo]="flightInfo"></app-book-flight>
+<app-book-flight *ngIf="flightChosenHasResponse" [flightInfo]="flightInfo"
+    [passengerCount]="passengerCount"></app-book-flight>
 
 <div class="component spinner d-flex justify-content-center" id="spinner" *ngIf="isLoading" scrollTo>
     <mat-spinner></mat-spinner>

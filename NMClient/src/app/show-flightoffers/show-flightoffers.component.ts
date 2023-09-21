@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FlightInfoResponse } from '../_models/Flights/FlightInfoResponse';
 import { FlightResponses } from '../_models/Flights/FlightResponses';
 import { FlightService } from '../_services/flight.service';
+import { PassengerCount } from '../_models/Flights/PassengerCount';
 
 @Component({
   selector: 'app-show-flightoffers',
@@ -10,6 +11,7 @@ import { FlightService } from '../_services/flight.service';
 })
 export class ShowFlightoffersComponent implements OnInit {
   @Input() offers!: FlightResponses;
+  @Input() passengerCount: PassengerCount;
   @Input() formSubmitted!: boolean;
   isLoading: boolean = false;
   flightInfo = {} as FlightInfoResponse;

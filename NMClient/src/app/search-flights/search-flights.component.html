@@ -103,7 +103,8 @@
 </div>
 
 <!-- Show flightoffers component -->
-<app-show-flightoffers *ngIf="formSubmitted" [offers]="flightsResponses"></app-show-flightoffers>
+<app-show-flightoffers *ngIf="formSubmitted" [offers]="flightsResponses"
+  [passengerCount]="passengerCount"></app-show-flightoffers>
 
 <!-- Loading animation when searching -->
 <div class="component spinner d-flex justify-content-center" id="spinner" *ngIf="isLoading" scrollTo>
