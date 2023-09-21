@@ -1,8 +1,8 @@
 export interface CustomerInfo {
-    title: string
+    gender: string
     firstName: string
     lastName: string
     dateOfBirth: string
-    email: string
+    email?: string
     passengerType: string
 }
