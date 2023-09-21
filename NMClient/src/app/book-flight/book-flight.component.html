@@ -1,36 +1,131 @@
-<div *ngIf="!flightBooked" class="component d-flex justify-content-center">
+<div *ngIf="!flightBooked" class="component component-top">
     <form #createBooking="ngForm" (submit)="submitForm(createBooking)">
-        <mat-form-field subscriptSizing="dynamic" class="input">
-            <mat-label>First name</mat-label>
-            <input matInput type="text" [(ngModel)]="model.firstName" name="firstName">
-            <button *ngIf="model.firstName" matSuffix mat-icon-button aria-label="Clear" (click)="model.firstName=''">
-                <mat-icon>close</mat-icon>
-            </button>
-        </mat-form-field>
+        <div class="d-flex justify-content-center flex-wrap">
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>E-mail of buyer</mat-label>
+                <input matInput type="email" [(ngModel)]="model.email" name="email">
+                <button *ngIf="model.email" matSuffix mat-icon-button aria-label="Clear" (click)="model.email=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div *ngFor="let passenger of passengersAdults; let index = index"
+            class="d-flex justify-content-center flex-wrap">
+            <h2>Info of adult no. {{index + 1}}</h2>
+            <mat-form-field subscriptSizing="dynamic" class="select">
+                <mat-label>Gender</mat-label>
+                <mat-select [(value)]="passenger.gender">
+                    <mat-option *ngFor="let choice of gender" [value]="choice">
+                        {{choice}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
 
-        <mat-form-field subscriptSizing="dynamic" class="input">
-            <mat-label>Last name</mat-label>
-            <input matInput type="text" [(ngModel)]="model.lastName" name="lastName">
-            <button *ngIf="model.lastName" matSuffix mat-icon-button aria-label="Clear" (click)="model.lastName=''">
-                <mat-icon>close</mat-icon>
-            </button>
-        </mat-form-field>
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>First and middle name</mat-label>
+                <input matInput type="text" [(ngModel)]="passenger.firstName" name="firstName">
+                <button *ngIf="passenger.firstName" matSuffix mat-icon-button aria-label="Clear"
+                    (click)="passenger.firstName=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
 
-        <mat-form-field subscriptSizing="dynamic" class="date">
-            <mat-label>Date of birth</mat-label>
-            <input matInput [(ngModel)]="model.dateOfBirth" name="datepick" [max]="maxDate" [matDatepicker]="picker"
-                disabled>
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker disabled="false"></mat-datepicker>
-        </mat-form-field>
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>Last name</mat-label>
+                <input matInput type="text" [(ngModel)]="passenger.lastName" name="lastName">
+                <button *ngIf="passenger.lastName" matSuffix mat-icon-button aria-label="Clear"
+                    (click)="passenger.lastName=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
 
-        <mat-form-field subscriptSizing="dynamic" class="input">
-            <mat-label>E-mail</mat-label>
-            <input matInput type="email" [(ngModel)]="model.email" name="email">
-            <button *ngIf="model.email" matSuffix mat-icon-button aria-label="Clear" (click)="model.email=''">
-                <mat-icon>close</mat-icon>
-            </button>
-        </mat-form-field>
+            <mat-form-field subscriptSizing="dynamic" class="date">
+                <mat-label>Date of birth</mat-label>
+                <input matInput [(ngModel)]="passenger.dateOfBirth" name="datepick" [max]="maxDate"
+                    [matDatepicker]="picker" disabled>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker disabled="false"></mat-datepicker>
+            </mat-form-field>
+        </div>
+
+        <div *ngFor="let passenger of passengersChildren; let index = index"
+            class="d-flex justify-content-center flex-wrap">
+            <h2>Info of child no. {{index + 1}}</h2>
+            <mat-form-field subscriptSizing="dynamic" class="select">
+                <mat-label>Gender</mat-label>
+                <mat-select [(value)]="passenger.gender">
+                    <mat-option *ngFor="let choice of gender" [value]="choice">
+                        {{choice}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>First and middle name</mat-label>
+                <input matInput type="text" [(ngModel)]="passenger.firstName" name="firstName">
+                <button *ngIf="passenger.firstName" matSuffix mat-icon-button aria-label="Clear"
+                    (click)="passenger.firstName=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>Last name</mat-label>
+                <input matInput type="text" [(ngModel)]="passengersChildren[index].lastName" name="lastName">
+                <button *ngIf="passenger.lastName" matSuffix mat-icon-button aria-label="Clear"
+                    (click)="passenger.lastName=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+
+            <mat-form-field subscriptSizing="dynamic" class="date">
+                <mat-label>Date of birth</mat-label>
+                <input matInput [(ngModel)]="passenger.dateOfBirth" name="datepick" [max]="maxDate"
+                    [matDatepicker]="picker" disabled>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker disabled="false"></mat-datepicker>
+            </mat-form-field>
+        </div>
+
+        <div *ngFor="let passenger of passengersInfants; let index = index"
+            class="d-flex justify-content-center flex-wrap">
+            <h2>Info of infant no. {{index + 1}}</h2>
+            <mat-form-field subscriptSizing="dynamic" class="select">
+                <mat-label>Gender</mat-label>
+                <mat-select [(value)]="passenger.gender">
+                    <mat-option *ngFor="let choice of gender" [value]="choice">
+                        {{choice}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>First and middle name</mat-label>
+                <input matInput type="text" [(ngModel)]="passenger.firstName" name="firstName">
+                <button *ngIf="passenger.firstName" matSuffix mat-icon-button aria-label="Clear"
+                    (click)="passenger.firstName=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>Last name</mat-label>
+                <input matInput type="text" [(ngModel)]="passenger.lastName" name="lastName">
+                <button *ngIf="passenger.lastName" matSuffix mat-icon-button aria-label="Clear"
+                    (click)="passenger.lastName=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+
+            <mat-form-field subscriptSizing="dynamic" class="date">
+                <mat-label>Date of birth</mat-label>
+                <input matInput [(ngModel)]="passenger.dateOfBirth" name="datepick" [max]="maxDate"
+                    [matDatepicker]="picker" disabled>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker disabled="false"></mat-datepicker>
+            </mat-form-field>
+        </div>
+
         <button mat-flat-button color="primary" type="submit">Go to payment</button>
     </form>
 </div>
