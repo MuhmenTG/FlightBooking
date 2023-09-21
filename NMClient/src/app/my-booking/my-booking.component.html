@@ -1,6 +1,6 @@
 <div class="component component-top component-fit ">
     <form #bookingReq="ngForm" (submit)="submitForm(bookingReq)">
-        <div class="d-flex justify-content-center flex-column">
+        <div class="d-flex justify-content-center flex-wrap">
             <mat-form-field subscriptSizing="dynamic" class="input">
                 <mat-label>Booking reference</mat-label>
                 <input [(ngModel)]="model.bookingReference" matInput placeholder="ID" name="bookingId">
