@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../_services/admin.service';
 import { NgForm } from '@angular/forms';
 import { AccountRequest } from '../_models/Employees/AccountRequest';
-import { AccountResponse, agent as Agent } from '../_models/Employees/AccountResponse';
+import { AccountsResponse, agent as Agent } from '../_models/Employees/AccountsResponse';
 import { Router } from '@angular/router';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-admin',
@@ -13,11 +14,12 @@ import { Router } from '@angular/router';
 export class AdminComponent implements OnInit {
 
   status = ["Active", "Inactive"];
-  model: AccountRequest = { email: "", firstName: "", lastName: "", status: "", isAdmin: 0, isAgent: 1, agentId: 0 };
-  accounts: AccountResponse = { formatedAgents: [] };
+  model: AccountRequest = { email: "", firstName: "", lastName: "", status: "1", isAdmin: 0, isAgent: 1, agentId: 0 };
+  accounts: AccountsResponse = { formatedAgents: [] };
   role: boolean = false;
+  snackbarOptions: MatSnackBarConfig = { verticalPosition: "top", horizontalPosition: "center" }
 
-  constructor(private _adminService: AdminService, private _router: Router) { };
+  constructor(private _adminService: AdminService, private _router: Router, private _snackBar: MatSnackBar) { };
 
   ngOnInit(): void {
     if (sessionStorage.getItem('role') == 'admin') {
@@ -38,7 +40,6 @@ export class AdminComponent implements OnInit {
   }
 
   editAccount(account: Agent) {
-    console.log("Account: " + account.travelAgentPermission)
     this.model.agentId = account.agentId;
     this.model.firstName = account.firstName;
     this.model.lastName = account.lastName;
@@ -49,8 +50,13 @@ export class AdminComponent implements OnInit {
   }
 
   accountActivation(account: Agent) {
-    this._adminService.deactivateOrActivateAccount(account.agentId).subscribe(response => {
-      console.log(response);
+    this._adminService.deactivateOrActivateAccount(account.agentId).subscribe(() => {
+      let agent = this.accounts.formatedAgents[this.accounts.formatedAgents.findIndex(i => i.agentId == account.agentId)]
+
+      if (agent.accountStatus == '0') agent.accountStatus = '1';
+      else agent.accountStatus = '0';
+
+      this.accounts.formatedAgents[this.accounts.formatedAgents.findIndex(i => i.agentId == agent.agentId)] = agent;
     });
   }
 
@@ -59,18 +65,29 @@ export class AdminComponent implements OnInit {
       return alert("Form is not valid. Try again.");
     }
     else if (this.model.agentId != 0) {
-      this._adminService.editAgent(this.model).subscribe(response => {
-        console.log(response);
-      })
+      this._adminService.editAgent(this.model).subscribe({
+        next: response => {
+          this._snackBar.open('User successfully edited!', '', this.snackbarOptions)
+          this.accounts.formatedAgents[this.accounts.formatedAgents.findIndex(i => i.agentId === response.data.agentId)] = response.data;
+        }, error: err => {
+          this._snackBar.open(err, '', this.snackbarOptions)
+        }
+      }
+      )
     }
     else {
-
       console.log(this.model);
-      this._adminService.createAccount(this.model).subscribe(response => {
-        console.log(response);
+      this._adminService.createAccount(this.model).subscribe(() => {
+        this._snackBar.open('User successfully created!', '', this.snackbarOptions)
       });
     }
 
     this.model.agentId = 0;
+    this.model.firstName = '';
+    this.model.lastName = '';
+    this.model.isAdmin = 0;
+    this.model.isAgent = 1;
+    this.model.email = '';
+    this.model.status = '1';
   }
 }

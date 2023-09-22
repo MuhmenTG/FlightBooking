@@ -29,15 +29,6 @@
                     </button>
                 </mat-form-field>
 
-                <mat-form-field subscriptSizing="dynamic" class="select-standalone">
-                    <mat-label>Status</mat-label>
-                    <mat-select [(value)]="model.status">
-                        <mat-option *ngFor="let value of status" [value]="value">
-                            {{value}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-
                 <div class="form-check-inline d-flex justify-content-center">
                     <mat-radio-group [(ngModel)]="model.isAdmin" name="trip" aria-label="Select an option">
                         <mat-radio-button [value]="0">Agent</mat-radio-button>
@@ -54,14 +45,27 @@
 </div>
 
 <div *ngIf="accounts != null">
-    <div *ngFor="let account of accounts.formatedAgents; let i = index;" class="container">
-        <h1>ID: {{account.agentId}}</h1>
-        <h2>Name: {{account.firstName + " " + account.lastName}}</h2>
-        <h2>Email: {{account.email}}</h2>
-        <div class="d-flex justify-content-end">
-            <button (click)="accountActivation(account)" type="submit" mat-flat-button color="secondary">Delete</button>
-            <button (click)="editAccount(account)" type="submit" mat-flat-button color="primary">Edit</button>
-        </div>
-        <hr *ngIf="accounts.formatedAgents.indexOf(account) + 1 < accounts.formatedAgents.length">
-    </div>
+    <mat-accordion multi="false">
+        <mat-expansion-panel class="mt-2 mb-2" *ngFor="let account of accounts.formatedAgents; let i = index;">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <h3>{{account.firstName + " " + account.lastName}}</h3>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ng-template matExpansionPanelContent>
+                <p><strong>ID:</strong> {{account.agentId}}</p>
+                <p><strong>Email:</strong> {{account.email}}</p>
+                <p><strong>Registration date:</strong> {{account.registeredAt}}</p>
+                <div class="d-flex justify-content-end">
+                    <div *ngIf="!account.administratorPermission">
+                        <button *ngIf="account.accountStatus == '1'" (click)="accountActivation(account)" type="submit"
+                            mat-flat-button color="secondary">Deactivate</button>
+                        <button *ngIf="account.accountStatus == '0'" (click)="accountActivation(account)" type="submit"
+                            mat-flat-button color="secondary">Activate</button>
+                    </div>
+                    <button (click)="editAccount(account)" type="submit" mat-flat-button color="primary">Edit</button>
+                </div>
+            </ng-template>
+        </mat-expansion-panel>
+    </mat-accordion>
 </div>
