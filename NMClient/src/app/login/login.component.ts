@@ -12,12 +12,10 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   model: LoginRequest = { email: "", password: "" };
 
-  @Output() sessionInfoEvent = new EventEmitter<void>();
-
   constructor(private _loginService: LoginService, private router: Router) { };
 
-  submitForm(form: NgForm) {
 
+  submitForm(form: NgForm) {
     if (!form.valid) {
       return alert("Form is not valid. Try again.");
     } else {
@@ -25,8 +23,9 @@ export class LoginComponent {
         sessionStorage.setItem('token', response.token);
         sessionStorage.setItem('user', response.user.email);
         sessionStorage.setItem('role', response.user.isAdmin ? 'admin' : 'agent');
-        this.sessionInfoEvent.emit();
-        this.router.navigate([sessionStorage.getItem('role')]);
+        this.router.navigate([sessionStorage.getItem('role')]).then(() => {
+          window.location.reload();
+        });
       })
     }
   }
