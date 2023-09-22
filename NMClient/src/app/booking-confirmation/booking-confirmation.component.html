@@ -22,25 +22,21 @@
                 <strong>Flight:</strong> {{ segment.airline }} {{ segment.flightNumber }}
             </p>
             <p>
-                <strong>Departure:</strong> {{ segment.departureFrom }}
+                <strong>Departure:</strong> {{ segment.departureFrom }} <span
+                    *ngIf="segment.departureTerminal != ''">terminal {{ segment.departureTerminal }}</span> at
+                {{ segment.departureDateTime }}
             </p>
-            <p *ngIf="segment.departureTerminal != ''">
-                <strong>Terminal:</strong> {{ segment.departureTerminal }}
-            </p>
+
             <p>
-                <strong>Departure Time:</strong> {{ segment.departureDateTime }}
+                <strong>Arrival:</strong> {{ segment.arrivalTo }} <span *ngIf="segment.arrivalTerminal != ''">
+                    terminal {{ segment.arrivalTerminal }}
+                </span> at {{ segment.arrivalDate }}
             </p>
-            <p>
-                <strong>Arrival:</strong> {{ segment.arrivalTo }} - {{ segment.arrivalTerminal }} at
-                {{ segment.arrivalDate }}
-            </p>
-            <p>
-                <strong>Arrival time:</strong> {{ segment.arrivalDate }}
-            </p>
+
             <p>
                 <strong>Duration:</strong> {{ segment.flightDuration }}
             </p>
-            <hr *ngIf="booking.flight.indexOf(segment) + 1 < booking.flight.length">
+            <mat-divider *ngIf="booking.flight.indexOf(segment) + 1 < booking.flight.length"></mat-divider>
         </div>
 
         <h1>Payment Details</h1>
