@@ -1,5 +1,5 @@
-export interface AccountResponse {
-    data: agent
+export interface AccountsResponse {
+    formatedAgents: agent[]
 }
 
 export interface agent {
