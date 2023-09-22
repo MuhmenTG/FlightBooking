@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment.development';
-import { AccountResponse } from '../_models/Employees/AccountResponse';
+import { AccountsResponse } from '../_models/Employees/AccountsResponse';
 import { Observable } from 'rxjs';
 import { HttpService } from './http.service';
 import { FAQS } from '../_models/FAQS';
 import { AccountRequest } from '../_models/Employees/AccountRequest';
+import { AccountResponse } from '../_models/Employees/AccountResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -25,8 +26,8 @@ export class AdminService extends HttpService {
     return this.http.get<AccountResponse>(this.apiUrl + "/getSpecificAgentDetails/" + id);
   }
 
-  getListOfAccounts(): Observable<AccountResponse> {
-    return this.http.get<AccountResponse>(this.apiUrl + "/showListOfTravelAgents", this.httpOptionsAccount);
+  getListOfAccounts(): Observable<AccountsResponse> {
+    return this.http.get<AccountsResponse>(this.apiUrl + "/showListOfTravelAgents", this.httpOptionsAccount);
   }
 
   deactivateOrActivateAccount(id: number): Observable<AccountResponse> {
