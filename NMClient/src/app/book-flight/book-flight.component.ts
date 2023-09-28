@@ -35,8 +35,6 @@ export class BookFlightComponent implements OnInit {
   constructor(private _flightService: FlightService) { }
 
   ngOnInit(): void {
-    console.log(this.passengerCount.adults + " - " + this.passengerCount.children + " - " + this.passengersInfants)
-
     for (let index = 0; index < this.passengerCount.adults; index++) {
       this.passengersAdults[index] = { gender: "Male", firstName: "", lastName: "", dateOfBirth: Date(), passengerType: "Adult" }
     }
@@ -57,7 +55,7 @@ export class BookFlightComponent implements OnInit {
       this.flightBooked = true;
       this.isLoading = true;
       this.flightInfo.data.flightOffers[0].passengers = this.passengersAdults.concat(this.passengersChildren, this.passengersInfants)
-      // Snak med Muhmen omkring titel, email og køn
+
       this.flightInfo.data.flightOffers[0].passengers.forEach(passenger => {
         passenger.email = this.model.email;
       });
