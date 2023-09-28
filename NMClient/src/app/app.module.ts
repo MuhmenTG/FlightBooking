@@ -34,6 +34,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { AdminFaqComponent } from './admin-faq/admin-faq.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
     FaqComponent,
     MyBookingComponent,
     BookingConfirmationComponent,
+    AdminFaqComponent,
   ],
   imports: [
     BrowserModule,
