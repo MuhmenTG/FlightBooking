@@ -10,7 +10,10 @@
       <mat-menu #menu="matMenu">
         <a class="nav-link" href="/mybooking"><button mat-menu-item>My booking</button></a>
         <a class="nav-link" href="/faq"><button mat-menu-item>FAQ</button></a>
-        <a class="nav-link" href="/admin"><button mat-menu-item *ngIf="sessionRole == 'admin'">Admin</button></a>
+        <a class="nav-link" href="/admin"><button mat-menu-item *ngIf="sessionRole == 'admin'">Admin
+            accounts</button></a>
+        <a class="nav-link" href="/admin/faq"><button mat-menu-item *ngIf="sessionRole == 'admin'">Admin
+            FAQs</button></a>
         <a class="nav-link" href="/agent"><button mat-menu-item
             *ngIf="sessionRole == 'admin' || sessionRole == 'agent'">Agent</button></a>
         <a class="nav-link" href=""><button *ngIf="sessionUsername != null" mat-menu-item (click)="logout()"><b>Log
