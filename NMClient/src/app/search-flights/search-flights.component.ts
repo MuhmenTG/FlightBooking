@@ -242,17 +242,17 @@ export class SearchFlightsComponent {
   }
 
   formatDate(date: Date): string {
-    let monthMod = '';
-    let dateMod = '';
+    let monthModification = '';
+    let dateModification = '';
 
-    if (date.getMonth() < 10) {
-      monthMod = '0';
+    if (date.getMonth() < 9) {
+      monthModification = '0';
     }
     if (date.getDate() < 10) {
-      dateMod = '0';
+      dateModification = '0';
     }
 
-    return date.getFullYear() + "-" + monthMod + (date.getMonth() + 1) + "-" + dateMod + date.getDate();
+    return date.getFullYear() + "-" + monthModification + (date.getMonth() + 1) + "-" + dateModification + date.getDate();
   }
 
   ngAfterViewChecked() {

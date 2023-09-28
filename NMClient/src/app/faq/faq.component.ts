@@ -16,8 +16,6 @@ export class FaqComponent implements OnInit {
   ngOnInit(): void {
     this._publicService.getAllFaqs().subscribe(response => {
       this.faqs = response;
-
-      console.log(this.faqs);
     })
   }
 }
