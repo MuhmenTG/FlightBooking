@@ -3,7 +3,7 @@ export interface AccountResponse {
 }
 
 export interface agent {
-    agentId: number;
+    id: number;
     firstName: string;
     lastName: string;
     email: string;
