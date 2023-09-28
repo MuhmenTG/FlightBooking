@@ -14,7 +14,7 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 export class AdminComponent implements OnInit {
 
   status = ["Active", "Inactive"];
-  model: AccountRequest = { email: "", firstName: "", lastName: "", status: "1", isAdmin: 0, isAgent: 1, agentId: 0 };
+  model: AccountRequest = { email: "", firstName: "", lastName: "", status: "1", isAdmin: 0, isAgent: 1, id: 0 };
   accounts: AccountsResponse = { formatedAgents: [] };
   role: boolean = false;
   snackbarOptions: MatSnackBarConfig = { verticalPosition: "top", horizontalPosition: "center" }
@@ -40,7 +40,7 @@ export class AdminComponent implements OnInit {
   }
 
   editAccount(account: Agent) {
-    this.model.agentId = account.agentId;
+    this.model.id = account.id;
     this.model.firstName = account.firstName;
     this.model.lastName = account.lastName;
     this.model.isAdmin = account.administratorPermission;
@@ -50,13 +50,13 @@ export class AdminComponent implements OnInit {
   }
 
   accountActivation(account: Agent) {
-    this._adminService.deactivateOrActivateAccount(account.agentId).subscribe(() => {
-      let agent = this.accounts.formatedAgents[this.accounts.formatedAgents.findIndex(i => i.agentId == account.agentId)]
+    this._adminService.deactivateOrActivateAccount(account.id).subscribe(() => {
+      let agent = this.accounts.formatedAgents[this.accounts.formatedAgents.findIndex(i => i.id == account.id)]
 
       if (agent.accountStatus == '0') agent.accountStatus = '1';
       else agent.accountStatus = '0';
 
-      this.accounts.formatedAgents[this.accounts.formatedAgents.findIndex(i => i.agentId == agent.agentId)] = agent;
+      this.accounts.formatedAgents[this.accounts.formatedAgents.findIndex(i => i.id == agent.id)] = agent;
     });
   }
 
@@ -64,13 +64,13 @@ export class AdminComponent implements OnInit {
     if (!form.valid) {
       return alert("Form is not valid. Try again.");
     }
-    else if (this.model.agentId != 0) {
+    else if (this.model.id != 0) {
       this._adminService.editAgent(this.model).subscribe({
         next: response => {
           this._snackBar.open('User successfully edited!', '', this.snackbarOptions)
-          this.accounts.formatedAgents[this.accounts.formatedAgents.findIndex(i => i.agentId === response.data.agentId)] = response.data;
+          this.accounts.formatedAgents[this.accounts.formatedAgents.findIndex(i => i.id === response.data.id)] = response.data;
         }, error: err => {
-          this._snackBar.open(err, '', this.snackbarOptions)
+          this._snackBar.open(err.message, '', this.snackbarOptions)
         }
       }
       )
@@ -82,7 +82,7 @@ export class AdminComponent implements OnInit {
       });
     }
 
-    this.model.agentId = 0;
+    this.model.id = 0;
     this.model.firstName = '';
     this.model.lastName = '';
     this.model.isAdmin = 0;
