@@ -10,7 +10,7 @@ class FlightConfirmationRequest extends FormRequest
     {
         return true;
     }
-    
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,7 +24,7 @@ class FlightConfirmationRequest extends FormRequest
             'itineraries.*.segments.*.duration' => 'required|string',
             'itineraries.*.segments' => 'required|array',
             'passengers' => 'required|array',
-            'passengers.*.title' => 'required|string',
+            'passengers.*.gender' => 'required|string',
             'passengers.*.firstName' => 'required|string',
             'passengers.*.lastName' => 'required|string',
             'passengers.*.dateOfBirth' => 'required|string',

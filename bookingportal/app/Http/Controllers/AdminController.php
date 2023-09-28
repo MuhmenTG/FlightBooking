@@ -30,16 +30,18 @@ class AdminController extends Controller
     public function createAgent(AdminCreateAgentRequest $request)
     {
         $validated = $request->validated();
-        
+
         try {
-            return new AgentResource($this->IbackOfficeService->createAgent(
-                $request->get('firstName'),
-                $request->get('lastName'),
-                $request->get('email'),
-                $request->get('status'),
-                (int)$request->get('isAdmin'), 
-                (int)$request->get('isAgent')
-            ));
+            return new AgentResource(
+                $this->IbackOfficeService->createAgent(
+                    $request->get('firstName'),
+                    $request->get('lastName'),
+                    $request->get('email'),
+                    $request->get('status'),
+                    (int) $request->get('isAdmin'),
+                    (int) $request->get('isAgent')
+                )
+            );
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_ALREADY_REPORTED);
         }
@@ -48,17 +50,19 @@ class AdminController extends Controller
     public function editAgent(AdminCreateAgentRequest $request)
     {
         $validated = $request->validated();
-        
+
         try {
-            return new AgentResource($this->IbackOfficeService->editAgent(
-                intval($request->get('agentId')),
-                $request->get('firstName'),
-                $request->get('lastName'),
-                $request->get('email'),
-                $request->get('status'),
-                intval($request->get('isAdmin')),
-                intval($request->get('isAgent'))
-            ));
+            return new AgentResource(
+                $this->IbackOfficeService->editAgent(
+                    intval($request->get('id')),
+                    $request->get('firstName'),
+                    $request->get('lastName'),
+                    $request->get('email'),
+                    $request->get('status'),
+                    intval($request->get('isAdmin')),
+                    intval($request->get('isAgent'))
+                )
+            );
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_ALREADY_REPORTED);
         }
@@ -96,76 +100,84 @@ class AdminController extends Controller
         $responseMessage = $agents
             ? ['formatedAgents' => AgentResource::collection($agents)]
             : ResponseHelper::AGENT_NOT_FOUND;
-    
+
         return ResponseHelper::jsonResponseMessage($responseMessage, Response::HTTP_OK);
-    } 
+    }
 
     public function createFaq(CreateOrUpdateFaqRequest $request)
     {
         $validated = $request->validated();
-        
+
         try {
-            return new FaqResource($this->IbackOfficeService->createOrUpdateFaq(
-                $request->get('question'),
-                $request->get('answer'),
-            ));
+            return new FaqResource(
+                $this->IbackOfficeService->createOrUpdateFaq(
+                    $request->get('question'),
+                    $request->get('answer'),
+                )
+            );
 
         } catch (Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_ALREADY_REPORTED);
         }
     }
 
-    
+
     public function editFaq(CreateOrUpdateFaqRequest $request)
     {
-          $validated = $request->validated();
-        
+        $validated = $request->validated();
+
         try {
-            return new FaqResource($this->IbackOfficeService->createOrUpdateFaq(
-                $request->get('question'),
-                $request->get('answer'),
-                intval($request->get('faqId'))
-            ));
+            return new FaqResource(
+                $this->IbackOfficeService->createOrUpdateFaq(
+                    $request->get('question'),
+                    $request->get('answer'),
+                    // Changed 'faqId' to 'id'
+                    intval($request->get('id'))
+                )
+            );
 
         } catch (Exception $e) {
             return ResponseHelper::jsonResponseMessage($e->getMessage(), Response::HTTP_ALREADY_REPORTED);
         }
     }
-    
-    public function getSpecificFaq(int $faqId){
-        
+
+    public function getSpecificFaq(int $faqId)
+    {
+
         $specificFaq = new FaqResource($this->IbackOfficeService->getFaqById($faqId));
-        
-        if(!$specificFaq){
+
+        if (!$specificFaq) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
-        
+
         return ResponseHelper::jsonResponseMessage($specificFaq, Response::HTTP_OK, "FAQ");
     }
 
-    public function removeFaq(int $faqId){
+    public function removeFaq(int $faqId)
+    {
         $specificFaq = $this->IbackOfficeService->getFaqById($faqId);
 
         if ($specificFaq === null) {
-            return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);    
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
-        
+
         if ($specificFaq->delete()) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::FAQ_DELETED_SUCCESSFULLY, Response::HTTP_OK);
         }
     }
 
-    public function resetAgentPassword(Request $request){
-        
+    public function resetAgentPassword(Request $request)
+    {
+
         $validator = Validator::make($request->all(), [
-            'agentId'                  => 'required|int',
+            'id' => 'required|int',
         ]);
 
         if ($validator->fails()) {
             return ResponseHelper::validationErrorResponse($validator->errors());
         }
 
-        $userId = $request->input('agentId');
+        $userId = $request->input('id');
         $password = "systemAgentUser";
 
         $user = UserAccount::ById($userId)->first();
@@ -174,4 +186,3 @@ class AdminController extends Controller
         $user->save();
     }
 }
-

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 namespace App\Repositories;
+
 use App\DTO\FlightOfferPassengerDTO;
 use App\DTO\FlightSelectionDTO;
 use App\Models\Airline;
@@ -19,22 +20,22 @@ class TravelAgentRepository implements ITravelAgentRepository
     {
         return FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();
     }
-    
+
     public function findFlightPassengersByPNR(string $bookingReference): Collection
     {
         return PassengerInfo::ByBookingReference($bookingReference)->get();
     }
-    
+
     public function cancelFlightSegments(string $bookingReference): int
     {
         return FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISCANCELLED => true]);
     }
-    
+
     public function cancelFlightPassengers(string $bookingReference): int
     {
         return PassengerInfo::where(PassengerInfo::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISCANCELLED => true]);
     }
-    
+
     public function createPayment(Charge $charge, int $amount, string $currency, string $bookingreference): ?Payment
     {
         $payment = new Payment();
@@ -47,20 +48,20 @@ class TravelAgentRepository implements ITravelAgentRepository
         $payment->setPaymentGatewayProcessor("Stripe Api");
         $payment->setConnectedBookingReference($bookingreference);
         $payment->save();
-        if($payment){
+        if ($payment) {
             return $payment;
-    
+
         }
         return null;
 
     }
-    
-    public function bookPassengers(string $bookingReference, FlightOfferPassengerDTO $passenger) : bool
+
+    public function bookPassengers(string $bookingReference, FlightOfferPassengerDTO $passenger): bool
     {
         $passengerInfo = new PassengerInfo();
         $passengerInfo->setBookingReference($bookingReference);
         $passengerInfo->setPaymentInfoId(1);
-        $passengerInfo->setTitle($passenger->title);
+        $passengerInfo->setGender($passenger->gender);
         $passengerInfo->setFirstName($passenger->firstName);
         $passengerInfo->setLastName($passenger->lastName);
         $passengerInfo->setDateOfBirth($passenger->dateOfBirth);
@@ -70,7 +71,8 @@ class TravelAgentRepository implements ITravelAgentRepository
         return $passengerInfo->save();
     }
 
-    public function getBookingPayment(string $bookingReference) {
+    public function getBookingPayment(string $bookingReference)
+    {
         $paymentDetails = Payment::ByConnectedBookingReference($bookingReference)->first();
         return $paymentDetails;
     }
@@ -88,22 +90,23 @@ class TravelAgentRepository implements ITravelAgentRepository
         }
     }
 
-    public function generateTicketNumber(string $validatingAirline) : string {
+    public function generateTicketNumber(string $validatingAirline): string
+    {
         $validatingCarrier = Airline::ByIataDesignator($validatingAirline)->first();
-        if($validatingCarrier){
+        if ($validatingCarrier) {
             $validatingAirlineDigits = $validatingCarrier->getThreeDigitAirlineCode();
         }
         $validatingAirlineDigits = "010";
-        if(!$validatingAirlineDigits){
+        if (!$validatingAirlineDigits) {
             return $validatingAirline;
         }
-        
+
         $ticketNumber = '';
-        for($i = 0; $i < 11; $i++) {
+        for ($i = 0; $i < 11; $i++) {
             $ticketNumber .= mt_rand(0, 9);
         }
-        
-        $generatedTicketNumber = $validatingAirlineDigits."-".$ticketNumber;
+
+        $generatedTicketNumber = $validatingAirlineDigits . "-" . $ticketNumber;
         return $generatedTicketNumber;
     }
 
@@ -161,7 +164,8 @@ class TravelAgentRepository implements ITravelAgentRepository
         return $flightBooking;
     }
 
-    private function getFullAirportNameByIcao(string $airportIcao) : string{
+    private function getFullAirportNameByIcao(string $airportIcao): string
+    {
         $airport = AirportInfo::ByAirportIcao($airportIcao)->first();
         $airportName = $airport->getAirportName();
         $cityName = $airport->getCity();
@@ -169,26 +173,30 @@ class TravelAgentRepository implements ITravelAgentRepository
         return $fullAirportName;
     }
 
-    private function getAirlineNameByAirlineIcao(string $airlineIcao) : string {
+    private function getAirlineNameByAirlineIcao(string $airlineIcao): string
+    {
         $airline = Airline::ByIataDesignator($airlineIcao)->first();
-        if($airline){
+        if ($airline) {
             return $airline->getAirlineName();
         }
         return $airlineIcao;
     }
 
-    public function getUserEnquiryById (int $enquiryId){
-       $specificUserEnquiry = UserEnquiry::byId($enquiryId)->first();
-       return $specificUserEnquiry;
+    public function getUserEnquiryById(int $enquiryId)
+    {
+        $specificUserEnquiry = UserEnquiry::byId($enquiryId)->first();
+        return $specificUserEnquiry;
     }
 
-    public function getAllUserEnquries() : Collection{
+    public function getAllUserEnquries(): Collection
+    {
         $userEnquiries = UserEnquiry::all();
         return $userEnquiries;
     }
 
-    
-    public function registerEnquiry(string $name, string $email, string $subject, string $message){
+
+    public function registerEnquiry(string $name, string $email, string $subject, string $message)
+    {
         $enquiry = new UserEnquiry();
         $enquiry->setName($name);
         $enquiry->setEmail($email);
@@ -197,9 +205,10 @@ class TravelAgentRepository implements ITravelAgentRepository
         $enquiry->setMessage($message);
         $enquiry->setTime(time());
         return $enquiry->save();
-    } 
+    }
 
-    public function getSpecificPassengerInBooking(int $passengerId, string $bookingReference){
+    public function getSpecificPassengerInBooking(int $passengerId, string $bookingReference)
+    {
         return PassengerInfo::where(PassengerInfo::COL_ID, $passengerId)
             ->where(PassengerInfo::COL_BOOKINGREFERENCE, $bookingReference)
             ->first();
@@ -215,11 +224,11 @@ class TravelAgentRepository implements ITravelAgentRepository
         return $passenger;
     }
 
-    
-    public function getAllConfirmedBookings(){
+
+    public function getAllConfirmedBookings()
+    {
         return FlightBooking::with('passengers')
-        ->where(FlightBooking::COL_ISPAID, 1)
-        ->get();
+            ->where(FlightBooking::COL_ISPAID, 1)
+            ->get();
     }
 }
-

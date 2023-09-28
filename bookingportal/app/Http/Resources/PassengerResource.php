@@ -16,7 +16,7 @@ class PassengerResource extends JsonResource
     {
         return [
             'passengerId' => $this->id,
-            'passengerTitle' => $this->title,
+            'passengerGender' => $this->gender,
             'passengerFirstName' => $this->firstName,
             'passengerLastName' => $this->lastName,
             'passengerDateOfBirth' => $this->dateOfBirth,

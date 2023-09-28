@@ -18,7 +18,7 @@
 @foreach ($bookingComplete['passengers'] as $traveller)
     <div class="container">
         <p>
-            <strong>Name:</strong> {{ $traveller['title'] }} {{ $traveller['firstName'] }} {{ $traveller['lastName'] }}
+            <strong>Name:</strong> {{ $traveller['firstName'] }} {{ $traveller['lastName'] }}
         </p>
         <p>
             <strong>Passenger type:</strong> {{ $traveller['passengerType'] }}

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 namespace App\Services\BackOffice;
+
 use App\Models\Faq;
 use App\Models\UserAccount;
 use App\Models\UserEnquiry;
@@ -34,19 +35,20 @@ interface IBackOfficeService
 
     public function getAllAgents(): Collection;
 
-    public function getFaqById(int $faqId) : ?Faq;
+    public function getFaqById(int $faqId): ?Faq;
 
-    public function getAllFaqs() : ?Collection;
+    public function getAllFaqs(): ?Collection;
 
     public function createOrUpdateFaq(
         string $question,
         string $answer,
-        ?int $faqId = null
+        // changed 'faqId' to 'id'
+        ?int $id = null
     ): Faq;
 
     public function findUserEnquiryById(int $id): ?UserEnquiry;
 
     public function getPayments();
 
-    public function getSpecificPayments(string $bookingreference, string $transactionId) : array;
+    public function getSpecificPayments(string $bookingreference, string $transactionId): array;
 }

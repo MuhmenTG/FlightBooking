@@ -16,7 +16,7 @@ class AgentResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'agentId' => $this->id,
+            'id' => $this->id,
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'email' => $this->email,

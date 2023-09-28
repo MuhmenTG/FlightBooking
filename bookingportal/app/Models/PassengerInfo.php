@@ -17,7 +17,7 @@ class PassengerInfo extends Model
         //      protected $fillable = [];
 
         const COL_ID = 'id';
-        const COL_TITLE = 'title';
+        const COL_GENDER = 'gender';
         const COL_BOOKINGREFERENCE = 'bookingReference';
         const COL_PAYMENTINFOID = 'PaymentInfoId';
         const COL_FIRSTNAME = 'firstName';
@@ -31,8 +31,8 @@ class PassengerInfo extends Model
         const COL_UPDATED_AT = 'updated_at';
 
         /*
-     * Eloquent Scopes
-     */
+         * Eloquent Scopes
+         */
 
         public function scopeById($query, $val)
         {
@@ -50,17 +50,17 @@ class PassengerInfo extends Model
         }
 
         /*
-     * GET / SET
-     */
+         * GET / SET
+         */
 
-        public function getTitle()
+        public function getGender()
         {
-                return $this->title;
+                return $this->gender;
         }
 
-        public function setTitle($value)
+        public function setGender($value)
         {
-                $this->title = $value;
+                $this->gender = $value;
         }
 
         public function getPassengerInfoId()
