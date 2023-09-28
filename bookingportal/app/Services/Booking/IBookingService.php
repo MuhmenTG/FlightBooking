@@ -23,21 +23,21 @@ interface IBookingService
 
     public function cancelFlightBooking(string $bookingReference);
 
-    public function getPassengerEmail(string $bookingReference) : string;
+    public function getPassengerEmail(string $bookingReference): string;
 
     public function finalizeFlightReservation(string $bookingReference): ?Collection;
 
-    public function getFlightPassengersByPNR(string $bookingReference) : Collection;
+    public function getFlightPassengersByPNR(string $bookingReference): Collection;
 
     public function getUserEnquiryById(int $enquiryId);
 
     public function getAllUserEnquiries();
-    
+
     public function getSpecificPassengerInBooking(int $passengerId, string $bookingReference);
 
     public function updatePassenger(PassengerInfo $passenger, string $firstName, string $lastName, string $dateOfBirth, string $email): PassengerInfo;
 
     public function getAllConfirmedBookings();
 
-    public function generateBookingConfirmationPDF($bookingComplete) : string;
+    public function generateBookingConfirmationPDF($bookingComplete): string;
 }

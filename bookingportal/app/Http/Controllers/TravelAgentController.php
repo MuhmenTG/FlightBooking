@@ -24,7 +24,7 @@ class TravelAgentController extends Controller
     protected $IBackOfficeService;
     protected $IEmailSendService;
 
-    
+
 
     public function __construct(IBookingService $IBookingService, ISendEmailService $IEmailSendService, IBackOfficeService $IBackOfficeService)
     {
@@ -82,7 +82,7 @@ class TravelAgentController extends Controller
             ];
 
             $pdfContent = $this->IBookingService->generateBookingConfirmationPDF($bookingComplete);
-            
+
             $isSend = $this->IEmailSendService->sendEmailWithAttachments($email, $email, "We're sendinding you electronic ticket", "Please see your attached tickets", $pdfContent);
 
             if ($isSend) {
@@ -98,16 +98,16 @@ class TravelAgentController extends Controller
     public function getAllUserEnquiries()
     {
         $userEnquiries = $this->IBookingService->getAllUserEnquiries();
-        
-        if($userEnquiries->isEmpty()) {
+
+        if ($userEnquiries->isEmpty()) {
             return ResponseHelper::jsonResponseMessage(ResponseHelper::COSTUMER_ENQUIRY_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
 
         $userEnquiries = SupportRequestResource::collection($userEnquiries);
 
-        return ResponseHelper::jsonResponseMessage($userEnquiries, Response::HTTP_OK,  "supportRequests");
+        return ResponseHelper::jsonResponseMessage($userEnquiries, Response::HTTP_OK, "supportRequests");
     }
-    
+
     public function getSpecificUserEnquiry(int $enquiryId)
     {
         $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
@@ -121,76 +121,80 @@ class TravelAgentController extends Controller
         return ResponseHelper::jsonResponseMessage($specificUserEnquiry, Response::HTTP_OK, "supportRequest");
     }
 
-    public function answerUserEnquiry(Request $request){
+    public function answerUserEnquiry(Request $request)
+    {
 
         $validator = Validator::make($request->all(), [
-            'id'                    => 'required|integer',
+            'id' => 'required|integer',
             'responseMessageToUser' => 'required|string',
         ]);
-    
+
         if ($validator->fails()) {
             return ResponseHelper::jsonResponseMessage($validator->errors(), Response::HTTP_BAD_REQUEST);
         }
-    
+
         $enquiryId = intval($request->input('id'));
         $responseMessageToUser = $request->input('responseMessageToUser');
 
         $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
-        
-        if(!$specificUserEnquiry){
-            return ResponseHelper::jsonResponseMessage(ResponseHelper::COSTUMER_ENQUIRY_NOT_FOUND, Response::HTTP_NOT_FOUND);    
+
+        if (!$specificUserEnquiry) {
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::COSTUMER_ENQUIRY_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
-        
-        $emailSent = $this->IEmailSendService->sendEmailWithAttachments($specificUserEnquiry->getName(), $specificUserEnquiry->getEmail(),
-            $specificUserEnquiry->getSubject(), $responseMessageToUser
+
+        $emailSent = $this->IEmailSendService->sendEmailWithAttachments(
+            $specificUserEnquiry->getName(),
+            $specificUserEnquiry->getEmail(),
+            $specificUserEnquiry->getSubject(),
+            $responseMessageToUser
         );
-    
-        if($emailSent){
+
+        if ($emailSent) {
             return ResponseHelper::jsonResponseMessage("Email replied", Response::HTTP_OK);
         }
-        
+
         return ResponseHelper::jsonResponseMessage('Email could not be sent', Response::HTTP_BAD_REQUEST);
     }
-     
+
     public function removeUserEnquiry(int $enquiryId)
-    {    
+    {
         $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
         if (!$specificUserEnquiry) {
-            return ResponseHelper::jsonResponseMessage('User enquiry not found', Response::HTTP_NOT_FOUND);    
+            return ResponseHelper::jsonResponseMessage('User enquiry not found', Response::HTTP_NOT_FOUND);
         }
-        
+
         if ($specificUserEnquiry->delete()) {
             return ResponseHelper::jsonResponseMessage('User enquiry deleted successfully', Response::HTTP_OK);
         }
-    
+
         return ResponseHelper::jsonResponseMessage('UserEnquiry could not be deleted', Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     public function editPassengerInformation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'passengerId'       => 'required|integer',
-            'bookingreference'  => 'required|string',
-            'firstName'         => 'required|string',
-            'lastName'          => 'required|string',
-            'dateOfBirth'       => 'required|string',
-            'email'             => 'required|string',
+            'id' => 'required|integer',
+            'bookingreference' => 'required|string',
+            'firstName' => 'required|string',
+            'lastName' => 'required|string',
+            'dateOfBirth' => 'required|string',
+            'email' => 'required|string',
         ]);
-    
+
         if ($validator->fails()) {
             return ResponseHelper::validationErrorResponse($validator->errors());
         }
-    
-        $passengerId = intval($request->input('passengerId'));
+
+        $id = intval($request->input('id'));
         $bookingReference = $request->input('bookingreference');
         $firstName = $request->input('firstName');
         $lastName = $request->input('lastName');
         $dateOfBirth = $request->input('dateOfBirth');
         $email = $request->input('email');
 
-    
-        $passenger = $this->IBookingService->getSpecificPassengerInBooking($passengerId, $bookingReference);
-    
+
+        $passenger = $this->IBookingService->getSpecificPassengerInBooking($id, $bookingReference);
+
         if (!$passenger) {
             return ResponseHelper::jsonResponseMessage('Passenger not found', Response::HTTP_NOT_FOUND, "UpdatedPassenger");
         }
@@ -198,16 +202,17 @@ class TravelAgentController extends Controller
         $passenger = $this->IBookingService->updatePassenger($passenger, $firstName, $lastName, $dateOfBirth, $email);
 
         $passenger = new PassengerResource($passenger);
-        
+
         return ResponseHelper::jsonResponseMessage($passenger, Response::HTTP_OK, 'updatedPassengerInfo');
     }
-    
-    public function setUserEnquiryStatus(int $enquiryId){
+
+    public function setUserEnquiryStatus(int $enquiryId)
+    {
 
         $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
-        
-        if(!$specificUserEnquiry){
-            return ResponseHelper::jsonResponseMessage(ResponseHelper::COSTUMER_ENQUIRY_NOT_FOUND, Response::HTTP_NOT_FOUND);    
+
+        if (!$specificUserEnquiry) {
+            return ResponseHelper::jsonResponseMessage(ResponseHelper::COSTUMER_ENQUIRY_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
 
         $specificUserEnquiry->setIsSolved(1);
@@ -219,48 +224,49 @@ class TravelAgentController extends Controller
 
     }
 
-    public function getAllFlightBookings(){
+    public function getAllFlightBookings()
+    {
 
         $payment = $this->IBookingService->getAllConfirmedBookings();
 
-        if($payment == null)
-        {
-            return ResponseHelper::jsonResponseMessage('There is not any booking info avaliable', Response::HTTP_NOT_FOUND);    
+        if ($payment == null) {
+            return ResponseHelper::jsonResponseMessage('There is not any booking info avaliable', Response::HTTP_NOT_FOUND);
         }
-        
+
         return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'bookings');
     }
 
-    public function getAllPaymentTransactions(){
+    public function getAllPaymentTransactions()
+    {
         $payment = $this->IBackOfficeService->getPayments();
 
-        if($payment == null)
-        {
-            return ResponseHelper::jsonResponseMessage('There is not any payment info avaliable', Response::HTTP_NOT_FOUND);    
+        if ($payment == null) {
+            return ResponseHelper::jsonResponseMessage('There is not any payment info avaliable', Response::HTTP_NOT_FOUND);
         }
 
         $payment = PaymentResource::collection($payment);
-        
+
         return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payments');
     }
 
-    public function getSpecificPaymentTransactions(string $bookingReference, string $paymentId){
+    public function getSpecificPaymentTransactions(string $bookingReference, string $paymentId)
+    {
         $payment = $this->IBackOfficeService->getSpecificPayments($bookingReference, $paymentId);
 
-        if($payment == null)
-        {
-            return ResponseHelper::jsonResponseMessage('Payment information not found about'. '.'.$bookingReference, Response::HTTP_NOT_FOUND);    
+        if ($payment == null) {
+            return ResponseHelper::jsonResponseMessage('Payment information not found about' . '.' . $bookingReference, Response::HTTP_NOT_FOUND);
         }
-        
+
         return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payment');
     }
-    
-    public function editAgentDetails(Request $request){
-        
+
+    public function editAgentDetails(Request $request)
+    {
+
         $validator = Validator::make($request->all(), [
-            'firstName'               => 'required|string',
-            'lastName'                => 'required|string',
-            'email'                   => 'required|string',
+            'firstName' => 'required|string',
+            'lastName' => 'required|string',
+            'email' => 'required|string',
         ]);
 
 
@@ -272,7 +278,7 @@ class TravelAgentController extends Controller
         $lastName = $request->input('lastName');
         $email = $request->input('email');
 
-        
+
         $loggedInUserId = $request->user()->id;
 
         $userAccount = UserAccount::ById($loggedInUserId)->first();

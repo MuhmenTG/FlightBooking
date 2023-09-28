@@ -15,7 +15,7 @@ class PassengerResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'passengerId' => $this->id,
+            'id' => $this->id,
             'passengerGender' => $this->gender,
             'passengerFirstName' => $this->firstName,
             'passengerLastName' => $this->lastName,
