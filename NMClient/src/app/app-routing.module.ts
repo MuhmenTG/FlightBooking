@@ -8,17 +8,19 @@ import { AgentComponent } from './agent/agent.component';
 import { FaqComponent } from './faq/faq.component';
 import { MyBookingComponent } from './my-booking/my-booking.component';
 import { BookingConfirmationComponent } from './booking-confirmation/booking-confirmation.component';
+import { AdminFaqComponent } from './admin-faq/admin-faq.component';
 
 const routes: Routes = [
   { path: '', component: SearchFlightsComponent },
   { path: 'hotels', component: SearchHotelsComponent },
   { path: 'work/login', component: LoginComponent },
   { path: 'admin', component: AdminComponent },
+  { path: 'admin/faq', component: AdminFaqComponent },
   { path: 'showbooking', component: AdminComponent },
   { path: 'agent', component: AgentComponent },
   { path: 'faq', component: FaqComponent },
   { path: 'mybooking', component: MyBookingComponent },
-  { path: 'bookingconfirmation', component: BookingConfirmationComponent }
+  { path: 'bookingconfirmation', component: BookingConfirmationComponent },
 ];
 
 @NgModule({

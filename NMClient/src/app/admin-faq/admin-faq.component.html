@@ -1,0 +1,49 @@
+<div *ngIf="role">
+    <div class="component component-top">
+        <form #saveReq="ngForm" (submit)="submitForm(saveReq)">
+            <div class="d-flex justify-content-center flex-wrap">
+                <mat-form-field subscriptSizing="dynamic" class="input">
+                    <mat-label>Question</mat-label>
+                    <input matInput type="text" [(ngModel)]="model.question" name="question">
+                    <button *ngIf="model.question" matSuffix mat-icon-button aria-label="Clear" type="button"
+                        (click)="model.question=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+
+                <mat-form-field subscriptSizing="dynamic" class="input">
+                    <mat-label>Answer</mat-label>
+                    <input matInput type="text" [(ngModel)]="model.answer" name="answer">
+                    <button *ngIf="model.answer" matSuffix mat-icon-button aria-label="Clear" type="button"
+                        (click)="model.answer=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+
+                <div class="d-flex justify-content-center">
+                    <button type="submit" mat-flat-button color="primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div *ngIf="faqs != null">
+    <mat-accordion multi="false">
+        <mat-expansion-panel class="mt-2 mb-2" *ngFor="let faq of faqs.FAQS; let i = index;">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <h3>{{faq.question}}</h3>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ng-template matExpansionPanelContent>
+                <p>ID: {{faq.id}}</p>
+                <p>{{faq.answer}}</p>
+                <div class="d-flex justify-content-end">
+                    <button (click)="deleteFAQ(faq.id)" type="submit" mat-flat-button color="secondary">Delete</button>
+                    <button (click)="editFAQ(faq)" type="submit" mat-flat-button color="primary">Edit</button>
+                </div>
+            </ng-template>
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>
