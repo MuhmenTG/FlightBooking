@@ -3,7 +3,7 @@ import { environment } from 'src/environments/environment.development';
 import { AccountsResponse } from '../_models/Employees/AccountsResponse';
 import { Observable } from 'rxjs';
 import { HttpService } from './http.service';
-import { FAQS } from '../_models/FAQS';
+import { FAQRequest, FAQS } from '../_models/FAQS';
 import { AccountRequest } from '../_models/Employees/AccountRequest';
 import { AccountResponse } from '../_models/Employees/AccountResponse';
 
@@ -39,23 +39,23 @@ export class AdminService extends HttpService {
   }
 
   // FAQ
-  createFAQ(body: FAQS): Observable<void> {
-    return this.http.post<void>(this.apiUrl + "/createNewFaq", JSON.stringify(body), this.httpOptions);
+  createFAQ(body: FAQRequest): Observable<void> {
+    return this.http.post<void>(this.apiUrl + "/createNewFaq", JSON.stringify(body), this.httpOptionsAccount);
   }
 
-  editFAQ(id: number, body: FAQS): Observable<void> {
-    return this.http.put<void>(this.apiUrl + "/editFaq/" + id, JSON.stringify(body), this.httpOptions);
+  editFAQ(body: FAQRequest): Observable<void> {
+    return this.http.post<void>(this.apiUrl + "/editFaq/", JSON.stringify(body), this.httpOptionsAccount);
   }
 
   removeFAQ(id: number): Observable<void> {
-    return this.http.delete<void>(this.apiUrl + "/removeFaq/" + id, this.httpOptions);
+    return this.http.delete<void>(this.apiUrl + "/removeFaq/" + id, this.httpOptionsAccount);
   }
 
   getFAQ(id: number): Observable<FAQS> {
-    return this.http.get<FAQS>(this.apiUrl + "/getSpecificFaq/" + id);
+    return this.http.get<FAQS>(this.apiUrl + "/getSpecificFaq/" + id, this.httpOptionsAccount);
   }
 
-  getAllFAQ(): Observable<FAQS[]> {
-    return this.http.get<FAQS[]>(this.apiUrl + "/getAllfaq")
+  getAllFAQ(): Observable<FAQS> {
+    return this.http.get<FAQS>(this.apiUrl + "/getAllFaqs", this.httpOptionsAccount)
   }
 }
