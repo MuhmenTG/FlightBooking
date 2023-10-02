@@ -68,7 +68,22 @@ class AmadeusService implements IAmadeusService {
         $url .= '?' . $params;
 
         return $url;
-    }      
+    }
+    
+    public function AmadeusCitySearchUrl(string $cityKeyWord) : string {
+        $url = getenv(Constants::SEARCH_CITY_LOCATIONS_URL);
+        
+        $queryParams = [
+            Constants::KEY_WORD_CITY => $cityKeyWord
+        ];
+
+        $params = Arr::query($queryParams);
+        
+        $url .= '&' . $params;
+
+        return $url;
+    }
+
 
     public function prepareFlightOfferDataForAmadeusValidating(array $jsonFlightData) : array
     {

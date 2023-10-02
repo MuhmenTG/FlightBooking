@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Amadeus\Airport;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\EnquirySupportRequest;
 use App\Http\Resources\FaqResource;
@@ -10,24 +9,27 @@ use App\Http\Resources\FlightConfirmationResource;
 use App\Http\Resources\PassengerResource;
 use App\Http\Resources\PaymentResource;
 use App\Models\AirportInfo;
+use App\Services\Amadeus\IAmadeusService;
 use App\Services\BackOffice\IBackOfficeService;
 use App\Services\Booking\IBookingService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class PublicSiteController extends Controller
 {
     protected $IBookingService;
     protected $IBackOfficeService;
+    protected $IAmadeusService;
+
     /**
     * PublicSiteController constructor.
     * @param IBookingService $IbookingService
     */
-    public function __construct(IBookingService $IbookingService, IBackOfficeService $IBackOfficeService)
+    public function __construct(IBookingService $IbookingService, IBackOfficeService $IBackOfficeService, IAmadeusService $IAmadeusService)
     {
         $this->IBookingService = $IbookingService;
         $this->IBackOfficeService = $IBackOfficeService;
+        $this->IAmadeusService = $IAmadeusService;
     }
 
     /**
@@ -69,10 +71,9 @@ class PublicSiteController extends Controller
     * @param Request $request The request object.
     * @return \Illuminate\Http\JsonResponse The JSON response.
     */
-
     public function sendEnquirySupport(EnquirySupportRequest $request)
     {    
-      $validated = $request->validated();
+        $request->validated();
         
         $response = $this->IBookingService->sendRquestContactForm(
             $request->get('name'),
@@ -104,7 +105,7 @@ class PublicSiteController extends Controller
         return ResponseHelper::jsonResponseMessage($faqs, Response::HTTP_OK, "FAQS");
     }
 
-    public function searchCity(string $cityName){
+    public function getSearchCity(string $cityName){
         $cityName = AirportInfo::whereLike(AirportInfo::COL_CITY, $cityName)->get();
 
         if(!$cityName){
@@ -113,4 +114,21 @@ class PublicSiteController extends Controller
 
         return ResponseHelper::jsonResponseMessage($cityName, Response::HTTP_OK, "city");
     }
+
+    /**
+    * The City Search API finds cities that match a specific word or string of letters.
+    *
+    * @param Request $request The request object.
+    * @return \Illuminate\Http\JsonResponse The JSON response.
+    */
+    public function searchCity(Request $request){
+        $constructedSearchUrl = $this->IAmadeusService->AmadeusCitySearchUrl(
+            $request->input('keyWord')
+        );
+        
+        $data = $this->sendhttpRequest($constructedSearchUrl, 'GGOk4m5HyMALt0XGhZEcUNj9BpLT');
+        
+        return $data;
+    }
+
 }

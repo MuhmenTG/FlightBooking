@@ -21,6 +21,9 @@ class PaymentService implements IPaymentService {
         $this->bookingRepository = $bookingRepository;
     }
     
+    /**
+    * {@inheritDoc}
+    */
     public function createCharge(int $amount, string $currency, string $cardNumber, string $expireYear, string $expireMonth, string $cvc, string $bookingreference) 
     {
         
@@ -44,6 +47,7 @@ class PaymentService implements IPaymentService {
         $payment = Payment::ByPaymentTransactionId($charge->id)->first();
         return $payment;
     }
+
 
     private function createCardRecord(string $cardNumber, string $expYear, string $expMonth, string $cvc){
 
@@ -84,12 +88,20 @@ class PaymentService implements IPaymentService {
         }
     }
 
+    
+    /**
+    * {@inheritDoc}
+    */
     public function retrieveSpecificBalanceTransaction(string $transactionId): BalanceTransaction
     {
         \Stripe\Stripe::setApiKey('your_api_key');
         return BalanceTransaction::retrieve($transactionId);
     }
 
+    
+    /**
+    * {@inheritDoc}
+    */
     public function retrieveAllTransactions()
     {
         \Stripe\Stripe::setApiKey('your_api_key');

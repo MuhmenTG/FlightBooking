@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Collection;
 
 class BackOfficeRepository implements IBackOfficeRepository{
 
+    /**
+    * {@inheritDoc}
+    */
     public function createAgent(string $password, string $firstName, string $lastName, string $email, int $isAdmin, int $isAgent, string $status): UserAccount
     {
         $userAccount = new UserAccount();
@@ -24,22 +27,34 @@ class BackOfficeRepository implements IBackOfficeRepository{
         return $userAccount;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function findAgentById(int $id): ?UserAccount
     {
         return UserAccount::find($id);
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getUserByEmail(string $email) : ?UserAccount
     {
         $user = UserAccount::ByEmail($email)->first();
         return $user;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function findAgentByEmail(string $email): ?UserAccount
     {
         return UserAccount::where('email', $email)->first();
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function updateAgent(int $agentId, string $firstName, string $lastName, string $email, int $isAdmin, int $isAgent, string $status):  UserAccount
     {
         $userAccount = UserAccount::ById($agentId)->first();
@@ -53,6 +68,9 @@ class BackOfficeRepository implements IBackOfficeRepository{
         return $userAccount;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function deandReactivateAccount(UserAccount $userAccount): UserAccount
     {
         if ($userAccount->getStatus() == 1) {
@@ -65,13 +83,19 @@ class BackOfficeRepository implements IBackOfficeRepository{
         $userAccount->save();
         return $userAccount;
     }
-    
+
+    /**
+    * {@inheritDoc}
+    */
     public function getActivatedAgents(): Collection
     {
         $agents = UserAccount::all();
         return $agents;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getSpecificFaq(int $faqId) : ?Faq {
         $specificFaq = Faq::byId($faqId)->first();
         if($specificFaq){
@@ -80,11 +104,17 @@ class BackOfficeRepository implements IBackOfficeRepository{
         return null;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getAllFaq() : Collection {
         $faqs = Faq::all();
         return $faqs;
     }
     
+    /**
+    * {@inheritDoc}
+    */
     public function createOrUpdateFaq(string $question, string $answer, int $faqId = null): Faq
     {
         if ($faqId !== null) {
@@ -103,17 +133,26 @@ class BackOfficeRepository implements IBackOfficeRepository{
         return $faq;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getDeactivatedAgents(): array
     {
         $agents = UserAccount::where(UserAccount::COL_STATUS, 0)->get()->ToArray();
         return $agents;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getAllPayments() : Collection{
         $payments = Payment::all();
         return $payments;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getSpecificPayments(string $bookingreference, string $transactionId) : ?array{
         $payment = Payment::where(Payment::COL_CONNECTEDBOOKINGREFERENCE, $bookingreference)->first();
         var_dump($payment);exit;

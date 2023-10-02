@@ -41,4 +41,6 @@ interface IAmadeusService
     * @return array The formatted flight offer data.
     */
     public function prepareFlightOfferDataForAmadeusValidating(array $jsonFlightData): array;
+
+    public function AmadeusCitySearchUrl(string $cityKeyWord) : string ;
 }

@@ -22,6 +22,9 @@ class BackOfficeService implements IBackOfficeService {
         $this->travelAgentRepository = $TravelAgentRepository;
     }
     
+    /**
+    * {@inheritDoc}
+    */
     public function createAgent(string $firstName, string $lastName, string $email, string $status, int $isAdmin, int $isAgent): UserAccount
     {
         $existingUserAccount = $this->backOfficeRepository->findAgentByEmail($email);
@@ -37,6 +40,10 @@ class BackOfficeService implements IBackOfficeService {
         return $userAccount;
     }
     
+    
+    /**
+    * {@inheritDoc}
+    */
     public function editAgent(int $agentId, string $firstName, string $lastName, string $email, string $status, int $isAdmin, int $isAgent): UserAccount
     {
         $existingUserAccount = $this->backOfficeRepository->findAgentById($agentId);
@@ -49,11 +56,19 @@ class BackOfficeService implements IBackOfficeService {
         return $userAccount;
     }
     
+    
+    /**
+    * {@inheritDoc}
+    */
     public function getAgentById(int $agentId): ?UserAccount
     {
         return $this->backOfficeRepository->findAgentById($agentId);
     }
     
+    
+    /**
+    * {@inheritDoc}
+    */
     public function removeAgentAccount(int $agentId): ?UserAccount
     {
         $userAccount = $this->backOfficeRepository->findAgentById($agentId);
@@ -66,6 +81,10 @@ class BackOfficeService implements IBackOfficeService {
         return $deactivatedAccount;
     }    
 
+    
+    /**
+    * {@inheritDoc}
+    */
     public function getAllAgents(): Collection
     {
         $agents = $this->backOfficeRepository->getActivatedAgents();
@@ -77,22 +96,36 @@ class BackOfficeService implements IBackOfficeService {
         return $agents;
     }
 
+    
+    /**
+    * {@inheritDoc}
+    */
     public function getFaqById(int $faqId) : ?Faq {
         $faq = $this->backOfficeRepository->getSpecificFaq($faqId);
         return $faq;
     }
      
+    
+    /**
+    * {@inheritDoc}
+    */
     public function getAllFaqs() : ?Collection{
         $faqs = $this->backOfficeRepository->getAllFaq();
         return $faqs;
     }
-
+    
+    /**
+    * {@inheritDoc}
+    */
     public function createOrUpdateFaq(string $question, string $answer, int $faqId = null) : Faq
     {
         $faq = $this->backOfficeRepository->createOrUpdateFaq($question, $answer, $faqId);
         return $faq;
     }
-
+    
+    /**
+    * {@inheritDoc}
+    */
     public function findUserEnquiryById(int $id): ?UserEnquiry
     {
         $userEnquiry = $this->travelAgentRepository->getUserEnquiryById($id);
@@ -102,6 +135,9 @@ class BackOfficeService implements IBackOfficeService {
         return false;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getPayments(){        
         $payments = $this->backOfficeRepository->getAllPayments();
 
@@ -112,6 +148,10 @@ class BackOfficeService implements IBackOfficeService {
         return [];
     }
 
+    
+    /**
+    * {@inheritDoc}
+    */
     public function getSpecificPayments(string $bookingreference, string $transactionId) : array{
         $payment = $this->backOfficeRepository->getSpecificPayments($bookingreference, $transactionId);
 

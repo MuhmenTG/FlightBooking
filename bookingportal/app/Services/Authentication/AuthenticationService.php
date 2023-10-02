@@ -18,6 +18,10 @@ class AuthenticationService implements IAuthenticationService {
         $this->backOfficeRepository = $backOfficeRepository;
     }
 
+    
+    /**
+    * {@inheritDoc}
+    */
     public function authenticate(string $email, string $password): ?Collection
     {
         $user = $this->backOfficeRepository->getUserByEmail($email);

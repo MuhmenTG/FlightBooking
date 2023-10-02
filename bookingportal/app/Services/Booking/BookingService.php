@@ -26,7 +26,10 @@ class BookingService implements IBookingService {
         $this->bookingRepository = $bookingRepository;
         $this->IEmailSendService = $IEmailSendService;
     }
-
+    
+    /**
+    * {@inheritDoc}
+    */
     public function createFlightBookingRecord(array $flightData, string $bookingReference)
     {
         if (!isset($flightData["itineraries"]) || !is_array($flightData["itineraries"])) {
@@ -56,12 +59,20 @@ class BookingService implements IBookingService {
         return $bookedSegments;
     }
 
+    
+    /**
+    * {@inheritDoc}
+    */
     public function generateBookingConfirmationPDF($bookingComplete) : string
     {
         $pdf = FacadePdf::loadView('booking_confirmation', compact('bookingComplete'));
         return $pdf->output();
     }
 
+    
+    /**
+    * {@inheritDoc}
+    */
     public function bookFlight(array $flightData): array
     {
         
@@ -92,6 +103,10 @@ class BookingService implements IBookingService {
         ];
     }
 
+    
+    /**
+    * {@inheritDoc}
+    */
     public function finalizeFlightReservation(string $bookingReference): ?Collection
     {
         $this->bookingRepository->generateTicketNumbers($bookingReference);
@@ -109,6 +124,9 @@ class BookingService implements IBookingService {
         return $paidFlightBooking;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getPassengerEmail(string $bookingReference) : string{
         $bookedPassengers = $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
         $email = $this->bookingRepository->getPassengerEmail($bookedPassengers);
@@ -118,6 +136,9 @@ class BookingService implements IBookingService {
         return null;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function createPassengerRecord(array $passengerData, string $bookingReference)
     {
         $passengers = [];
@@ -130,6 +151,9 @@ class BookingService implements IBookingService {
         return $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function retrieveBookingInformation(string $bookingReference) : ?array
     {
         $bookedFlightSegments = $this->bookingRepository->findFlightSegmentsByBookingReference($bookingReference);
@@ -147,6 +171,10 @@ class BookingService implements IBookingService {
         return null;
     }
 
+    
+    /**
+    * {@inheritDoc}
+    */
     public function generateBookingReference() : string{
         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $bookingNumber = '';
@@ -157,6 +185,10 @@ class BookingService implements IBookingService {
         return $bookingNumber;
     }
 
+    
+    /**
+    * {@inheritDoc}
+    */
     public function sendRquestContactForm(string $name, string $email, string $subject, string $message, string $bookingReference = null)
     {
        
@@ -171,41 +203,66 @@ class BookingService implements IBookingService {
         return false;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getFlightSegmentsByBookingReference(string $bookingReference)
     {
         return $this->bookingRepository->findFlightSegmentsByBookingReference($bookingReference);
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getFlightPassengersByPNR(string $bookingReference) : Collection
     {
         return $this->bookingRepository->findFlightPassengersByPNR($bookingReference);
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function cancelFlightBooking(string $bookingReference)
     {
         $this->bookingRepository->cancelFlightSegments($bookingReference);
         $this->bookingRepository->cancelFlightPassengers($bookingReference);
     }
-
+    
+    /**
+    * {@inheritDoc}
+    */
     public function getUserEnquiryById(int $enquiryId)
     {
        return $this->bookingRepository->getUserEnquiryById($enquiryId);
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getAllUserEnquiries()
     {
         return $this->bookingRepository->getAllUserEnquries();
     }
-
+    
+    /**
+    * {@inheritDoc}
+    */
     public function getSpecificPassengerInBooking(int $passengerId, string $bookingReference){
         return $this->bookingRepository->getSpecificPassengerInBooking($passengerId, $bookingReference);
     }
-
+    
+    /**
+    * {@inheritDoc}
+    */
     public function updatePassenger(PassengerInfo $passenger, string $firstName, string $lastName, string $dateOfBirth, string $email): PassengerInfo
     {
         return $this->bookingRepository->updatePassenger($passenger, $firstName, $lastName, $dateOfBirth, $email);
     }
 
+    
+    /**
+    * {@inheritDoc}
+    */
     public function getAllConfirmedBookings(){
        return $this->bookingRepository->getAllConfirmedBookings();
     }

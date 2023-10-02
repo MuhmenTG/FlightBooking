@@ -40,7 +40,7 @@ class AuthenticationController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $validated = $request->validated();
+        $request->validated();
 
         $response = $this->IAuthenticationService->authenticate($request->get('email'), $request->get('password'));
 

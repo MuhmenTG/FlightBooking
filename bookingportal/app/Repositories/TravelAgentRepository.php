@@ -16,26 +16,41 @@ use Stripe\Charge;
 
 class TravelAgentRepository implements ITravelAgentRepository
 {
+    /**
+    * {@inheritDoc}
+    */
     public function findFlightSegmentsByBookingReference(string $bookingReference): Collection
     {
         return FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->get();
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function findFlightPassengersByPNR(string $bookingReference): Collection
     {
         return PassengerInfo::ByBookingReference($bookingReference)->get();
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function cancelFlightSegments(string $bookingReference): int
     {
         return FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISCANCELLED => true]);
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function cancelFlightPassengers(string $bookingReference): int
     {
         return PassengerInfo::where(PassengerInfo::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISCANCELLED => true]);
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function createPayment(Charge $charge, int $amount, string $currency, string $bookingreference): ?Payment
     {
         $payment = new Payment();
@@ -56,6 +71,9 @@ class TravelAgentRepository implements ITravelAgentRepository
 
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function bookPassengers(string $bookingReference, FlightOfferPassengerDTO $passenger): bool
     {
         $passengerInfo = new PassengerInfo();
@@ -71,12 +89,18 @@ class TravelAgentRepository implements ITravelAgentRepository
         return $passengerInfo->save();
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getBookingPayment(string $bookingReference)
     {
         $paymentDetails = Payment::ByConnectedBookingReference($bookingReference)->first();
         return $paymentDetails;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function generateTicketNumbers(string $bookingReference)
     {
         $ticketRecord = FlightBooking::ByBookingReference($bookingReference)->first();
@@ -90,6 +114,9 @@ class TravelAgentRepository implements ITravelAgentRepository
         }
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function generateTicketNumber(string $validatingAirline): string
     {
         $validatingCarrier = Airline::ByIataDesignator($validatingAirline)->first();
@@ -110,23 +137,34 @@ class TravelAgentRepository implements ITravelAgentRepository
         return $generatedTicketNumber;
     }
 
-
+    /**
+    * {@inheritDoc}
+    */
     public function getUnpaidFlightBookings(string $bookingReference): Collection
     {
         return FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 0)->get();
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function markBookingAsPaid(string $bookingReference): void
     {
         FlightBooking::where(FlightBooking::COL_BOOKINGREFERENCE, $bookingReference)->update([FlightBooking::COL_ISPAID => 1]);
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getPaidFlightBookings(string $bookingReference): Collection
     {
         $bookings = FlightBooking::ByBookingReference($bookingReference)->where(FlightBooking::COL_ISPAID, 1)->get();
         return $bookings;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getPassengerEmail(Collection $bookedPassengers): ?string
     {
         $email = null;
@@ -136,6 +174,9 @@ class TravelAgentRepository implements ITravelAgentRepository
         return $email;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function createFlightBookingSegment(string $bookingReference, FlightSelectionDTO $flightSegment): FlightBooking
     {
         $flightBooking = new FlightBooking();
@@ -182,19 +223,27 @@ class TravelAgentRepository implements ITravelAgentRepository
         return $airlineIcao;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getUserEnquiryById(int $enquiryId)
     {
         $specificUserEnquiry = UserEnquiry::byId($enquiryId)->first();
         return $specificUserEnquiry;
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getAllUserEnquries(): Collection
     {
         $userEnquiries = UserEnquiry::all();
         return $userEnquiries;
     }
 
-
+    /**
+    * {@inheritDoc}
+    */
     public function registerEnquiry(string $name, string $email, string $subject, string $message)
     {
         $enquiry = new UserEnquiry();
@@ -207,6 +256,9 @@ class TravelAgentRepository implements ITravelAgentRepository
         return $enquiry->save();
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function getSpecificPassengerInBooking(int $passengerId, string $bookingReference)
     {
         return PassengerInfo::where(PassengerInfo::COL_ID, $passengerId)
@@ -214,6 +266,9 @@ class TravelAgentRepository implements ITravelAgentRepository
             ->first();
     }
 
+    /**
+    * {@inheritDoc}
+    */
     public function updatePassenger(PassengerInfo $passenger, string $firstName, string $lastName, string $dateOfBirth, string $email): PassengerInfo
     {
         $passenger->setFirstName($firstName);
@@ -224,7 +279,9 @@ class TravelAgentRepository implements ITravelAgentRepository
         return $passenger;
     }
 
-
+    /**
+    * {@inheritDoc}
+    */
     public function getAllConfirmedBookings()
     {
         return FlightBooking::with('passengers')

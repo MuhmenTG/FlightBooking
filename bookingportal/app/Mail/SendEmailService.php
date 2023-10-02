@@ -27,7 +27,6 @@ class SendEmailService implements ISendEmailService
             );
         }
         
-    
         $sendgrid = new \SendGrid(getenv('SEND_GRID_API_KEY'));
         try {
             $response = $sendgrid->send($email);

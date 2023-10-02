@@ -14,8 +14,6 @@ use App\Services\Booking\IBookingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
-use Barryvdh\DomPDF\PDF;
-
 
 class TravelAgentController extends Controller
 {
@@ -92,8 +90,6 @@ class TravelAgentController extends Controller
             return ResponseHelper::jsonResponseMessage('Something went wrong while sending confirmation', Response::HTTP_BAD_REQUEST);
         }
     }
-
-
 
     public function getAllUserEnquiries()
     {
