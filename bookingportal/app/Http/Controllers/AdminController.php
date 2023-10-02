@@ -27,9 +27,16 @@ class AdminController extends Controller
         $this->IbackOfficeService = $IbackOfficeService;
     }
 
+    /**
+    * Create a new agent based on the provided request data.
+    *
+    * @param AdminCreateAgentRequest $request The request containing agent creation data.
+    *
+    * @return Agent The newly created agent.
+    */
     public function createAgent(AdminCreateAgentRequest $request)
     {
-        $validated = $request->validated();
+        $request->validated();
 
         try {
             return new AgentResource(
@@ -47,9 +54,16 @@ class AdminController extends Controller
         }
     }
 
+    /**
+    * Edit an existing agent using the provided request data.
+    *
+    * @param AdminCreateAgentRequest $request The request containing agent edit data.
+    *
+    * @return Agent The edited agent.
+    */
     public function editAgent(AdminCreateAgentRequest $request)
     {
-        $validated = $request->validated();
+        $request->validated();
 
         try {
             return new AgentResource(
@@ -68,6 +82,13 @@ class AdminController extends Controller
         }
     }
 
+    /**
+    * Retrieve detailed information about a specific agent based on their unique ID.
+    *
+    * @param int $agentId The unique ID of the agent.
+    *
+    * @return AgentDetails|null The detailed information about the agent, or null if not found.
+    */
     public function getSpecificAgentDetails(int $agentId)
     {
         try {
@@ -81,6 +102,14 @@ class AdminController extends Controller
         }
     }
 
+    /**
+    * Deactivate or reactivate the account of a specific agent based on their unique ID.
+    *
+    * @param int $agentId The unique ID of the agent.
+    *
+    * @return JsonResponse The JSON response indicating success or failure of the operation.
+    * @throws \Exception If an error occurs during the operation.
+    */
     public function deOrReactivateAgentAccount(int $agentId)
     {
         try {
@@ -94,6 +123,11 @@ class AdminController extends Controller
         }
     }
 
+    /**
+    * Retrieve a list of travel agents.
+    *
+    * @return JsonResponse The JSON response containing the list of travel agents or an error message.
+    */
     public function showListOfTravelAgents()
     {
         $agents = $this->IbackOfficeService->getAllAgents();
@@ -106,7 +140,7 @@ class AdminController extends Controller
 
     public function createFaq(CreateOrUpdateFaqRequest $request)
     {
-        $validated = $request->validated();
+        $request->validated();
 
         try {
             return new FaqResource(
@@ -124,7 +158,7 @@ class AdminController extends Controller
 
     public function editFaq(CreateOrUpdateFaqRequest $request)
     {
-        $validated = $request->validated();
+        $request->validated();
 
         try {
             return new FaqResource(

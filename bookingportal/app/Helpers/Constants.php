@@ -22,7 +22,9 @@ class Constants
     public const CHILDREN = 'children';
     public const SEARCH_FLIGHT_API_URL = 'SEARCH_FLIGHT_API_URL';
     public const HOTEL_LIST_API_URL = 'HOTEL_LIST_API_URL';
+    public const SEARCH_CITY_LOCATIONS_URL = 'SEARCH_CITY_LOCATIONS_URL';
     public const ORIGIN_LOCATION_CODE = 'originLocationCode';
+    public const KEY_WORD_CITY = 'keyword';
     public const CURRENCY_CODE = 'DKK';
     public const FLIGHT_OFFERS_PRICING = 'flight-offers-pricing';
     public const DESTINATION_LOCATION_CODE = 'destinationLocationCode';

@@ -26,8 +26,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::post('/getAccess', [FlightBookingController::class, 'getAccessToken']);
-
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthenticationController::class, 'login']);
     Route::post('logout', [AuthenticationController::class, 'logout']);
@@ -41,12 +39,12 @@ Route::prefix('flight')->group(function () {
 });
 
 Route::prefix('public')->group(function () {
-    /* OBS: Jeg har rettet stavefejl fra retriveBooking til retrieveBooking */
     Route::get('retrieveBooking/{bookingReference}', [PublicSiteController::class, 'retrieveBookingInformation']);
     Route::post('resendBookingConfirmationPDF', [TravelAgentController::class, 'resendBookingConfirmationPDF']);
     Route::post('contactform', [PublicSiteController::class, 'sendEnquirySupport']);
     Route::get('getAllFaqs', [PublicSiteController::class, 'getAllFaqs']);
-    Route::get('getCityName/{cityName}', [PublicSiteController::class, 'searchCity']);
+    Route::post('getCityName', [PublicSiteController::class, 'searchCity']);
+    Route::get('getCityName', [PublicSiteController::class, 'getSearchCity']);
     Route::get('/getSpecificFaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
 });
 
