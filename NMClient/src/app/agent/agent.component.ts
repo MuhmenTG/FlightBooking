@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { PassengerInfo } from '../_models/PassengerInfo';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { FinalBookingResponse } from '../_models/Flights/FinalBookingResponse';
+import { BookingResponse, Passenger } from '../_models/Employees/Agent/Booking';
 
 @Component({
   selector: 'app-agent',
@@ -14,8 +14,8 @@ import { FinalBookingResponse } from '../_models/Flights/FinalBookingResponse';
 export class AgentComponent implements OnInit {
   agentToken = sessionStorage.getItem('token');
   role: boolean = false;
-  model: PassengerInfo = { id: 0, firstName: '', lastName: '', dateOfBirth: '', bookingReference: '' }
-  bookings: FinalBookingResponse[] = [];
+  model: Passenger = { id: 0, firstName: '', lastName: '', dateOfBirth: '', bookingReference: '', email: '' }
+  bookingResponses: BookingResponse = { bookings: [] };
   snackbarOptions: MatSnackBarConfig = { verticalPosition: "top", horizontalPosition: "center" }
   currentYear = new Date().getFullYear();
   currentMonth = new Date().getMonth();
@@ -33,8 +33,8 @@ export class AgentComponent implements OnInit {
       }
 
       this._agentService.getAllFlightBookings().subscribe(response => {
-        this.bookings = response
-        console.log(response);
+        this.bookingResponses = response;
+        console.log(this.bookingResponses);
       });
     }
     else {
@@ -61,14 +61,21 @@ export class AgentComponent implements OnInit {
       this._snackBar.open('Choose a passenger to edit.', '', this.snackbarOptions)
     }
 
+    this.model.id = 0;
     this.model.firstName = '';
     this.model.lastName = '';
+    this.model.email = '';
+    this.model.dateOfBirth = '';
+    this.model.bookingReference = '';
   }
 
-  editBooking(booking: FinalBookingResponse, passengerId: number) {
-    this.model.id = booking.passengers[passengerId].passengerId;
-    this.model.firstName = booking.passengers[passengerId].passengerFirstName;
-    this.model.lastName = booking.passengers[passengerId].passengerLastName;
-    this.model.email = booking.passengers[passengerId].passengerEmail;
+  editBooking(passenger: Passenger) {
+    this.model.id = passenger.id;
+    this.model.firstName = passenger.firstName;
+    this.model.lastName = passenger.lastName;
+    this.model.email = passenger.email;
+    this.model.dateOfBirth = passenger.dateOfBirth;
+    this.model.bookingReference = passenger.bookingReference;
+    console.log(this.model.bookingReference);
   }
 }

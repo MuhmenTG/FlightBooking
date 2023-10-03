@@ -3,7 +3,7 @@ import { HttpService } from './http.service';
 import { environment } from 'src/environments/environment.development';
 import { Observable } from 'rxjs';
 import { EnquiryResponse } from '../_models/Enquiries/EnquiryResponse';
-import { PassengerInfo } from '../_models/PassengerInfo';
+import { BookingResponse, Passenger } from '../_models/Employees/Agent/Booking';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +11,8 @@ import { PassengerInfo } from '../_models/PassengerInfo';
 export class AgentService extends HttpService {
   private apiUrl = environment.apiUrl + "/travelAgent";
 
-  getAllFlightBookings(): Observable<any> {
-    return this.http.get<any>(this.apiUrl + "/getAllFlightBookings", this.httpOptionsAccount);
+  getAllFlightBookings(): Observable<BookingResponse> {
+    return this.http.get<BookingResponse>(this.apiUrl + "/getAllFlightBookings", this.httpOptionsAccount);
   }
 
   getBooking(bookingReference: string): Observable<any> {
@@ -31,8 +31,8 @@ export class AgentService extends HttpService {
     return this.http.get<any>(this.apiUrl + "/getSpecificPaymentTransactions/" + bookingReference + "/" + paymentId, this.httpOptionsAccount);
   }
 
-  editPassengerInformation(passengerInfo: PassengerInfo): Observable<any> {
-    return this.http.post<any>(this.apiUrl + "/editPassengerInformation", passengerInfo, this.httpOptionsAccount);
+  editPassengerInformation(passengerInfo: Passenger): Observable<any> {
+    return this.http.post<Passenger>(this.apiUrl + "/editPassengerInformation", passengerInfo, this.httpOptionsAccount);
   }
 
   sendBookingToCustomer(): Observable<any> {

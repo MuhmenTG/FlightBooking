@@ -20,6 +20,15 @@
                     </button>
                 </mat-form-field>
 
+                <mat-form-field subscriptSizing="dynamic" class="input">
+                    <mat-label>E-mail</mat-label>
+                    <input matInput type="email" [(ngModel)]="model.email" name="email">
+                    <button *ngIf="model.email" matSuffix mat-icon-button aria-label="Clear" type="button"
+                        (click)="model.email=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+
                 <mat-form-field subscriptSizing="dynamic" class="date">
                     <mat-label>Birth date</mat-label>
                     <input matInput [(ngModel)]="model.dateOfBirth" name="datepick" [max]="maxDate"
@@ -36,22 +45,27 @@
     </div>
 </div>
 
-<div *ngIf="bookings != null">
+<div *ngIf="bookingResponses != null">
     <mat-accordion multi="false">
-        <mat-expansion-panel class="mt-2 mb-2" *ngFor="let booking of bookings; let i = index;">
+        <mat-expansion-panel class="mt-2 mb-2" *ngFor="let booking of bookingResponses.bookings;">
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     <h3>{{booking.bookingReference}}</h3>
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <ng-template matExpansionPanelContent>
-                <p><strong>ID:</strong> {{booking.navigationId}}</p>
-                <div class="d-flex justify-content-end" *ngFor="let passenger of booking.passengers">
-                    <p>{{passenger.passengerFirstName}} {{passenger.passengerLastName}}</p>
-                    <p><strong>Email:</strong> {{passenger.passengerEmail}}</p>
-                    <button (click)="editBooking(booking, passenger.passengerId)" type="submit" mat-flat-button
-                        color="primary">Edit</button>
+                <div *ngFor="let passenger of booking.passengers">
+                    <p><strong>Passenger ID:</strong> {{booking.id}}</p>
+                    <p><strong>Name:</strong> {{passenger.firstName}} {{passenger.lastName}}</p>
+                    <p><strong>Email:</strong> {{passenger.email}}</p>
+                    <p><strong>Date of birth:</strong> {{passenger.dateOfBirth}}</p>
+                    <div class="d-flex justify-content-end">
+
+                        <button (click)="editBooking(passenger)" type="submit" mat-flat-button
+                            color="primary">Edit</button>
+                    </div>
                 </div>
+
             </ng-template>
         </mat-expansion-panel>
     </mat-accordion>
