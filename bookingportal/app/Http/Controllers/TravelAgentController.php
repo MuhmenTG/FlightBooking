@@ -170,7 +170,7 @@ class TravelAgentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer',
-            'bookingreference' => 'required|string',
+            'bookingReference' => 'required|string',
             'firstName' => 'required|string',
             'lastName' => 'required|string',
             'dateOfBirth' => 'required|string',
@@ -182,7 +182,7 @@ class TravelAgentController extends Controller
         }
 
         $id = intval($request->input('id'));
-        $bookingReference = $request->input('bookingreference');
+        $bookingReference = $request->input('bookingReference');
         $firstName = $request->input('firstName');
         $lastName = $request->input('lastName');
         $dateOfBirth = $request->input('dateOfBirth');

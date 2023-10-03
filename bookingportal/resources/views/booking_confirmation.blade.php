@@ -15,7 +15,7 @@
 
 <h1>Passenger Details</h1>
 <!-- Jeg har ændret variabel til 'passengers' og rettet stavefejl -->
-@foreach ($bookingComplete['passengers'] as $traveller)
+@foreach ($bookingComplete['passenger'] as $traveller)
     <div class="container">
         <p>
             <strong>Name:</strong> {{ $traveller['firstName'] }} {{ $traveller['lastName'] }}
