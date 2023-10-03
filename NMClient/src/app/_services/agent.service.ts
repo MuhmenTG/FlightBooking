@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environment.development';
 import { Observable } from 'rxjs';
 import { EnquiryResponse } from '../_models/Enquiries/EnquiryResponse';
 import { BookingResponse, Passenger } from '../_models/Employees/Agent/Booking';
+import { FinalBookingResponse } from '../_models/Flights/FinalBookingResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,8 @@ export class AgentService extends HttpService {
     return this.http.get<BookingResponse>(this.apiUrl + "/getAllFlightBookings", this.httpOptionsAccount);
   }
 
-  getBooking(bookingReference: string): Observable<any> {
-    return this.http.get<any>(this.apiUrl + "/getBooking/" + bookingReference, this.httpOptionsAccount);
+  getBooking(bookingReference: string): Observable<FinalBookingResponse> {
+    return this.http.get<FinalBookingResponse>(this.apiUrl + "/getBooking/" + bookingReference, this.httpOptionsAccount);
   }
 
   cancelFlightBooking(bookingReference: string): Observable<any> {

@@ -5,6 +5,7 @@ import { NgForm } from '@angular/forms';
 import { PassengerInfo } from '../_models/PassengerInfo';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { BookingResponse, Passenger } from '../_models/Employees/Agent/Booking';
+import { FinalBookingResponse } from '../_models/Flights/FinalBookingResponse';
 
 @Component({
   selector: 'app-agent',
@@ -16,6 +17,9 @@ export class AgentComponent implements OnInit {
   role: boolean = false;
   model: Passenger = { id: 0, firstName: '', lastName: '', dateOfBirth: '', bookingReference: '', email: '' }
   bookingResponses: BookingResponse = { bookings: [] };
+  searchString: string = '';
+  searchModel: FinalBookingResponse = { flight: [], passengers: [] };
+  searchResponse: FinalBookingResponse = { passengers: [], flight: [] };
   snackbarOptions: MatSnackBarConfig = { verticalPosition: "top", horizontalPosition: "center" }
   currentYear = new Date().getFullYear();
   currentMonth = new Date().getMonth();
@@ -76,6 +80,16 @@ export class AgentComponent implements OnInit {
     this.model.email = passenger.email;
     this.model.dateOfBirth = passenger.dateOfBirth;
     this.model.bookingReference = passenger.bookingReference;
-    console.log(this.model.bookingReference);
+  }
+
+  searchBooking() {
+    if (this.searchString.length > 5) {
+      console.log('trigger');
+      this._agentService.getBooking(this.searchString).subscribe({
+        next: response => {
+          this.searchResponse = response;
+        }
+      })
+    }
   }
 }

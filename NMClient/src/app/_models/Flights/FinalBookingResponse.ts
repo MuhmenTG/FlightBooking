@@ -1,8 +1,6 @@
-import { PassengerInfo } from "../PassengerInfo";
-
 export interface FinalBookingResponse {
-    bookingReference: string;
-    navigationId: number;
+    bookingReference?: string;
+    navigationId?: number;
     flight: Flight[];
     passengers: Passenger[];
     payment?: Payment;

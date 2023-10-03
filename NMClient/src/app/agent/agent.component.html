@@ -44,6 +44,18 @@
         </form>
     </div>
 </div>
+<div class="d-flex justify-content-center flex-wrap">
+    <mat-form-field subscriptSizing="dynamic" class="input">
+        <mat-label>Search by booking reference</mat-label>
+        <input matInput type="text" [(ngModel)]="searchString" name="searchString" (input)="searchBooking()">
+        <button *ngIf=" searchString" matSuffix mat-icon-button aria-label="Clear" type="button"
+            (click)="searchString=''">
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-form-field>
+</div>
+
+<mat-divider class="mt-2"></mat-divider>
 
 <div *ngIf="bookingResponses != null">
     <mat-accordion multi="false">
@@ -60,12 +72,10 @@
                     <p><strong>Email:</strong> {{passenger.email}}</p>
                     <p><strong>Date of birth:</strong> {{passenger.dateOfBirth}}</p>
                     <div class="d-flex justify-content-end">
-
                         <button (click)="editBooking(passenger)" type="submit" mat-flat-button
                             color="primary">Edit</button>
                     </div>
                 </div>
-
             </ng-template>
         </mat-expansion-panel>
     </mat-accordion>
