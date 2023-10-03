@@ -44,7 +44,7 @@ Route::prefix('public')->group(function () {
     Route::post('contactform', [PublicSiteController::class, 'sendEnquirySupport']);
     Route::get('getAllFaqs', [PublicSiteController::class, 'getAllFaqs']);
     Route::post('getCityName', [PublicSiteController::class, 'searchCity']);
-    Route::get('getCityName', [PublicSiteController::class, 'getSearchCity']);
+    Route::get('getCityName/{cityName}', [PublicSiteController::class, 'getSearchCity']);
     Route::get('/getSpecificFaq/{faqId}', [AdminController::class, 'getSpecificFaq']);
 });
 
