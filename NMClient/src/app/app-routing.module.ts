@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { SearchFlightsComponent } from './search-flights/search-flights.component';
-import { SearchHotelsComponent } from './search-hotels/search-hotels.component';
 import { LoginComponent } from './login/login.component';
 import { AdminComponent } from './admin/admin.component';
 import { AgentComponent } from './agent/agent.component';
@@ -12,7 +11,6 @@ import { AdminFaqComponent } from './admin-faq/admin-faq.component';
 
 const routes: Routes = [
   { path: '', component: SearchFlightsComponent },
-  { path: 'hotels', component: SearchHotelsComponent },
   { path: 'work/login', component: LoginComponent },
   { path: 'admin', component: AdminComponent },
   { path: 'admin/faq', component: AdminFaqComponent },
