@@ -1,8 +1,8 @@
 export interface PassengerInfo {
     id: number
-    bookingReference: string
+    bookingReference?: string
     firstName: string
     lastName: string
     dateOfBirth: string
-    email: string
+    email?: string
 }

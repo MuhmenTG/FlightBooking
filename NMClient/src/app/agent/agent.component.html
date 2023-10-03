@@ -1,1 +1,58 @@
-<p>agent works!</p>
+<div *ngIf="role">
+    <div class="component component-top">
+        <form #saveReq="ngForm" (submit)="submitForm(saveReq)">
+            <div class="d-flex justify-content-center flex-wrap">
+                <mat-form-field subscriptSizing="dynamic" class="input">
+                    <mat-label>First name</mat-label>
+                    <input matInput type="text" [(ngModel)]="model.firstName" name="firstName">
+                    <button *ngIf="model.firstName" matSuffix mat-icon-button aria-label="Clear" type="button"
+                        (click)="model.firstName=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+
+                <mat-form-field subscriptSizing="dynamic" class="input">
+                    <mat-label>Last name</mat-label>
+                    <input matInput type="text" [(ngModel)]="model.lastName" name="lastName">
+                    <button *ngIf="model.lastName" matSuffix mat-icon-button aria-label="Clear" type="button"
+                        (click)="model.lastName=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+
+                <mat-form-field subscriptSizing="dynamic" class="date">
+                    <mat-label>Birth date</mat-label>
+                    <input matInput [(ngModel)]="model.dateOfBirth" name="datepick" [max]="maxDate"
+                        [matDatepicker]="picker" disabled>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker disabled="false"></mat-datepicker>
+                </mat-form-field>
+
+                <div class="d-flex justify-content-center">
+                    <button type="submit" mat-flat-button color="primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div *ngIf="bookings != null">
+    <mat-accordion multi="false">
+        <mat-expansion-panel class="mt-2 mb-2" *ngFor="let booking of bookings; let i = index;">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <h3>{{booking.bookingReference}}</h3>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ng-template matExpansionPanelContent>
+                <p><strong>ID:</strong> {{booking.navigationId}}</p>
+                <div class="d-flex justify-content-end" *ngFor="let passenger of booking.passengers">
+                    <p>{{passenger.passengerFirstName}} {{passenger.passengerLastName}}</p>
+                    <p><strong>Email:</strong> {{passenger.passengerEmail}}</p>
+                    <button (click)="editBooking(booking, passenger.passengerId)" type="submit" mat-flat-button
+                        color="primary">Edit</button>
+                </div>
+            </ng-template>
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>
