@@ -12,7 +12,7 @@ import { PassengerCount } from '../_models/Flights/PassengerCount';
 export class ShowFlightoffersComponent implements OnInit {
   @Input() offers!: FlightResponses;
   @Input() passengerCount: PassengerCount;
-  @Input() formSubmitted!: boolean;
+  // @Input() formSubmitted!: boolean;
   isLoading: boolean = false;
   flightInfo = {} as FlightInfoResponse;
   flightChosen: boolean = false;
