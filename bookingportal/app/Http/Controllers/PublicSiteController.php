@@ -49,16 +49,16 @@ class PublicSiteController extends Controller
         if ($bookingInfo) {
 
             $bookedFlightSegments = FlightConfirmationResource::collection($bookingInfo['flight']);
-            $bookedFlightPassenger = PassengerResource::collection($bookingInfo['passengers']);
+            $bookedFlightPassengers = PassengerResource::collection($bookingInfo['passengers']);
             $paymentDetails = new PaymentResource($bookingInfo['payment']);
     
-            $responseData = [
-                'passengers' => $bookedFlightPassenger,
-                'flight' => $bookedFlightSegments,
-                'payment' => $paymentDetails,
+            $bookingComplete = [
+                "passengers" => $bookedFlightPassengers,
+                "flights" => $bookedFlightSegments,
+                "payment" => $paymentDetails,
             ];
     
-            return ResponseHelper::jsonResponseMessage($responseData, Response::HTTP_OK);
+            return ResponseHelper::jsonResponseMessage($bookingComplete, Response::HTTP_OK);
         }
     
         return ResponseHelper::jsonResponseMessage(ResponseHelper::BOOKING_NOT_FOUND, Response::HTTP_NOT_FOUND);
