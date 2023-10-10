@@ -39,14 +39,13 @@ class PaymentService implements IPaymentService {
             'description' => $bookingreference,
         ]);
         
-        
         if($charge){    
            $payment = $this->bookingRepository->createPayment($charge, $amount, $currency, $bookingreference);
         }
         
-        $payment = Payment::ByPaymentTransactionId($charge->id)->first();
-        return $payment;
-    }
+    $payment = Payment::ByPaymentTransactionId($charge->id)->first();
+    return $payment;
+}
 
 
     private function createCardRecord(string $cardNumber, string $expYear, string $expMonth, string $cvc){
