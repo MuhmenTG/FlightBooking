@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpService } from './http.service';
 import { environment } from 'src/environments/environment.development';
 import { Observable } from 'rxjs';
-import { EnquiryResponse } from '../_models/Enquiries/EnquiryResponse';
+import { EnquiryResponse, EnquiryResponses } from '../_models/Enquiries/EnquiryResponse';
 import { BookingResponse, Passenger } from '../_models/Employees/Agent/Booking';
 import { FinalBookingResponse } from '../_models/Flights/FinalBookingResponse';
+import { EnquiryReply } from '../_models/Employees/Agent/EnquiryReply';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,7 @@ export class AgentService extends HttpService {
     return this.http.get<any>(this.apiUrl + "/getSpecificPaymentTransactions/" + bookingReference + "/" + paymentId, this.httpOptionsAccount);
   }
 
-  editPassengerInformation(passengerInfo: Passenger): Observable<any> {
+  editPassengerInformation(passengerInfo: Passenger): Observable<Passenger> {
     return this.http.post<Passenger>(this.apiUrl + "/editPassengerInformation", passengerInfo, this.httpOptionsAccount);
   }
 
@@ -40,20 +41,20 @@ export class AgentService extends HttpService {
     return this.http.post<any>(this.apiUrl + "/sendBooking", this.httpOptionsAccount);
   }
 
-  answerEnquiry(): Observable<any> {
-    return this.http.post<any>(this.apiUrl + "/answerUserEnquiry", this.httpOptionsAccount);
+  answerUserEnquiry(reply: EnquiryReply): Observable<any> {
+    return this.http.post<any>(this.apiUrl + "/answerUserEnquiry", reply, this.httpOptionsAccount);
   }
 
   setEnquiryStatus(id: number): Observable<any> {
-    return this.http.put<any>(this.apiUrl + "/setUserEnquiryStatus/" + id, this.httpOptionsAccount);
+    return this.http.put<any>(this.apiUrl + "/setUserEnquiryStatus/" + id, null, this.httpOptionsAccount);
   }
 
   deleteEnquiryStatus(id: number): Observable<any> {
     return this.http.delete<any>(this.apiUrl + "/removeUserEnquiry/" + id, this.httpOptionsAccount);
   }
 
-  getAllEnquiries(): Observable<EnquiryResponse[]> {
-    return this.http.get<EnquiryResponse[]>(this.apiUrl + "/getAllUserEnquries", this.httpOptionsAccount);
+  getAllEnquiries(): Observable<EnquiryResponses> {
+    return this.http.get<EnquiryResponses>(this.apiUrl + "/getAllUserEnquries", this.httpOptionsAccount);
   }
 
   getSpecificEnquiry(id: number): Observable<EnquiryResponse> {
