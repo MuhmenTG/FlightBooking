@@ -1,4 +1,4 @@
-<div *ngIf="!flightBooked" class="component component-top">
+<div *ngIf="!flightBooked" class="component-top">
     <form #createBooking="ngForm" (submit)="submitForm(createBooking)">
         <div class="d-flex justify-content-center flex-wrap">
             <mat-form-field subscriptSizing="dynamic" class="input">
@@ -141,6 +141,6 @@
 
 <app-payment *ngIf="formSubmitted" [bookingResponse]="bookingResponse" [flightInfo]="flightInfo"></app-payment>
 
-<div class="component spinner d-flex justify-content-center" id="spinner" *ngIf="isLoading" scrollTo>
+<div class="spinner d-flex justify-content-center" id="spinner" *ngIf="isLoading" scrollTo>
     <mat-spinner></mat-spinner>
 </div>
