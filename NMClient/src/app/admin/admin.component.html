@@ -45,27 +45,56 @@
 </div>
 
 <div *ngIf="accounts != null">
-    <mat-accordion multi="false">
-        <mat-expansion-panel class="mt-2 mb-2" *ngFor="let account of accounts.formatedAgents; let i = index;">
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    <h3>{{account.firstName + " " + account.lastName}}</h3>
-                </mat-panel-title>
-            </mat-expansion-panel-header>
-            <ng-template matExpansionPanelContent>
-                <p><strong>ID:</strong> {{account.id}}</p>
-                <p><strong>Email:</strong> {{account.email}}</p>
-                <p><strong>Registration date:</strong> {{account.registeredAt}}</p>
-                <div class="d-flex justify-content-end">
-                    <div *ngIf="!account.administratorPermission">
-                        <button *ngIf="account.accountStatus == '1'" (click)="accountActivation(account)" type="submit"
-                            mat-flat-button color="secondary">Deactivate</button>
-                        <button *ngIf="account.accountStatus == '0'" (click)="accountActivation(account)" type="submit"
-                            mat-flat-button color="secondary">Activate</button>
+    <h3>Active accounts</h3>
+    <div *ngFor="let account of accounts.formatedAgents; let i = index;">
+        <mat-accordion multi="false" *ngIf="account.accountStatus == '1'">
+            <mat-expansion-panel class="mt-2 mb-2">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <h3>{{account.firstName + " " + account.lastName}}</h3>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ng-template matExpansionPanelContent>
+                    <p><strong>ID:</strong> {{account.id}}</p>
+                    <p><strong>Email:</strong> {{account.email}}</p>
+                    <p><strong>Registration date:</strong> {{account.registeredAt}}</p>
+                    <div class="d-flex justify-content-end">
+                        <div *ngIf="!account.administratorPermission">
+                            <button (click)="accountActivation(account)" type="submit" mat-flat-button
+                                color="secondary">Deactivate</button>
+                        </div>
+                        <button (click)="editAccount(account)" type="submit" mat-flat-button
+                            color="primary">Edit</button>
                     </div>
-                    <button (click)="editAccount(account)" type="submit" mat-flat-button color="primary">Edit</button>
-                </div>
-            </ng-template>
-        </mat-expansion-panel>
-    </mat-accordion>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+
+    <mat-divider class="mb-5"></mat-divider>
+    <h3>Inactive accounts</h3>
+    <div *ngFor="let account of accounts.formatedAgents; let i = index;">
+        <mat-accordion multi="false" *ngIf="account.accountStatus == '0'">
+            <mat-expansion-panel class="mt-2 mb-2">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <h3>{{account.firstName + " " + account.lastName}}</h3>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ng-template matExpansionPanelContent>
+                    <p><strong>ID:</strong> {{account.id}}</p>
+                    <p><strong>Email:</strong> {{account.email}}</p>
+                    <p><strong>Registration date:</strong> {{account.registeredAt}}</p>
+                    <div class="d-flex justify-content-end">
+                        <div *ngIf="!account.administratorPermission">
+                            <button (click)="accountActivation(account)" type="submit" mat-flat-button
+                                color="secondary">Activate</button>
+                        </div>
+                        <button (click)="editAccount(account)" type="submit" mat-flat-button
+                            color="primary">Edit</button>
+                    </div>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
 </div>
