@@ -1,3 +1,7 @@
+export interface EnquiryResponses {
+    enquiryResponses: EnquiryResponse[];
+}
+
 export interface EnquiryResponse {
     id: number;
     name: string;
