@@ -3,9 +3,9 @@ import { FAQS } from '../_models/FAQS';
 import { HttpService } from './http.service';
 import { environment } from 'src/environments/environment.development';
 import { Observable } from 'rxjs';
-import { EnquiryRequest } from '../_models/EnquiryRequest';
 import { CitySearchResponse } from '../_models/Flights/CitySearchResponse';
 import { FinalBookingResponse } from '../_models/Flights/FinalBookingResponse';
+import { EnquiryRequest } from '../_models/Enquiries/EnquiryRequest';
 
 @Injectable({
   providedIn: 'root'
