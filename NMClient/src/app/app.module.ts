@@ -34,6 +34,9 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule } from '@angular/mater
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { AdminFaqComponent } from './admin-faq/admin-faq.component';
+import { EnquiryComponent } from './enquiry/enquiry.component';
+import { AgentEnquiryComponent } from './agent-enquiry/agent-enquiry.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 @NgModule({
   declarations: [
@@ -50,6 +53,8 @@ import { AdminFaqComponent } from './admin-faq/admin-faq.component';
     MyBookingComponent,
     BookingConfirmationComponent,
     AdminFaqComponent,
+    EnquiryComponent,
+    AgentEnquiryComponent,
   ],
   imports: [
     BrowserModule,
@@ -77,7 +82,8 @@ import { AdminFaqComponent } from './admin-faq/admin-faq.component';
     MatMenuModule,
     MatSnackBarModule,
     MatCheckboxModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatSidenavModule
   ],
   providers: [
     {
