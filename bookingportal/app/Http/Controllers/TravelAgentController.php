@@ -101,7 +101,7 @@ class TravelAgentController extends Controller
 
         $userEnquiries = SupportRequestResource::collection($userEnquiries);
 
-        return ResponseHelper::jsonResponseMessage($userEnquiries, Response::HTTP_OK, "supportRequests");
+        return ResponseHelper::jsonResponseMessage($userEnquiries, Response::HTTP_OK, "enquiryResponses");
     }
 
     public function getSpecificUserEnquiry(int $enquiryId)
@@ -114,7 +114,7 @@ class TravelAgentController extends Controller
 
         $specificUserEnquiry = new SupportRequestResource($specificUserEnquiry);
 
-        return ResponseHelper::jsonResponseMessage($specificUserEnquiry, Response::HTTP_OK, "supportRequest");
+        return ResponseHelper::jsonResponseMessage($specificUserEnquiry, Response::HTTP_OK, "enquiryResponse");
     }
 
     public function answerUserEnquiry(Request $request)
