@@ -15,14 +15,14 @@ class SupportRequestResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'supportRequestId' => $this->id,
+            'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
             'subject' => $this->subject,
-            'bookingreference' => $this->bookingreference,
+            'bookingReference' => $this->bookingReference,
             'message' => $this->message,
-            'sentTime' => $this->time,
-            'solvedSatus' => $this->isSolved,
+            'time' => $this->time,
+            'isSolved' => $this->isSolved,
         ];
     }
 }
