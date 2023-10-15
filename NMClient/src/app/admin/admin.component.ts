@@ -77,7 +77,8 @@ export class AdminComponent implements OnInit {
     }
     else {
       console.log(this.model);
-      this._adminService.createAccount(this.model).subscribe(() => {
+      this._adminService.createAccount(this.model).subscribe(response => {
+        this.accounts.formatedAgents = this.accounts.formatedAgents.concat(response.data);
         this._snackBar.open('User successfully created!', '', this.snackbarOptions)
       });
     }
