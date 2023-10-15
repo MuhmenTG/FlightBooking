@@ -11,5 +11,5 @@ export interface SearchFlightsRequest {
     adults: number;
     children: number;
     infants: number;
-    isDirect: boolean;
+    nonStop: boolean;
 }
