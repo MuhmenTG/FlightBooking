@@ -1,4 +1,4 @@
-<div class="component">
+<div class="component-top">
     <form #sendPayment="ngForm" (submit)="submitForm(sendPayment)">
         <div class="d-flex flex-row justify-content-start">
             <mat-form-field subscriptSizing="dynamic" class="input">
@@ -48,6 +48,6 @@
     </form>
 </div>
 
-<div class="component spinner d-flex justify-content-center" id="spinner" *ngIf="isLoading" scrollTo>
+<div class="spinner d-flex justify-content-center" id="spinner" *ngIf="isLoading" scrollTo>
     <mat-spinner></mat-spinner>
 </div>
