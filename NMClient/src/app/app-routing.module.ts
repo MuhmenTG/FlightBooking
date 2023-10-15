@@ -8,6 +8,8 @@ import { FaqComponent } from './faq/faq.component';
 import { MyBookingComponent } from './my-booking/my-booking.component';
 import { BookingConfirmationComponent } from './booking-confirmation/booking-confirmation.component';
 import { AdminFaqComponent } from './admin-faq/admin-faq.component';
+import { EnquiryComponent } from './enquiry/enquiry.component';
+import { AgentEnquiryComponent } from './agent-enquiry/agent-enquiry.component';
 
 const routes: Routes = [
   { path: '', component: SearchFlightsComponent },
@@ -16,9 +18,11 @@ const routes: Routes = [
   { path: 'admin/faq', component: AdminFaqComponent },
   { path: 'showbooking', component: AdminComponent },
   { path: 'agent', component: AgentComponent },
+  { path: 'agent/enquiry', component: AgentEnquiryComponent },
   { path: 'faq', component: FaqComponent },
   { path: 'mybooking', component: MyBookingComponent },
   { path: 'bookingconfirmation', component: BookingConfirmationComponent },
+  { path: 'enquiry', component: EnquiryComponent }
 ];
 
 @NgModule({
