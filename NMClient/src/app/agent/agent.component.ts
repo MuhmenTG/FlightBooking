@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { AgentService } from '../_services/agent.service';
 import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
-import { PassengerInfo } from '../_models/PassengerInfo';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { BookingResponse, Passenger } from '../_models/Employees/Agent/Booking';
 import { FinalBookingResponse } from '../_models/Flights/FinalBookingResponse';
@@ -29,7 +28,7 @@ export class AgentComponent implements OnInit {
   constructor(private _agentService: AgentService, private _router: Router, private _snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
-    if (sessionStorage.getItem('role') == 'agent') {
+    if (sessionStorage.getItem('role') == 'agent' || sessionStorage.getItem('role') == 'admin') {
       this.role = true;
       var token = sessionStorage.getItem('token');
       if (token != null) {
@@ -54,7 +53,7 @@ export class AgentComponent implements OnInit {
       this._agentService.editPassengerInformation(this.model).subscribe({
         next: response => {
           this._snackBar.open('Passenger information successfully edited!', '', this.snackbarOptions)
-          // this.accounts.formatedAgents[this.accounts.formatedAgents.findIndex(i => i.id === response.data.id)] = response.data;
+          // var booking = this.bookingResponses.bookings[this.bookingResponses.bookings.indexOf]
         }, error: err => {
           this._snackBar.open(err.message, '', this.snackbarOptions)
         }
