@@ -9,18 +9,12 @@ import { Router } from '@angular/router';
   templateUrl: './my-booking.component.html',
   styleUrls: ['./my-booking.component.css']
 })
-export class MyBookingComponent implements OnInit {
+export class MyBookingComponent {
 
   isLoading: boolean = false;
   model: MyBookingRequest = { bookingReference: "" }
 
   constructor(private _publicService: PublicService, private _router: Router) { }
-
-  ngOnInit(): void {
-    // this._publicService.retrieveBooking("DIVE4D").subscribe(response => {
-    //   console.log(response);
-    // })
-  }
 
   submitForm(form: NgForm) {
     if (!form.valid) {
