@@ -1,4 +1,4 @@
-<div *ngIf="offers != null && !flightChosen" class="component offer-component">
+<div *ngIf="offers != null && !flightChosen" class="offer-component">
     <div *ngFor="let offer of offers.data; let i = index;">
         <div *ngIf="shownOffers > i" class="border my-2 content">
             <div *ngFor="let iti of offer.itineraries">
@@ -24,6 +24,6 @@
 <app-book-flight *ngIf="flightChosenHasResponse" [flightInfo]="flightInfo"
     [passengerCount]="passengerCount"></app-book-flight>
 
-<div class="component spinner d-flex justify-content-center" id="spinner" *ngIf="isLoading" scrollTo>
+<div class="spinner d-flex justify-content-center" id="spinner" *ngIf="isLoading" scrollTo>
     <mat-spinner></mat-spinner>
 </div>

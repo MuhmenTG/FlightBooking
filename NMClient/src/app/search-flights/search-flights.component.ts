@@ -10,6 +10,7 @@ import { PublicService } from '../_services/public.service';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { PassengerCount } from '../_models/Flights/PassengerCount';
+import { FlightInfoResponse } from '../_models/Flights/FlightInfoResponse';
 
 enum FlightClassEnum {
   ECONOMY = 0,
@@ -24,6 +25,9 @@ enum FlightClassEnum {
   styleUrls: ['./search-flights.component.css']
 })
 export class SearchFlightsComponent {
+  opened: boolean;
+  sidebarInfo = {} as FlightInfoResponse;
+
   @ViewChild(ShowFlightoffersComponent) child!: ShowFlightoffersComponent;
   passengerTypes = ["Adults (18+)", "Children (2-17)", "Infants (0-2)"]
   passengers = [1, 0, 0]
@@ -46,7 +50,7 @@ export class SearchFlightsComponent {
     infants: 0,
     travelClass: this.classes[0],
     travelClassVar: this.classes[0],
-    isDirect: false
+    nonStop: false
   }
 
   passengerCount: PassengerCount = { adults: 0, children: 0, infants: 0 };
@@ -77,10 +81,16 @@ export class SearchFlightsComponent {
     iconRegistry.addSvgIcon('minus-icon', sanitizer.bypassSecurityTrustResourceUrl('./assets/images/minus.svg'))
   }
 
+  updateNav(info: FlightInfoResponse) {
+    this.sidebarInfo = info;
+  }
+
   resetAll() {
     this.child.reset()
     this.formSubmitted = false;
     this.isLoading = false;
+    if (this.opened) this.opened = !this.opened;
+    this.sidebarInfo = {} as FlightInfoResponse;
   }
 
   inputSearchFrom(searchString: any): void {

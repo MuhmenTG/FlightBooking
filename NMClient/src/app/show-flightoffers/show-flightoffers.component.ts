@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FlightInfoResponse } from '../_models/Flights/FlightInfoResponse';
 import { FlightResponses } from '../_models/Flights/FlightResponses';
 import { FlightService } from '../_services/flight.service';
@@ -14,6 +14,7 @@ export class ShowFlightoffersComponent implements OnInit {
   @Input() passengerCount: PassengerCount;
   // @Input() formSubmitted!: boolean;
   isLoading: boolean = false;
+  @Output() flightInfoEvent = new EventEmitter<FlightInfoResponse>();
   flightInfo = {} as FlightInfoResponse;
   flightChosen: boolean = false;
   flightChosenHasResponse: boolean = false;
@@ -25,10 +26,7 @@ export class ShowFlightoffersComponent implements OnInit {
   constructor(private _flightService: FlightService) { }
 
   ngOnInit(): void {
-    console.log(this.offers.data.length + ' - ' + this.paginationCount);
-    console.log(this.moreOffers)
     this.offers.data.length > this.paginationCount ? this.moreOffers = true : this.moreOffers = false;
-    console.log(this.moreOffers)
 
     const mySpinner = document.getElementById('spinner');
     if (mySpinner != null) mySpinner.scrollIntoView({ behavior: 'smooth' });
@@ -42,6 +40,8 @@ export class ShowFlightoffersComponent implements OnInit {
       next: response => {
         this.flightChosenHasResponse = true;
         this.flightInfo = response;
+        console.log('Emitting');
+        this.flightInfoEvent.emit(response);
         this.isLoading = false;
       },
       error: err => {

@@ -1,113 +1,146 @@
-<div class="component component-top">
-  <form #searchFlights="ngForm" (submit)="submitForm(searchFlights)">
-    <!-- Travel type input - Radio -->
-    <div class="form-check-inline d-flex justify-content-center flex-wrap">
-      <mat-radio-group [(ngModel)]="model.travelType" name="trip" aria-label="Select an option">
-        <mat-radio-button [value]="0">Two-way trip</mat-radio-button>
-        <mat-radio-button [value]="1">Single</mat-radio-button>
-      </mat-radio-group>
-      <mat-checkbox name="direct" [(ngModel)]="model.isDirect">Direct flight</mat-checkbox>
-    </div>
+<mat-sidenav-container class="component component-top">
+  <div *ngIf="sidebarInfo.data">
 
-    <!-- Datepicking fields - Datepicker -->
-    <div class="d-flex justify-content-center flex-wrap">
-      <mat-form-field subscriptSizing="dynamic" *ngIf="model.travelType == 0; else noReturnDate" class="date">
-        <mat-label>Choose dates</mat-label>
-        <mat-date-range-input [formGroup]="range" [min]="minDate" [max]="maxDate" [rangePicker]="picker" disabled>
-          <input [(ngModel)]="model.departureDateVar" matStartDate formControlName="start">
-          <input [(ngModel)]="model.returnDateVar" matEndDate formControlName="end">
-        </mat-date-range-input>
-        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
-      </mat-form-field>
+  </div>
+  <mat-sidenav class="sidenav" position="end" #sidenav [(opened)]="opened">
+    <h1>Booking info</h1>
 
-      <!-- Alternative date for single travel use - Datepicker -->
-      <ng-template #noReturnDate>
-        <mat-form-field subscriptSizing="dynamic" class="date">
-          <mat-label>Choose date</mat-label>
-          <input matInput [(ngModel)]="model.departureDateVar" name="datepick" [min]="minDate" [max]="maxDate"
-            [matDatepicker]="picker" disabled>
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker disabled="false"></mat-datepicker>
-        </mat-form-field>
-      </ng-template>
-
-      <mat-form-field subscriptSizing="dynamic" class="input">
-        <mat-label>From</mat-label>
-        <input required type="text" placeholder="City" aria-label="DestinationFrom" matInput
-          [formControl]="myControlFrom" [matAutocomplete]="autoFrom" (input)="inputSearchFrom($event)"
-          [(ngModel)]="model.originLocationCode">
-        <button *ngIf="model.originLocationCode" matSuffix mat-icon-button aria-label="Clear" type="button"
-          (click)="model.originLocationCode=''">
-          <mat-icon>close</mat-icon>
-        </button>
-        <mat-autocomplete hideSingleSelectionIndicator requireSelection #autoFrom="matAutocomplete">
-          <mat-option *ngFor="let optionFrom of filteredOptionsFrom | async" [value]="optionFrom">
-            {{optionFrom}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-
-      <mat-form-field subscriptSizing="dynamic" class="input">
-        <mat-label>To</mat-label>
-        <input required type="text" placeholder="City" aria-label="DestinationTo" matInput [formControl]="myControlTo"
-          [matAutocomplete]="autoTo" (input)="inputSearchTo($event)" [(ngModel)]="model.destinationLocationCode">
-        <button *ngIf="model.destinationLocationCode" matSuffix mat-icon-button aria-label="Clear" type="button"
-          (click)="model.destinationLocationCode=''">
-          <mat-icon>close</mat-icon>
-        </button>
-        <mat-autocomplete hideSingleSelectionIndicator requireSelection #autoTo="matAutocomplete">
-          <mat-option *ngFor="let optionTo of filteredOptionsTo | async" [value]="optionTo">
-            {{optionTo}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-
-      <div class="d-flex justify-content-center flex-wrap w-100">
-        <!-- Fields for choosing number of passengers - Select -->
-        <mat-form-field subscriptSizing="dynamic" class="select">
-          <mat-label id="passengers"><span>Passengers: {{passengers[0]}} Adults</span><span *ngIf="passengers[1] > 0"> -
-              {{passengers[1]}} Children </span><span *ngIf="passengers[2] > 0"> -
-              {{passengers[2]}} Infants</span></mat-label>
-          <mat-select>
-            <mat-option *ngFor="let type of passengerTypes" disabled>
-              {{type}}
-              <div>
-                <button mat-flat-button aria-label="subtractPassenger" class="icon-button"
-                  (click)="subtractOnePassengerType(type)"><mat-icon class="icon" svgIcon="minus-icon"
-                    aria-hidden="false" aria-label="SVG minus icon"></mat-icon></button>
-                {{passengers[passengerTypes.indexOf(type)]}}
-                <button mat-flat-button aria-label="addPassenger" class="icon-button"
-                  (click)="addOnePassengerType(type)"><mat-icon class="icon" svgIcon="plus-icon" aria-hidden="false"
-                    aria-label="SVG plus icon"></mat-icon></button>
-              </div>
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <!-- Fields for choosing flight class - Select -->
-        <mat-form-field subscriptSizing="dynamic" class="select">
-          <mat-label>Class</mat-label>
-          <mat-select [(value)]="model.travelClassVar">
-            <mat-option *ngFor="let class of classes" [value]="class">
-              {{class}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+    <mat-divider class="my-5"></mat-divider>
+    <h2>Flight</h2>
+    <div *ngIf="sidebarInfo.data">
+      <div *ngFor="let itinerary of sidebarInfo.data.flightOffers[0].itineraries">
+        {{itinerary.segments[0].departure.iataCode}} <span *ngIf="itinerary.segments[0].departure.terminal"> at Terminal
+          {{itinerary.segments[0].departure.terminal}}</span> to
+        {{itinerary.segments[0].arrival.iataCode}} <span *ngIf="itinerary.segments[0].arrival.terminal"> at Terminal
+          {{itinerary.segments[0].arrival.terminal}}</span>
       </div>
     </div>
 
-    <div class="d-flex justify-content-center">
-      <button mat-flat-button color="primary" type="submit">Search flights</button>
+    <mat-divider class="my-5"></mat-divider>
+    <h2>Baggage</h2>
+
+    <mat-divider class="my-5"></mat-divider>
+    <h2>Price</h2>
+  </mat-sidenav>
+  <mat-sidenav-content>
+
+
+    <form #searchFlights="ngForm" (submit)="submitForm(searchFlights)">
+      <!-- Travel type input - Radio -->
+      <div class="form-check-inline d-flex justify-content-center flex-wrap">
+        <mat-radio-group [(ngModel)]="model.travelType" name="trip" aria-label="Select an option">
+          <mat-radio-button [value]="0">Two-way trip</mat-radio-button>
+          <mat-radio-button [value]="1">Single</mat-radio-button>
+        </mat-radio-group>
+        <mat-checkbox name="direct" [(ngModel)]="model.nonStop">Direct flight</mat-checkbox>
+      </div>
+
+      <!-- Datepicking fields - Datepicker -->
+      <div class="d-flex justify-content-center flex-wrap">
+        <mat-form-field subscriptSizing="dynamic" *ngIf="model.travelType == 0; else noReturnDate" class="date">
+          <mat-label>Choose dates</mat-label>
+          <mat-date-range-input [formGroup]="range" [min]="minDate" [max]="maxDate" [rangePicker]="picker" disabled>
+            <input [(ngModel)]="model.departureDateVar" matStartDate formControlName="start">
+            <input [(ngModel)]="model.returnDateVar" matEndDate formControlName="end">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
+        </mat-form-field>
+
+        <!-- Alternative date for single travel use - Datepicker -->
+        <ng-template #noReturnDate>
+          <mat-form-field subscriptSizing="dynamic" class="date">
+            <mat-label>Choose date</mat-label>
+            <input matInput [(ngModel)]="model.departureDateVar" name="datepick" [min]="minDate" [max]="maxDate"
+              [matDatepicker]="picker" disabled>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker disabled="false"></mat-datepicker>
+          </mat-form-field>
+        </ng-template>
+
+        <mat-form-field subscriptSizing="dynamic" class="input">
+          <mat-label>From</mat-label>
+          <input required type="text" placeholder="City" aria-label="DestinationFrom" matInput
+            [formControl]="myControlFrom" [matAutocomplete]="autoFrom" (input)="inputSearchFrom($event)"
+            [(ngModel)]="model.originLocationCode">
+          <button *ngIf="model.originLocationCode" matSuffix mat-icon-button aria-label="Clear" type="button"
+            (click)="model.originLocationCode=''">
+            <mat-icon>close</mat-icon>
+          </button>
+          <mat-autocomplete hideSingleSelectionIndicator requireSelection #autoFrom="matAutocomplete">
+            <mat-option *ngFor="let optionFrom of filteredOptionsFrom | async" [value]="optionFrom">
+              {{optionFrom}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field subscriptSizing="dynamic" class="input">
+          <mat-label>To</mat-label>
+          <input required type="text" placeholder="City" aria-label="DestinationTo" matInput [formControl]="myControlTo"
+            [matAutocomplete]="autoTo" (input)="inputSearchTo($event)" [(ngModel)]="model.destinationLocationCode">
+          <button *ngIf="model.destinationLocationCode" matSuffix mat-icon-button aria-label="Clear" type="button"
+            (click)="model.destinationLocationCode=''">
+            <mat-icon>close</mat-icon>
+          </button>
+          <mat-autocomplete hideSingleSelectionIndicator requireSelection #autoTo="matAutocomplete">
+            <mat-option *ngFor="let optionTo of filteredOptionsTo | async" [value]="optionTo">
+              {{optionTo}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <div class="d-flex justify-content-center flex-wrap w-100">
+          <!-- Fields for choosing number of passengers - Select -->
+          <mat-form-field subscriptSizing="dynamic" class="select">
+            <mat-label id="passengers"><span>Passengers: {{passengers[0]}} Adults</span><span *ngIf="passengers[1] > 0">
+                -
+                {{passengers[1]}} Children </span><span *ngIf="passengers[2] > 0"> -
+                {{passengers[2]}} Infants</span></mat-label>
+            <mat-select>
+              <mat-option *ngFor="let type of passengerTypes" disabled>
+                {{type}}
+                <div>
+                  <button mat-flat-button aria-label="subtractPassenger" class="icon-button"
+                    (click)="subtractOnePassengerType(type)"><mat-icon class="icon" svgIcon="minus-icon"
+                      aria-hidden="false" aria-label="SVG minus icon"></mat-icon></button>
+                  {{passengers[passengerTypes.indexOf(type)]}}
+                  <button mat-flat-button aria-label="addPassenger" class="icon-button"
+                    (click)="addOnePassengerType(type)"><mat-icon class="icon" svgIcon="plus-icon" aria-hidden="false"
+                      aria-label="SVG plus icon"></mat-icon></button>
+                </div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Fields for choosing flight class - Select -->
+          <mat-form-field subscriptSizing="dynamic" class="select">
+            <mat-label>Class</mat-label>
+            <mat-select [(value)]="model.travelClassVar">
+              <mat-option *ngFor="let class of classes" [value]="class">
+                {{class}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <button class="mb-2" mat-flat-button color="primary" type="submit">Search flights</button>
+      </div>
+    </form>
+
+    <!-- Show flightoffers component -->
+    <app-show-flightoffers (flightInfoEvent)="updateNav($event)" *ngIf="formSubmitted" [offers]="flightsResponses"
+      [passengerCount]="passengerCount"></app-show-flightoffers>
+
+    <p *ngIf="sidebarInfo.data" class="sidenav-button">
+      <button mat-button (click)="sidenav.toggle()">Show flightinfo</button>
+    </p>
+
+    <!-- Loading animation when searching -->
+    <div class="spinner d-flex justify-content-center" id="spinner" *ngIf="isLoading" scrollTo>
+      <mat-spinner></mat-spinner>
     </div>
-  </form>
-</div>
 
-<!-- Show flightoffers component -->
-<app-show-flightoffers *ngIf="formSubmitted" [offers]="flightsResponses"
-  [passengerCount]="passengerCount"></app-show-flightoffers>
-
-<!-- Loading animation when searching -->
-<div class="component spinner d-flex justify-content-center" id="spinner" *ngIf="isLoading" scrollTo>
-  <mat-spinner></mat-spinner>
-</div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
