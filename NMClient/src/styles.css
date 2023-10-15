@@ -8,12 +8,20 @@
     padding-top: 10px;
 }
 
-.component>form,
-.component .content,
+.mat-mdc-button-touch-target {
+    display: none;
+}
+
+.sidenav-button {
+    width: fit-content;
+    margin: 0 0 0 auto;
+}
+
+.component,
 .print-section {
-    background-color: #505050;
-    border-radius: 10px;
-    border: 1px solid lightgrey;
+    background-color: #505050 !important;
+    border-radius: 10px !important;
+    border: 1px solid lightgrey !important;
     width: 100%;
     padding: 10px;
 }
@@ -21,7 +29,6 @@
 .component-fit {
     width: fit-content;
 }
-
 
 html,
 body {
@@ -38,6 +45,7 @@ body {
 
 .headfoot * {
     color: lightgrey;
+    z-index: 100;
 }
 
 .headfoot {
@@ -66,10 +74,6 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
     transition: background-color 5000s !important;
     -webkit-text-fill-color: lightgrey !important;
-}
-
-#head {
-    z-index: 1;
 }
 
 #cdk-overlay-0 {
