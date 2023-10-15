@@ -1,0 +1,63 @@
+<div *ngIf="responses != null" class="component component-top">
+    <h1>Open cases</h1>
+    <mat-accordion multi="false">
+        <div *ngFor="let enquiry of responses.enquiryResponses;">
+            <mat-expansion-panel class="mt-2 mb-2" *ngIf="!enquiry.isSolved">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <h3>ID: {{enquiry.id}} <span *ngIf="enquiry.bookingReference != null">- Booking ID:
+                                {{enquiry.bookingReference}} -</span> Subject: {{enquiry.subject}}</h3>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ng-template matExpansionPanelContent>
+                    <p><strong>Name:</strong> {{enquiry.name}}</p>
+                    <p><strong>Message:</strong> {{enquiry.message}}</p>
+
+                    <mat-form-field subscriptSizing="dynamic" class="input">
+                        <mat-label>Message</mat-label>
+                        <textarea matInput placeholder="Response to customer..."
+                            [(ngModel)]="reply.responseMessageToUser" type="text"
+                            [(ngModel)]="reply.responseMessageToUser" name="message"></textarea>
+                    </mat-form-field>
+
+                    <div class="d-flex justify-content-end">
+                        <button class="me-2" (click)="submitReply(enquiry.id)" type="button" mat-flat-button
+                            color="primary">Reply</button>
+                        <button (click)="close(enquiry.id)" type="button" mat-flat-button color="primary">Close
+                            case</button>
+                    </div>
+                </ng-template>
+            </mat-expansion-panel>
+        </div>
+
+        <mat-divider class="mt-2 mb-2"> </mat-divider>
+        <h1>Closed cases</h1>
+
+        <div *ngFor="let enquiry of responses.enquiryResponses;">
+            <mat-expansion-panel class="mt-2 mb-2" *ngIf="enquiry.isSolved">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <h3>ID: {{enquiry.id}} <span *ngIf="enquiry.bookingReference != null">- Booking ID:
+                                {{enquiry.bookingReference}} -</span> Subject: {{enquiry.subject}}</h3>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ng-template matExpansionPanelContent>
+                    <p><strong>Name:</strong> {{enquiry.name}}</p>
+                    <p><strong>Message:</strong> {{enquiry.message}}</p>
+                </ng-template>
+            </mat-expansion-panel>
+        </div>
+    </mat-accordion>
+
+</div>
+
+<!-- id: number;
+name: string;
+email: string;
+subject: string;
+bookingReference?: string;
+message: string;
+time: Date;
+isSolved: boolean;
+created_at: Date;
+updated_at: Date; -->
