@@ -1,0 +1,51 @@
+<div class="component component-top">
+    <form #saveReq="ngForm" (submit)="submitForm(saveReq)">
+        <div class="d-flex justify-content-center flex-wrap">
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>E-mail</mat-label>
+                <input matInput type="email" [(ngModel)]="model.email" name="email">
+                <button *ngIf="model.email" matSuffix mat-icon-button aria-label="Clear" type="button"
+                    (click)="model.email=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>Name</mat-label>
+                <input matInput type="text" [(ngModel)]="model.name" name="name">
+                <button *ngIf="model.name" matSuffix mat-icon-button aria-label="Clear" type="button"
+                    (click)="model.name=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+
+            <mat-form-field subscriptSizing="dynamic" class="input mb-5">
+                <mat-label>Booking reference ID</mat-label>
+                <input matInput type="text" [(ngModel)]="model.bookingReference" name="bookingReferenceId">
+                <button *ngIf="model.bookingReference" matSuffix mat-icon-button aria-label="Clear" type="button"
+                    (click)="model.bookingReference=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>Subject</mat-label>
+                <input matInput type="text" [(ngModel)]="model.subject" name="name">
+                <button *ngIf="model.subject" matSuffix mat-icon-button aria-label="Clear" type="button"
+                    (click)="model.subject=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+
+            <mat-form-field subscriptSizing="dynamic" class="input">
+                <mat-label>Message</mat-label>
+                <textarea matInput placeholder="Let us know what we can do for you..." [(ngModel)]="model.message"
+                    type="text" [(ngModel)]="model.message" name="message"></textarea>
+            </mat-form-field>
+
+            <div class="d-flex justify-content-center">
+                <button type="submit" mat-flat-button color="primary">Send enquiry</button>
+            </div>
+        </div>
+    </form>
+</div>
