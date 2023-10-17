@@ -17,8 +17,8 @@ export class AgentComponent implements OnInit {
   model: Passenger = { id: 0, firstName: '', lastName: '', dateOfBirth: '', bookingReference: '', email: '' }
   bookingResponses: BookingResponse = { bookings: [] };
   searchString: string = '';
-  searchModel: FinalBookingResponse = { flight: [], passengers: [] };
-  searchResponse: FinalBookingResponse = { passengers: [], flight: [] };
+  searchModel: FinalBookingResponse = { flights: [], passengers: [] };
+  searchResponse: FinalBookingResponse = { passengers: [], flights: [] };
   snackbarOptions: MatSnackBarConfig = { verticalPosition: "top", horizontalPosition: "center" }
   currentYear = new Date().getFullYear();
   currentMonth = new Date().getMonth();
