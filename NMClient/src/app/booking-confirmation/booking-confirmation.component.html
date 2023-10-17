@@ -17,26 +17,26 @@
             </p>
         </div>
         <h1>Itinerary Details</h1>
-        <div *ngFor="let segment of booking.flight" class="container">
+        <div *ngFor="let flight of booking.flights" class="container">
             <p>
-                <strong>Flight:</strong> {{ segment.airline }} {{ segment.flightNumber }}
+                <strong>Flight:</strong> {{ flight.airline }} {{ flight.flightNumber }}
             </p>
             <p>
-                <strong>Departure:</strong> {{ segment.departureFrom }} <span
-                    *ngIf="segment.departureTerminal != ''">terminal {{ segment.departureTerminal }}</span> at
-                {{ segment.departureDateTime }}
-            </p>
-
-            <p>
-                <strong>Arrival:</strong> {{ segment.arrivalTo }} <span *ngIf="segment.arrivalTerminal != ''">
-                    terminal {{ segment.arrivalTerminal }}
-                </span> at {{ segment.arrivalDate }}
+                <strong>Departure:</strong> {{ flight.departureFrom }} <span
+                    *ngIf="flight.departureTerminal != ''">terminal {{ flight.departureTerminal }}</span> at
+                {{ flight.departureDateTime }}
             </p>
 
             <p>
-                <strong>Duration:</strong> {{ segment.flightDuration }}
+                <strong>Arrival:</strong> {{ flight.arrivalTo }} <span *ngIf="flight.arrivalTerminal != ''">
+                    terminal {{ flight.arrivalTerminal }}
+                </span> at {{ flight.arrivalDate }}
             </p>
-            <mat-divider *ngIf="booking.flight.indexOf(segment) + 1 < booking.flight.length"></mat-divider>
+
+            <p>
+                <strong>Duration:</strong> {{ flight.flightDuration }}
+            </p>
+            <mat-divider *ngIf="booking.flights.indexOf(flight) + 1 < booking.flights.length"></mat-divider>
         </div>
 
         <h1>Payment Details</h1>
@@ -59,8 +59,7 @@
     </div>
 
     <div class="d-flex mx-auto justify-content-around">
-        <button type="submit" mat-flat-button color="primary">Resend email</button>
-        <button type="submit" printTitle="NMFlights" printSectionId="print-section" ngxPrint mat-flat-button
+        <button type="button" printTitle="NMFlights" printSectionId="print-section" ngxPrint mat-flat-button
             color="primary">Print</button>
     </div>
 </div>
