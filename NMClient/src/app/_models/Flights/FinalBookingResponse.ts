@@ -1,7 +1,7 @@
 export interface FinalBookingResponse {
     bookingReference?: string;
     navigationId?: number;
-    flight: Flight[];
+    flights: Flight[];
     passengers: Passenger[];
     payment?: Payment;
 }
