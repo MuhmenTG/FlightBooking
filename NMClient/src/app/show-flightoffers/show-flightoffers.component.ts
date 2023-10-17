@@ -40,7 +40,6 @@ export class ShowFlightoffersComponent implements OnInit {
       next: response => {
         this.flightChosenHasResponse = true;
         this.flightInfo = response;
-        console.log('Emitting');
         this.flightInfoEvent.emit(response);
         this.isLoading = false;
       },
