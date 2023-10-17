@@ -9,18 +9,26 @@
     <h2>Flight</h2>
     <div *ngIf="sidebarInfo.data">
       <div *ngFor="let itinerary of sidebarInfo.data.flightOffers[0].itineraries">
-        {{itinerary.segments[0].departure.iataCode}} <span *ngIf="itinerary.segments[0].departure.terminal"> at Terminal
-          {{itinerary.segments[0].departure.terminal}}</span> to
-        {{itinerary.segments[0].arrival.iataCode}} <span *ngIf="itinerary.segments[0].arrival.terminal"> at Terminal
-          {{itinerary.segments[0].arrival.terminal}}</span>
+        <p>
+          {{itinerary.segments[0].departure.iataCode}}
+          <span *ngIf="itinerary.segments[0].departure.terminal"> at Terminal
+            {{itinerary.segments[0].departure.terminal}}</span>
+          to
+          {{itinerary.segments[0].arrival.iataCode}}
+          <span *ngIf="itinerary.segments[0].arrival.terminal"> at Terminal
+            {{itinerary.segments[0].arrival.terminal}}</span>
+        </p>
+        <p>Duration: {{itinerary.segments[0].duration}}</p>
       </div>
+
+
+      <mat-divider class="my-5"></mat-divider>
+      <h2>Price</h2>
+      <p>
+        {{sidebarInfo.data.flightOffers[0].price.billingCurrency}} {{sidebarInfo.data.flightOffers[0].price.grandTotal}}
+      </p>
     </div>
 
-    <mat-divider class="my-5"></mat-divider>
-    <h2>Baggage</h2>
-
-    <mat-divider class="my-5"></mat-divider>
-    <h2>Price</h2>
   </mat-sidenav>
   <mat-sidenav-content>
 
