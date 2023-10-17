@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./booking-confirmation.component.css']
 })
 export class BookingConfirmationComponent implements OnInit {
-  booking: FinalBookingResponse = { bookingReference: "", navigationId: 0, passengers: [], flight: [] }
+  booking: FinalBookingResponse = { bookingReference: "", navigationId: 0, passengers: [], flights: [] }
   isValid: boolean = false;
 
   constructor(private _router: Router) { }
