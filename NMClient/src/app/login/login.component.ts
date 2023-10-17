@@ -23,6 +23,7 @@ export class LoginComponent {
         sessionStorage.setItem('token', response.token);
         sessionStorage.setItem('user', response.user.email);
         sessionStorage.setItem('role', response.user.isAdmin ? 'admin' : 'agent');
+        // Snak med Muhmen omkring first time login
         this.router.navigate([sessionStorage.getItem('role')]).then(() => {
           window.location.reload();
         });
