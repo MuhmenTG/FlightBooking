@@ -74,14 +74,14 @@ class TravelAgentController extends Controller
             $paymentDetails = new PaymentResource($bookingInfo['payment']);
 
             $bookingComplete = [
-                'passenger' => $bookedFlightPassenger,
+                'passengers' => $bookedFlightPassenger,
                 'flight' => $bookedFlightSegments,
                 'payment' => $paymentDetails,
             ];
 
             $pdfContent = $this->IBookingService->generateBookingConfirmationPDF($bookingComplete);
 
-            $isSend = $this->IEmailSendService->sendEmailWithAttachments($email, $email, "We're sendinding you electronic ticket", "Please see your attached tickets", $pdfContent);
+            $isSend = $this->IEmailSendService->sendEmailWithAttachments($email, $email, "We're resending your electronic ticket", "Please see your attached tickets", $pdfContent);
 
             if ($isSend) {
                 return ResponseHelper::jsonResponseMessage("Booking confirmation has been sent", Response::HTTP_OK);
