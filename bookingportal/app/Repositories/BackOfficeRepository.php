@@ -49,7 +49,7 @@ class BackOfficeRepository implements IBackOfficeRepository{
     */
     public function findAgentByEmail(string $email): ?UserAccount
     {
-        return UserAccount::where('email', $email)->first();
+        return UserAccount::where('email', $email)->where(UserAccount::COL_DEACTIVATEDAT, 0)->first();
     }
 
     /**
