@@ -1,7 +1,9 @@
 <div class="component">
+
     <div id="print-section">
-        <div *ngIf="booking.bookingReference != null" class="container">
-            <h1>Booking reference ID: {{ booking.bookingReference }}</h1>
+
+        <div class="container">
+            <h1>Booking reference ID: {{ booking.flights[0].bookingReference }}</h1>
         </div>
         <h1>Passenger Details</h1>
         <div *ngFor="let traveller of booking.passengers" class="container">
@@ -59,7 +61,11 @@
     </div>
 
     <div class="d-flex mx-auto justify-content-around">
+        <button type="button"
+            (click)="resendEmail(booking.flights[0].bookingReference, booking.passengers[0].passengerEmail)"
+            mat-flat-button color="primary">Resend email</button>
         <button type="button" printTitle="NMFlights" printSectionId="print-section" ngxPrint mat-flat-button
             color="primary">Print</button>
     </div>
+
 </div>

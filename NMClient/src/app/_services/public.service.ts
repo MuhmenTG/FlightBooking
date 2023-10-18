@@ -25,6 +25,10 @@ export class PublicService extends HttpService {
     return this.http.post<any>(this.apiUrl + "/contactform", enquiryRequest)
   }
 
+  resendEmail(bookingReference: string, email: string): Observable<any> {
+    return this.http.post<any>(this.apiUrl + "/resendBookingConfirmationPDF", { bookingReference, email })
+  }
+
   retrieveBooking(bookingReferenceId: string): Observable<FinalBookingResponse> {
     return this.http.get<FinalBookingResponse>(this.apiUrl + "/retrieveBooking/" + bookingReferenceId)
   }
