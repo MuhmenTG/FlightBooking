@@ -49,9 +49,7 @@ class BookingService implements IBookingService {
                 }
 
                 $flightSegment = new FlightSelectionDTO($segment);
-
                 $bookedSegment = $this->bookingRepository->createFlightBookingSegment($bookingReference, $flightSegment);
-
                 $bookedSegments[] = $bookedSegment;
             }
         }

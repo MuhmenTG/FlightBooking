@@ -245,17 +245,6 @@ class TravelAgentController extends Controller
         return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payments');
     }
 
-    public function getSpecificPaymentTransactions(string $bookingReference, string $paymentId)
-    {
-        $payment = $this->IBackOfficeService->getSpecificPayments($bookingReference, $paymentId);
-
-        if ($payment == null) {
-            return ResponseHelper::jsonResponseMessage('Payment information not found about' . '.' . $bookingReference, Response::HTTP_NOT_FOUND);
-        }
-
-        return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payment');
-    }
-
     public function editAgentDetails(Request $request)
     {
 

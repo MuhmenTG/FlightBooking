@@ -65,9 +65,7 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
 Route::middleware(['auth:sanctum', 'isAgent'])->group(function () {
     Route::get('/travelAgent/getAllFlightBookings', [TravelAgentController::class, 'getAllFlightBookings']);
     Route::get('/travelAgent/getBooking/{bookingReference}', [PublicSiteController::class, 'retrieveBookingInformation']);
-    Route::get('/travelAgent/getAllPaymentTransactions', [TravelAgentController::class, 'getAllPaymentTransactions']);
     Route::post('/travelAgent/resendBookingConfirmationPDF', [TravelAgentController::class, 'resendBookingConfirmationPDF']);
-    Route::get('/travelAgent/getSpecificPaymentTransactions/{bookingReference}/{paymentId}', [TravelAgentController::class, 'getSpecificPaymentTransactions']);
     Route::post('/travelAgent/editPassengerInformation', [TravelAgentController::class, 'editPassengerInformation']);
     Route::get('/travelAgent/cancelFlight/{flightBookingReference}', [TravelAgentController::class, 'cancelFlightBooking']);
     Route::post('/travelAgent/answerUserEnquiry', [TravelAgentController::class, 'answerUserEnquiry']);
