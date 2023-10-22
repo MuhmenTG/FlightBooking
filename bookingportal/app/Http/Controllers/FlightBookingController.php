@@ -129,6 +129,7 @@ class FlightBookingController extends Controller
             }
             
             $bookedFlightSegments = FlightConfirmationResource::collection($this->IBookingService->finalizeFlightReservation($request->get('bookingReference'))); 
+            
             $bookedFlightPassengers = PassengerResource::collection($this->IBookingService->getFlightPassengersByPNR($request->get('bookingReference')));           
           
             $bookingComplete = [

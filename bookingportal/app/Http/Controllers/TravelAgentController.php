@@ -152,29 +152,15 @@ class TravelAgentController extends Controller
         return ResponseHelper::jsonResponseMessage('Email could not be sent', Response::HTTP_BAD_REQUEST);
     }
 
-    public function removeUserEnquiry(int $enquiryId)
-    {
-        $specificUserEnquiry = $this->IBookingService->getUserEnquiryById($enquiryId);
-        if (!$specificUserEnquiry) {
-            return ResponseHelper::jsonResponseMessage('User enquiry not found', Response::HTTP_NOT_FOUND);
-        }
-
-        if ($specificUserEnquiry->delete()) {
-            return ResponseHelper::jsonResponseMessage('User enquiry deleted successfully', Response::HTTP_OK);
-        }
-
-        return ResponseHelper::jsonResponseMessage('UserEnquiry could not be deleted', Response::HTTP_INTERNAL_SERVER_ERROR);
-    }
-
     public function editPassengerInformation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
-            'bookingReference' => 'required|string',
-            'firstName' => 'required|string',
-            'lastName' => 'required|string',
-            'dateOfBirth' => 'required|string',
-            'email' => 'required|string',
+            'id'                => 'required|integer',
+            'bookingReference'  => 'required|string',
+            'firstName'         => 'required|string',
+            'lastName'          => 'required|string',
+            'dateOfBirth'       => 'required|string',
+            'email'             => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -243,17 +229,6 @@ class TravelAgentController extends Controller
         $payment = PaymentResource::collection($payment);
 
         return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payments');
-    }
-
-    public function getSpecificPaymentTransactions(string $bookingReference, string $paymentId)
-    {
-        $payment = $this->IBackOfficeService->getSpecificPayments($bookingReference, $paymentId);
-
-        if ($payment == null) {
-            return ResponseHelper::jsonResponseMessage('Payment information not found about' . '.' . $bookingReference, Response::HTTP_NOT_FOUND);
-        }
-
-        return ResponseHelper::jsonResponseMessage($payment, Response::HTTP_OK, 'payment');
     }
 
     public function editAgentDetails(Request $request)
