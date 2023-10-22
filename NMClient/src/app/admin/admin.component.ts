@@ -5,6 +5,7 @@ import { AccountRequest } from '../_models/Employees/AccountRequest';
 import { AccountsResponse, agent as Agent } from '../_models/Employees/AccountsResponse';
 import { Router } from '@angular/router';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { AccountResponse } from '../_models/Employees/AccountResponse';
 
 @Component({
   selector: 'app-admin',
@@ -12,10 +13,11 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
   styleUrls: ['./admin.component.css']
 })
 export class AdminComponent implements OnInit {
-
+  searchString: string = '';
   status = ["Active", "Inactive"];
   model: AccountRequest = { email: "", firstName: "", lastName: "", status: "1", isAdmin: 0, isAgent: 1, id: 0 };
-  accounts: AccountsResponse = { formatedAgents: [] };
+  accounts: AccountsResponse = {} as AccountsResponse;
+  searchAccount: AccountResponse = {} as AccountResponse;
   role: boolean = false;
   snackbarOptions: MatSnackBarConfig = { verticalPosition: "top", horizontalPosition: "center" }
 
@@ -31,7 +33,6 @@ export class AdminComponent implements OnInit {
 
       this._adminService.getListOfAccounts().subscribe(response => {
         this.accounts = response
-        console.log(response);
       });
     }
     else {
@@ -76,7 +77,6 @@ export class AdminComponent implements OnInit {
       )
     }
     else {
-      console.log(this.model);
       this._adminService.createAccount(this.model).subscribe(response => {
         this.accounts.formatedAgents = this.accounts.formatedAgents.concat(response.data);
         this._snackBar.open('User successfully created!', '', this.snackbarOptions)
@@ -91,4 +91,19 @@ export class AdminComponent implements OnInit {
     this.model.email = '';
     this.model.status = '1';
   }
+
+  searchAgent() {
+    if (Number(this.searchString) > 0) {
+      this._adminService.getAccountDetails(Number(this.searchString)).subscribe({
+        next: response => {
+          this.searchAccount = response;
+        }
+      })
+    }
+    else {
+      this.searchAccount = {} as AccountResponse;
+    }
+  }
+
+  // TODO: Reset password for account
 }
