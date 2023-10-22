@@ -83,7 +83,6 @@ export class AgentComponent implements OnInit {
 
   searchBooking() {
     if (this.searchString.length > 5) {
-      console.log('trigger');
       this._agentService.getBooking(this.searchString).subscribe({
         next: response => {
           this.searchResponse = response;
@@ -91,4 +90,6 @@ export class AgentComponent implements OnInit {
       })
     }
   }
+
+  // TODO: Edit own user info
 }

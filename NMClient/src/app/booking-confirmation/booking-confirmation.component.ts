@@ -26,7 +26,7 @@ export class BookingConfirmationComponent implements OnInit {
 
   resendEmail(bookingReference: string, email: string) {
     this._publicService.resendEmail(bookingReference, email).subscribe(response => {
-      console.log(response);
+      // TODO: Add resent email response
     });
   }
 }

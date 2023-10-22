@@ -71,4 +71,6 @@ export class AdminFaqComponent implements OnInit {
       this._snackBar.open('FAQ deleted successfully!', '', this.snackbarOptions)
     });
   }
+
+  // TODO: Find FAQ by ID
 }
