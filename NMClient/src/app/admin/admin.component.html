@@ -44,6 +44,42 @@
     </div>
 </div>
 
+<div class="d-flex justify-content-center flex-wrap">
+    <mat-form-field subscriptSizing="dynamic" class="input">
+        <mat-label>Search by agent ID</mat-label>
+        <input matInput type="text" [(ngModel)]="searchString" name="searchString" (input)="searchAgent()">
+        <button *ngIf=" searchString" matSuffix mat-icon-button aria-label="Clear" type="button"
+            (click)="searchString=''">
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-form-field>
+</div>
+
+<div *ngIf="searchAccount.data != null">
+    <mat-accordion multi="false">
+        <mat-expansion-panel class="mt-2 mb-2">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <h3>{{searchAccount.data.firstName + " " + searchAccount.data.lastName}}</h3>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ng-template matExpansionPanelContent>
+                <p><strong>ID:</strong> {{searchAccount.data.id}}</p>
+                <p><strong>Email:</strong> {{searchAccount.data.email}}</p>
+                <p><strong>Registration date:</strong> {{searchAccount.data.registeredAt}}</p>
+                <div class="d-flex justify-content-end">
+                    <div *ngIf="!searchAccount.data.administratorPermission">
+                        <button (click)="accountActivation(searchAccount.data)" type="submit" mat-flat-button
+                            color="secondary">Deactivate</button>
+                    </div>
+                    <button (click)="editAccount(searchAccount.data)" type="submit" mat-flat-button
+                        color="primary">Edit</button>
+                </div>
+            </ng-template>
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>
+
 <div *ngIf="accounts != null">
     <h3>Active accounts</h3>
     <div *ngFor="let account of accounts.formatedAgents; let i = index;">
