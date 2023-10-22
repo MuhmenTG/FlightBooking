@@ -23,7 +23,7 @@ export class AdminService extends HttpService {
   }
 
   getAccountDetails(id: number): Observable<AccountResponse> {
-    return this.http.get<AccountResponse>(this.apiUrl + "/getSpecificAgentDetails/" + id);
+    return this.http.get<AccountResponse>(this.apiUrl + "/getSpecificAgentDetails/" + id, this.httpOptionsAccount);
   }
 
   getListOfAccounts(): Observable<AccountsResponse> {
